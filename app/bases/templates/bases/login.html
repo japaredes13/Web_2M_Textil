@@ -1,0 +1,54 @@
+{% extends 'base/base.html' %}
+
+{% block body %}
+    <body class="hold-transition login-page">
+        {% block side_bar %} {% endblock %}
+        {% block content %} {% endblock %}
+        {% block footer%} {% endblock %}
+        {% block login %} 
+            <div class="login-box">
+                <!-- /.login-logo -->
+                <div class="card card-outline card-primary">
+                    <div class="card-header text-center">
+                        <a href="/" class="h1"><b>Bienvenido</b></a>
+                    </div>
+                    
+                    <div class="card-body">
+                        <p class="login-box-msg">Inicie su Sesión</p>
+
+                        <form class="user" method="POST" id="form">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="id_username" name="username" placeholder="Usuario" autocomplete="off">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-envelope"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                                    </button>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.login-box -->    
+        {% endblock %}  
+    </body>
+{% endblock body %}
