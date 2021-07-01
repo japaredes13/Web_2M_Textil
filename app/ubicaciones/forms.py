@@ -5,15 +5,17 @@ from .models import Departamento, Ciudad
 class DepartamentoForm(forms.ModelForm):
     class Meta:
         model = Departamento
-        fields = ['descripcion','estado']
-        widgets = {'descripcion':forms.TextInput}
+        fields = [
+            'descripcion',
+            'estado'
+        ]
+        labels = {
+            'descripcion':"Departamento:"
+        }
+        widgets = {
+            'descripcion':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
+        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-        for field in iter(self.fields):
-            self.fields[field].widget.attrs.update({
-                'class':'form-control'
-            })
 
 class CiudadForm(forms.ModelForm):
     departamento=forms.ModelChoiceField(
@@ -22,9 +24,13 @@ class CiudadForm(forms.ModelForm):
     )
     class Meta:
         model = Ciudad
-        fields = ['departamento','descripcion','estado']
-        labels = {'descripcion':"Ciudad",'estado':"Estado"}
-        widgets = {'descripcion':forms.TextInput}
+        fields = ['departamento','descripcion']
+        labels = {
+            'descripcion':"Ciudad"
+        }
+        widgets = {
+            'descripcion':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)

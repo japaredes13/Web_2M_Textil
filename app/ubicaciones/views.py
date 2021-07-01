@@ -16,10 +16,9 @@ class DepartamentoView(LoginRequiredMixin, generic.ListView):
     login_url = 'bases:login'
 
 
-class DepartamentoNew(LoginRequiredMixin,
-                   generic.CreateView):
-    model=Departamento
-    template_name="ubicaciones/departamento_form.html"
+class DepartamentoCreate(LoginRequiredMixin, generic.CreateView):
+    model = Departamento
+    template_name="ubicaciones/departamentos/departamento_form.html"
     context_object_name = 'obj'
     form_class=DepartamentoForm
     success_url= reverse_lazy("ubicaciones:departamento_list")
@@ -27,13 +26,13 @@ class DepartamentoNew(LoginRequiredMixin,
 
     def form_valid(self, form):
         form.instance.user_created = self.request.user
+        form.instance.estado = True
         return super().form_valid(form)
     
 
-class DepartamentoEdit(LoginRequiredMixin,
-                   generic.UpdateView):
+class DepartamentoEdit(LoginRequiredMixin, generic.UpdateView):
     model=Departamento
-    template_name="ubicaciones/departamento_form.html"
+    template_name="ubicaciones/departamentos/departamento_form.html"
     context_object_name = 'obj'
     form_class=DepartamentoForm
     success_url= reverse_lazy("ubicaciones:departamento_list")
@@ -77,15 +76,14 @@ def departamento_inactivar(request, id):
 
 class CiudadView(LoginRequiredMixin, generic.ListView):
     model = Ciudad
-    template_name = "ubicaciones/ciudad_list.html"
+    template_name = "ubicaciones/ciudades/ciudad_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
 
 
-class CiudadNew(LoginRequiredMixin,
-                   generic.CreateView):
+class CiudadCreate(LoginRequiredMixin, generic.CreateView):
     model=Ciudad
-    template_name="ubicaciones/ciudad_form.html"
+    template_name="ubicaciones/ciudades/ciudad_form.html"
     context_object_name = 'obj'
     form_class=CiudadForm
     success_url= reverse_lazy("ubicaciones:ciudad_list")
@@ -96,10 +94,9 @@ class CiudadNew(LoginRequiredMixin,
         return super().form_valid(form)
     
 
-class CiudadEdit(LoginRequiredMixin,
-                   generic.UpdateView):
+class CiudadEdit(LoginRequiredMixin, generic.UpdateView):
     model=Ciudad
-    template_name="ubicaciones/ciudad_form.html"
+    template_name="ubicaciones/ciudades/ciudad_form.html"
     context_object_name = 'obj'
     form_class=CiudadForm
     success_url= reverse_lazy("ubicaciones:ciudad_list")
