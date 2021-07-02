@@ -1,0 +1,40 @@
+<div class="modal fade modal-danger" id="modal-delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="delete-confirmation-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Atención</h5>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="default-message">
+                    ¿Desea eliminar el registro?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <form method="GET" role="form" class="form-inline">
+                  {% csrf_token %}
+                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Aceptar</button>
+                   
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#modal-delete-confirmation').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var actionTarget = button.data('action-target');
+            var modal = $(this);
+            modal.find('form').attr('action', actionTarget);
+
+            if (button.data('remove-submit-button') === true) {
+                modal.find('button[type=submit]').hide();
+            } else {
+                modal.find('button[type=submit]').show();
+            }
+        });
+    });
+</script>

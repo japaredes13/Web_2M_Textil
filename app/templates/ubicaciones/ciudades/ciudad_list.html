@@ -60,7 +60,7 @@
                                                                href="{% url 'ubicaciones:ciudad_edit' item.id %}">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="">
+                                                            <button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{% url 'ubicaciones:ciudad_delete' item.id %}">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>
                                                         </td>
@@ -78,3 +78,7 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block js_page %}
+    {% include 'base/modal_delete.html' %}
+{% endblock js_page %}

@@ -43,12 +43,12 @@ class DepartamentoEdit(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
     
 
-def departamento_eliminar(request,id):
-    dpto= Departamento.objects.filter(pk=id).first()
-    print(dpto)
+def departamento_delete(request,id):
+    departamento= Departamento.objects.filter(pk=id).first()
     if request.method=='GET':
         try:
-            dpto.delete()
+            departamento.estado = False
+            departamento.save()
             messages.success(request, "Registro eliminado correctamente." )
         except ProtectedError:
             messages.error(request, "No se puede eliminar el registro" )
@@ -106,15 +106,16 @@ class CiudadEdit(LoginRequiredMixin, generic.UpdateView):
         form.instance.user_updated_id = self.request.user.id
         return super().form_valid(form)
     
-def ciudad_eliminar(request,id):
+def ciudad_delete(request,id):
     ciudad= Ciudad.objects.filter(pk=id).first()
-    print(ciudad)
     if request.method=='GET':
         try:
-            ciudad.delete()
-            messages.success(request, "Registro eliminado correctamente." )
+            ciudad.estado = False
+            ciudad.save() 
+            #messages.success(request, "Registro eliminado correctamente." )
         except ProtectedError:
-            messages.error(request, "No se puede eliminar el registro" )
+            print("Error")
+            #messages.error(request, "No se puede eliminar el registro" )
         return redirect("ubicaciones:ciudad_list")
 
 
