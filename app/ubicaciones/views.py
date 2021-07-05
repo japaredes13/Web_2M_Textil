@@ -39,7 +39,8 @@ class DepartamentoEdit(LoginRequiredMixin, generic.UpdateView):
     login_url="bases:login"
 
     def form_valid(self, form):
-        form.instance.user_updated_id = self.request.user.id
+        form.instance.user_updated_id = self.request.user.id 
+        messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
     
 

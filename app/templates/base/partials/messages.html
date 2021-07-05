@@ -1,0 +1,22 @@
+<script type=text/javascript>
+    toastr.options = {
+        "progressBar": true,
+        "timeOut": "6000",
+        "extendedTimeOut": "2000",
+    }
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success'%}
+                toastr.{{ message.tags }}('{{ message }}','Mensaje')
+            {% elif message.tags == 'info' %}
+                toastr.{{ message.tags }}('{{ message }}','Mensaje')
+            {% elif message.tags == 'warning' %}
+                toastr.{{ message.tags }}('{{ message }}','Mensaje')
+            {% elif message.tags == 'error' %}
+                toastr.{{ message.tags }}('{{ message }}','Mensaje')
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+</script>

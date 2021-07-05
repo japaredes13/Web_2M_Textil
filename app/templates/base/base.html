@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="{% static 'base/plugins/icheck-bootstrap/icheck-bootstrap.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'base/css/adminlte.css' %}">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+	
 </head>
 
 {% block body %}
@@ -61,7 +63,9 @@
     <script src="{% static 'base/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <!-- AdminLTE -->
     <script src="{% static 'base/js/adminlte.js' %}"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    {% include 'base/partials/messages.html' %}
+
     {% block js_page %} 
     {% endblock js_page %}
 
