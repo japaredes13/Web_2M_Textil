@@ -28,9 +28,9 @@
                         </div>
                         <div class="card-body">
                             {% if obj %}
-                                <form method="POST" role="form" action="{% url 'ubicaciones:ciudad_edit' obj.pk %}">
+                                <form method="POST" role="form" id="form" action="{% url 'ubicaciones:ciudad_edit' obj.pk %}">
                             {% else %}
-                                <form method="POST" role="form" action="{% url 'ubicaciones:ciudad_create' %}">
+                                <form method="POST" role="form" id="form" action="{% url 'ubicaciones:ciudad_create' %}">
                             {% endif %}
                             {% csrf_token %}
                             <div class="row">
@@ -62,3 +62,15 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block js_page %}
+<script>
+    var options = {
+        rules: {
+            'departamento' : {required: [true, '* Debe seleccionar un departamento'] },
+            'descripcion': { required: [true,'* El campo descripción es requerido'] },
+        }
+    };
+    var formObject = new ej.inputs.FormValidator('#form', options);
+</script>
+{% endblock js_page %}

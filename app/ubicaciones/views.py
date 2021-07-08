@@ -10,10 +10,14 @@ from .models import Departamento, Ciudad
 from .forms import DepartamentoForm, CiudadForm
 
 class DepartamentoView(LoginRequiredMixin, generic.ListView):
-    model = Departamento
+    paginate_by = 5
     template_name = "ubicaciones/departamentos/departamento_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
+
+    def get_queryset(self):
+        queryset = Departamento.objects.filter(estado=True).order_by('descripcion')
+        return queryset
 
 
 class DepartamentoCreate(LoginRequiredMixin, generic.CreateView):
@@ -27,6 +31,7 @@ class DepartamentoCreate(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         form.instance.user_created = self.request.user
         form.instance.estado = True
+        messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
     
 
@@ -76,10 +81,14 @@ def departamento_inactivar(request, id):
     return render(request,template_name,contexto)
 
 class CiudadView(LoginRequiredMixin, generic.ListView):
-    model = Ciudad
+    paginate_by = 5
     template_name = "ubicaciones/ciudades/ciudad_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
+
+    def get_queryset(self):
+        queryset = Ciudad.objects.filter(estado=True).order_by('descripcion')
+        return queryset
 
 
 class CiudadCreate(LoginRequiredMixin, generic.CreateView):
@@ -92,6 +101,7 @@ class CiudadCreate(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         form.instance.user_created = self.request.user
+        messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
     
 
@@ -105,6 +115,7 @@ class CiudadEdit(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         form.instance.user_updated_id = self.request.user.id
+        messages.success(self.request, "Registro eliminado correctamente." )
         return super().form_valid(form)
     
 def ciudad_delete(request,id):
@@ -113,10 +124,9 @@ def ciudad_delete(request,id):
         try:
             ciudad.estado = False
             ciudad.save() 
-            #messages.success(request, "Registro eliminado correctamente." )
+            messages.success(request, "Registro eliminado correctamente." )
         except ProtectedError:
-            print("Error")
-            #messages.error(request, "No se puede eliminar el registro" )
+            messages.error(request, "No se puede eliminar el registro" )
         return redirect("ubicaciones:ciudad_list")
 
 
