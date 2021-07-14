@@ -22,19 +22,21 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function(){
-        $('#modal-delete-confirmation').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var actionTarget = button.data('action-target');
-            var modal = $(this);
-            modal.find('form').attr('action', actionTarget);
+{% block js_page %}
+    <script>
+        $(document).ready(function(){
+            $('#modal-delete-confirmation').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var actionTarget = button.data('action-target');
+                var modal = $(this);
+                modal.find('form').attr('action', actionTarget);
 
-            if (button.data('remove-submit-button') === true) {
-                modal.find('button[type=submit]').hide();
-            } else {
-                modal.find('button[type=submit]').show();
-            }
+                if (button.data('remove-submit-button') === true) {
+                    modal.find('button[type=submit]').hide();
+                } else {
+                    modal.find('button[type=submit]').show();
+                }
+            });
         });
-    });
-</script>
+    </script>
+{% endblock %}

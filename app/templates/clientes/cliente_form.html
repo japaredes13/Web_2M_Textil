@@ -1,0 +1,156 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div id="formulario" class="modal-dialog modal-lg" role="dialog">
+    <div class="modal-content">
+        {% if obj %}
+        <form method="POST" id="form" role="form" class="form-inline" action="{% url 'clientes:cliente_edit' obj.pk %}">
+        {% else %}
+        <form method="POST" id="form" role="form" class="form-inline" action="{% url 'clientes:cliente_new' %}">
+        {% endif %}
+            <div class="col-xl-12 col-md-12 mb-12">
+                {% if obj %}
+                <div class="card border-left-warning shadow h-100 py-2">
+                {% else %}
+                <div class="card border-left-success shadow h-100 py-2">
+                {% endif %}    
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    {% if obj %} editar {% else %} Nuevo {% endif %} Cliente
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_nombre"><strong>{{form.nombre.label}}</strong></label>
+                                                {{form.nombre}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_apellido"><strong>{{form.apellido.label}}</strong></label>
+                                                {{form.apellido}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_razon_social"><strong>{{form.razon_social.label}}</strong></label>
+                                                {{form.razon_social}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_cedula"><strong>{{form.cedula.label}}</strong></label>
+                                                {{form.cedula}}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
+                                                {{form.ruc}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_nro_celular"><strong>{{form.nro_celular.label}}</strong></label>
+                                                {{form.nro_celular}}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_nro_telefono"><strong>{{form.nro_telefono.label}}</strong></label>
+                                                {{form.nro_telefono}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_email"><strong>{{form.email.label}}</strong></label>
+                                                {{form.email}}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_tipo_cliente"><strong>{{form.tipo_cliente.label}}</strong></label>
+                                                {{form.tipo_cliente}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
+                                                <select class="form-control"  name = "ciudad" id="id_ciudad">
+                                                    {% for ciudad in ciudades %}
+                                                        <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_direccion"><strong>{{form.direccion.label}}</strong></label>
+                                                    {{form.direccion}}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_estado"><strong>{{form.estado.label}}</strong></label>
+                                                {{form.estado}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-success"><span class="fa fa-save"></span>Guardar</button>
+                                        <a class="btn btn-danger float-right" href="{% url 'clientes:cliente_list' %}">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+{% block js_page %}
+    <script>
+        var options = {
+            rules: {
+                'nombre': { required: true},
+                'email': { required: true, email: true },
+                'razon_social': { required: false }
+            }
+        };
+        var formObject = new ej.inputs.FormValidator('#form', options);
+        formObject.removeRules('razon_social');
+    </script>
+
+    <script>
+        $(document).ready(function(){
+
+            $('#id_ciudad').val("{{ obj.ciudad.id }}").change();
+            $('#id_ciudad').select2({
+                width: '150%',
+                placeholder: 'Seleccione la Ciudad'
+            });
+            
+        });
+    </script>
+{% endblock js_page %}
