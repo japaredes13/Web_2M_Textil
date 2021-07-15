@@ -66,7 +66,10 @@
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                         
-                                                            <button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{% url 'ubicaciones:departamento_delete' item.id %}">
+                                                            <!--<button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{% url 'ubicaciones:departamento_delete' item.id %}">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>-->
+                                                            <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar('{% url 'ubicaciones:departamento_delete' item.id %}')">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>
                                                         </td>
@@ -108,4 +111,25 @@
 
 {% block js_page %}
     {% include 'base/modal_delete.html' %}
+
+    <script>
+        function eliminar (url) { 
+            console.log(url);
+            Swal.fire({
+                "title":"¿Estás seguro?",
+                "text":"Esta acción no se puede deshacer",
+                "icon":"question",
+                "showCancelButton":true,
+                "cancelButtonText":"No, Cancelar",
+                "confirmButtonText":"Si, Eliminar",
+                "reverseButtons":true,
+                "confirmButtonColor":"#dc3545"
+            })
+            .then(function(result) {
+                if (result.isConfirmed) {
+                    window.location.href = url
+                }
+            });
+        }
+    </script>
 {% endblock js_page %}

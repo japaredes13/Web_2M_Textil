@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.contrib import messages
@@ -124,7 +125,13 @@ def ciudad_delete(request,id):
         try:
             ciudad.estado = False
             ciudad.save() 
-            messages.success(request, "Registro eliminado correctamente." )
+            data = {
+                'error':False, 
+                'message':"Registro eliminado correctamente.",
+                'url':"{% url 'ubicaciones:departamento_list' %}"
+            }
+            return JsonResponse(data, safe=False)
+            #messages.success(request, "Registro eliminado correctamente." )
         except ProtectedError:
             messages.error(request, "No se puede eliminar el registro" )
         return redirect("ubicaciones:ciudad_list")

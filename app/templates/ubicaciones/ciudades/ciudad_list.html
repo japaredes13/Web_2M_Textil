@@ -67,7 +67,10 @@
                                                                href="{% url 'ubicaciones:ciudad_edit' item.id %}">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-                                                            <button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{% url 'ubicaciones:ciudad_delete' item.id %}">
+                                                            <!--<button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{% url 'ubicaciones:ciudad_delete' item.id %}">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>-->
+                                                            <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar('{% url 'ubicaciones:ciudad_delete' item.id %}', '{% url 'ubicaciones:ciudad_list' %}')">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>
                                                         </td>
@@ -109,4 +112,52 @@
 
 {% block js_page %}
     {% include 'base/modal_delete.html' %}
+    <script>
+        function eliminar (url, redirect_url) { 
+            Swal.fire({
+                "title":"¿Estás seguro?",
+                "text":"Esta acción no se puede deshacer",
+                "icon":"question",
+                "showCancelButton":true,
+                "cancelButtonText":"No, Cancelar",
+                "confirmButtonText":"Si, Eliminar",
+                "reverseButtons":true,
+                "confirmButtonColor":"#dc3545",
+                "showLoaderOnConfirm": true,
+                "preConfirm": function(login)  {
+                    return $.get(url,function(result) {
+                        return result;
+                    })
+                    .fail(function(error) {
+                        Swal.fire({title:'Error',text:'Ha Ocurrido un error, intente mas tarde',type:'error'});
+                    })
+                }
+            })
+            .then(function(result) {
+                console.log(result);
+                if(result.value) {
+                    if (result.value.error) {
+                        Swal.fire({
+                            title:'Error',
+                            text:result.value.message,
+                            type:'error'
+                        });
+                    }else{
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: result.value.message,
+                            icon: 'success',
+                            confirmButtonColor: '#254a99',
+                            showCancelButton: false,
+                            allowOutsideClick: false
+                        }).then(function(result)  {
+                            console.log(result);
+                            window.location.href = redirect_url;
+                        });
+
+                    }
+                }
+            });
+        }
+    </script>
 {% endblock js_page %}
