@@ -22,4 +22,5 @@ urlpatterns = [
     path('ubicaciones/',include(('ubicaciones.urls','ubicaciones'), namespace='ubicaciones')),
     path('clientes/',include(('clientes.urls','clientes'), namespace='clientes')),
     path('telas/',include(('telas.urls','telas'), namespace='telas')),
+    path('proveedores/',include(('proveedores.urls','proveedores'), namespace='proveedores')),
 ]

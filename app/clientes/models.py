@@ -5,7 +5,7 @@ from ubicaciones.models import Ciudad
 class Cliente(ClaseModelo):
     nombre= models.CharField(max_length=200)
     apellido = models.CharField(max_length=200)
-    razon_social = models.CharField(max_length=200)
+    razon_social = models.CharField(max_length=200,null=True, blank=True)
     cedula = models.CharField(max_length=50, unique=True)
     ruc = models.CharField(max_length=50)
     email = models.EmailField(max_length = 200)

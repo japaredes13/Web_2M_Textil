@@ -1,0 +1,142 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear Proveedor</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'ubicaciones:departamento_list' %}">Departamentos</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Nuevo</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_new' %}">
+                            {% endif %}
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_nombre_empresa"><strong>Nombre de la Empresa</strong></label>
+                                                    {{form.nombre_empresa}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
+                                                    {{form.ruc}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
+                                                    <select class="form-control"  name = "ciudad" id="id_ciudad">
+                                                        {% for ciudad in ciudades %}
+                                                            <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_direccion"><strong>{{form.direccion.label}}</strong></label>
+                                                    {{form.direccion}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_nro_celular"><strong>{{form.nro_celular.label}}</strong></label>
+                                                    {{form.nro_celular}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_email"><strong>{{form.email.label}}</strong></label>
+                                                    {{form.email}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_telefono"><strong>{{form.telefono.label}}</strong></label>
+                                                    {{form.telefono}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label form="id_estado"><strong>{{form.estado.label}}</strong></label>
+                                                    {{form.estado}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="dropdown-divider"></div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <button type="submit" class="btn btn-success"><span class="fa fa-save"></span>Guardar</button>
+                                            <a class="btn btn-danger float-right" href="{% url 'proveedores:proveedor_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+{% block js_page %}
+<script>
+    var options = {
+        rules: {
+            'nombre_empresa': { required: [ true, 'Campo requerido']},
+            'ruc': { required:[ true, 'Campo requerido']},
+            'ciudad': { required: [ true, 'Campo requerido']},
+            'direccion': { required: [ true, 'Campo requerido']},
+            'nro_celular': { required: [ true, 'Campo requerido']},
+            'email': { required: [ true, 'Campo requerido']},
+            'telefono': { required: false }
+        }
+    };
+    var formObject = new ej.inputs.FormValidator('#form', options);
+    formObject.removeRules('telefono');
+    formObject.addRules('email', {email: [ true, 'Introduzca una direccion de correo válido']});
+</script>
+<script>
+    $(document).ready(function(){
+        $('#id_ciudad').val("{{ obj.ciudad.id }}").change();
+        $('#id_ciudad').select2({
+            width: '100%'
+        });
+        
+    });
+</script>
+{% endblock js_page %}
