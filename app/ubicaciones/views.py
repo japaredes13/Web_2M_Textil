@@ -56,7 +56,12 @@ def departamento_delete(request,id):
         try:
             departamento.estado = False
             departamento.save()
-            messages.success(request, "Registro eliminado correctamente." )
+            data = {
+                'error':False, 
+                'message':"Registro eliminado correctamente."
+            }
+            return JsonResponse(data, safe=False)
+            #messages.success(request, "Registro eliminado correctamente." )
         except ProtectedError:
             messages.error(request, "No se puede eliminar el registro" )
         return redirect("ubicaciones:departamento_list")
@@ -127,8 +132,7 @@ def ciudad_delete(request,id):
             ciudad.save() 
             data = {
                 'error':False, 
-                'message':"Registro eliminado correctamente.",
-                'url':"{% url 'ubicaciones:departamento_list' %}"
+                'message':"Registro eliminado correctamente."
             }
             return JsonResponse(data, safe=False)
             #messages.success(request, "Registro eliminado correctamente." )

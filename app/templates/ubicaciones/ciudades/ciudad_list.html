@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></a></li>
                         <li class="breadcrumb-item active">Ciudades</li>
                     </ol>
                 </div>               
@@ -37,7 +37,7 @@
                     
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <a href="{% url 'ubicaciones:ciudad_create' %}" class="btn btn-primary btn-block">
                                         <i class="fas fa-plus-square"></i> Nueva Ciudad
                                     </a>
@@ -111,53 +111,5 @@
 {% endblock content %}
 
 {% block js_page %}
-    {% include 'base/modal_delete.html' %}
-    <script>
-        function eliminar (url, redirect_url) { 
-            Swal.fire({
-                "title":"¿Estás seguro?",
-                "text":"Esta acción no se puede deshacer",
-                "icon":"question",
-                "showCancelButton":true,
-                "cancelButtonText":"No, Cancelar",
-                "confirmButtonText":"Si, Eliminar",
-                "reverseButtons":true,
-                "confirmButtonColor":"#dc3545",
-                "showLoaderOnConfirm": true,
-                "preConfirm": function(login)  {
-                    return $.get(url,function(result) {
-                        return result;
-                    })
-                    .fail(function(error) {
-                        Swal.fire({title:'Error',text:'Ha Ocurrido un error, intente mas tarde',type:'error'});
-                    })
-                }
-            })
-            .then(function(result) {
-                console.log(result);
-                if(result.value) {
-                    if (result.value.error) {
-                        Swal.fire({
-                            title:'Error',
-                            text:result.value.message,
-                            type:'error'
-                        });
-                    }else{
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: result.value.message,
-                            icon: 'success',
-                            confirmButtonColor: '#254a99',
-                            showCancelButton: false,
-                            allowOutsideClick: false
-                        }).then(function(result)  {
-                            console.log(result);
-                            window.location.href = redirect_url;
-                        });
-
-                    }
-                }
-            });
-        }
-    </script>
+    {% include 'base/partials/sweet_delete.html' %}
 {% endblock js_page %}

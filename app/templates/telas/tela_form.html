@@ -1,0 +1,119 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear Tela</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'telas:tela_list' %}">Telas</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Nuevo</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'telas:tela_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'telas:tela_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_nombre"><strong>{{form.nombre.label}}</strong></label>
+                                                {{form.nombre}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_codigo"><strong>{{form.codigo.label}}</strong></label>
+                                                {{form.codigo}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_disenho"><strong>{{form.disenho.label}}</strong></label>
+                                                {{form.disenho}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_categoria"><strong>{{form.categoria.label}}</strong></label>
+                                                {{form.categoria}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_color"><strong>{{form.color.label}}</strong></label>
+                                                {{form.color}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_precio"><strong>{{form.precio.label}}</strong></label>
+                                                {{form.precio}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_metraje"><strong>{{form.metraje.label}}</strong></label>
+                                                {{form.metraje}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'telas:tela_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+<script>
+    var options = {
+        rules: {
+            'codigo':{required: false },
+            'nombre':{required: [true, '* El campo es requerido'] },
+            'color':{required: [true, '* El campo es requerido'] },
+            'metraje':{required: [true, '* El campo es requerido'] },
+            'precio':{required: [true, '* El campo es requerido'] },
+            'disenho':{required: [true, '* El campo es requerido'] },
+            'categoria':{required: [true, '* El campo es requerido'] },
+        }
+    };
+    var formObject = new ej.inputs.FormValidator('#form', options);
+    formObject.removeRules('codigo');
+</script>
+{% endblock js_page %}

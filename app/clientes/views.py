@@ -14,7 +14,6 @@ from .forms import ClienteForm
 from ubicaciones.models import Ciudad
 
 class ClienteView(LoginRequiredMixin,generic.ListView):
-    print('HOLA')
     model = Cliente 
     template_name = "clientes/cliente_list.html"
     #context_object_name = "obj"

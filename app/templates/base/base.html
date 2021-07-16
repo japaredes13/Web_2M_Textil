@@ -20,6 +20,8 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'base/css/adminlte.css' %}">
   <!--<link href="//cdn.syncfusion.com/ej2/ej2-base/styles/material.css" rel="stylesheet">-->
+  <link href="{% static 'base/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     {% block css %}
     {% endblock css%}
@@ -67,6 +69,9 @@
     <script src="{% static 'base/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <!-- AdminLTE -->
     <script src="{% static 'base/js/adminlte.js' %}"></script>
+
+    <script src="{% static 'base/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'base/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <script src="{% static 'base/plugins/datatables/jquery.dataTables.min.js' %}"></script>

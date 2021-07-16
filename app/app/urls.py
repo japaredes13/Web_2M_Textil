@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ubicaciones/',include(('ubicaciones.urls','ubicaciones'), namespace='ubicaciones')),
     path('clientes/',include(('clientes.urls','clientes'), namespace='clientes')),
+    path('telas/',include(('telas.urls','telas'), namespace='telas')),
 ]
