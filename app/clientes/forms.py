@@ -21,7 +21,6 @@ class ClienteForm(forms.ModelForm):
             'nro_celular',
             'ciudad',
             'direccion',
-            'estado',
         ]
         labels = {
             'nombre_cliente':'Nombre Cliente',
@@ -34,7 +33,6 @@ class ClienteForm(forms.ModelForm):
             'nro_celular':'Numero de Celular',
             'ciudad':'Ciudad',
             'direccion':'Direccion',
-            'estado':'Estado',
 		}
         widgets = {
 			'nombre_cliente' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
@@ -47,5 +45,4 @@ class ClienteForm(forms.ModelForm):
 			'nro_celular' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'ciudad' : forms.Select(attrs={'class':'form-control'}),
             'direccion' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-            'estado' : forms.CheckboxInput(attrs={'class':'form-control'}),
 		}

@@ -7,7 +7,7 @@ from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
-import json
+from datetime import datetime
 
 from .models import Cliente
 from .forms import ClienteForm
@@ -82,32 +82,18 @@ class ClienteEdit(LoginRequiredMixin, generic.UpdateView):
         context ["obj"] = Cliente.objects.filter(pk=pk).first()
         return context
 
-def cliente_eliminar(request,id):
-    cliente = Cliente.objects.filter(pk=id).first()
-    if request.method=='GET':
-        try:
-            cliente.delete()
-            messages.success(request, "Registro eliminado correctamente." )
-        except ProtectedError:
-            messages.error(request, "No se puede eliminar el registro" )
-        return redirect("clientes:cliente_list")
-
-
-def cliente_inactivar (request,id):
-    template_name = 'base/modal_eliminar.html'
-    contexto={}
-    cli= Cliente.objects.filter(pk=id).first()
-
-    if not cli:
-        return HttpResponse('Cliente Inactivado')
-    
-    if request.method=='GET':
-        contexto={'obj':cli}
-
-    if request.method=='POST':
-        cli.estado=False
-        cli.save()
-        contexto={'obj':'OK'}
-        return HttpResponse('Cliente Inactivado')
-    
-    return render(request, template_name, contexto)
+def cliente_delete(request,id):
+    try:
+        cliente= Cliente.objects.get(pk=id)
+        cliente.fecha_eliminacion = datetime.now()
+        cliente.save()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Cliente.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)

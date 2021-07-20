@@ -18,7 +18,6 @@ class ProveedorForm(forms.ModelForm):
             'nro_celular',
             'email',
             'ruc',
-            'estado',
         ]
         labels = {
             'ciudad':'Ciudad',
@@ -29,7 +28,6 @@ class ProveedorForm(forms.ModelForm):
             'nro_celular':'Número de Celular',
             'email':'E-mail',
             'ruc':'Ruc',
-            'estado':'Estado'
 		}
         widgets = {
             'ciudad' : forms.Select(attrs={'class':'form-control'}),
@@ -40,5 +38,4 @@ class ProveedorForm(forms.ModelForm):
 			'nro_celular' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
             'email':forms.EmailInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'ruc' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-            'estado' : forms.CheckboxInput(attrs={'class':'form-control'}),
 		}
