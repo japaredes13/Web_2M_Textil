@@ -27,14 +27,14 @@ class ClienteList(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         estado = int(self.request.GET.get('estado'))
         clientes = self.model.objects.filter(estado=estado).values(
-                            'id','nombre','apellido','cedula','ruc','nro_celular','estado')
+                            'id','nombre_cliente','cedula','ruc','nro_celular','estado')
         buscar_cliente = self.request.GET.get('cliente')
 
         if estado:
             print(estado)
             clientes = clientes.filter(estado=estado)
         if buscar_cliente:
-            clientes = clientes.filter(Q(nombre__icontains=buscar_cliente) | Q(apellido__icontains=buscar_cliente) |
+            clientes = clientes.filter(Q(nombre_cliente__icontains=buscar_cliente) |
                 Q(cedula__icontains=buscar_cliente) | Q(ruc__icontains=buscar_cliente))
 
         return clientes
@@ -68,6 +68,7 @@ class ClienteNew(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         form.instance.user_created = self.request.user
+        form.instance.estado = True
         return super().form_valid(form)
 
     def get_context_data (self, **kwargs):

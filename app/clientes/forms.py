@@ -11,8 +11,7 @@ class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = [
-            'nombre',
-            'apellido',
+            'nombre_cliente',
             'razon_social',
             'cedula',
             'ruc',
@@ -25,8 +24,7 @@ class ClienteForm(forms.ModelForm):
             'estado',
         ]
         labels = {
-            'nombre':'Nombres',
-            'apellido':'Apellidos',
+            'nombre_cliente':'Nombre Cliente',
             'razon_social':'Razon Social',
             'cedula':'Cedula',
             'ruc':'Ruc',
@@ -39,8 +37,7 @@ class ClienteForm(forms.ModelForm):
             'estado':'Estado',
 		}
         widgets = {
-            'nombre' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'apellido' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+			'nombre_cliente' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'razon_social' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'cedula' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'ruc' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),

@@ -88,12 +88,6 @@
                                                     {{form.telefono}}
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_estado"><strong>{{form.estado.label}}</strong></label>
-                                                    {{form.estado}}
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div class="dropdown-divider"></div>
@@ -127,7 +121,7 @@
         }
     };
     var formObject = new ej.inputs.FormValidator('#form', options);
-    formObject.removeRules('telefono');
+    formObject.addRules('telefono',{number: [true,'Ingrese solo números']});
     formObject.addRules('email', {email: [ true, 'Introduzca una direccion de correo válido']});
 </script>
 <script>

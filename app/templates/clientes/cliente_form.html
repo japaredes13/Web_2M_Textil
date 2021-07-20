@@ -36,14 +36,8 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label form="id_nombre"><strong>{{form.nombre.label}}</strong></label>
-                                                    {{form.nombre}}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_apellido"><strong>{{form.apellido.label}}</strong></label>
-                                                    {{form.apellido}}
+                                                <label form="id_nombre_cliente"><strong>{{form.nombre_cliente.label}}</strong></label>
+                                                    {{form.nombre_cliente}}
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -116,15 +110,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_estado"><strong>{{form.estado.label}}</strong></label>
-                                                    {{form.estado}}
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="dropdown-divider"></div>
                                     <div class="row">
                                         <div class="col">
@@ -146,19 +131,20 @@
     <script>
         var options = {
             rules: {
-                'nombre': { required:[ true, 'Campo requerido']},
-                'apellido': { required:[ true, 'Campo requerido']},
+                'nombre_cliente': { required:[ true, 'Campo requerido']},
                 'cedula': { required:[ true, 'Campo requerido']},
                 'nro_celular': { required:[ true, 'Campo requerido']},
                 'direccion': { required:[ true, 'Campo requerido']},
                 'email': { required:[ true, 'Campo requerido']},
-                'ruc': { required:[ true, 'Campo requerido']},
-                'nro_telefono': { required: [ true, 'Campo requerido']},
                 'razon_social': { required: false },
+                'ruc': { required: false },
+                'nro_telefono': { required: false },
             }
         };
         var formObject = new ej.inputs.FormValidator('#form', options);
         formObject.removeRules('razon_social');
+        formObject.removeRules('ruc');
+        formObject.addRules('nro_telefono',{number: [true,'Ingrese solo números']});
         formObject.addRules('email', {email: [ true, 'Introduzca una direccion de correo válido']});
     </script>
 
