@@ -7,10 +7,10 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse,JsonResponse
-import json
+from django.http import JsonResponse
 from .models import Tela
 from .forms import TelaForm
+from datetime import datetime
 
 
 class TelaList(LoginRequiredMixin,generic.ListView):
@@ -19,7 +19,7 @@ class TelaList(LoginRequiredMixin,generic.ListView):
     login_url = 'bases:login'
 
     def queryset(self):
-        telas = Tela.objects.filter(estado=True).order_by('nombre')
+        telas = Tela.objects.filter(fecha_eliminacion__isnull=True).order_by('nombre')
         buscar_tela = self.request.POST['tela']
         categoria = self.request.POST['categoria']
         if categoria:
@@ -75,10 +75,16 @@ class TelaEdit(LoginRequiredMixin, generic.UpdateView):
 
 def tela_delete(request,id):
     try:
-        tela= Tela.objects.filter(pk=id).first()
-        tela.estado = False
-        tela.save() 
-        messages.success(request, "Registro eliminado correctamente." )
-    except ProtectedError:
-        messages.error(request, "No se puede eliminar el registro" )
-    return redirect("telas:tela_list")
+        tela= Tela.objects.get(pk=id)
+        tela.fecha_eliminacion = datetime.now()
+        tela.save()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Tela.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)

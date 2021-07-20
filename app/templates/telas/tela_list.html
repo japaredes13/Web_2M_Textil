@@ -84,10 +84,9 @@
 {% endblock content %}
 
 {% block js_page %}
-    {% include 'base/modal_delete.html' %}
+    {% include 'base/partials/sweet_delete.html' %}
     <script>
-        $(document).ready(function() {
-            
+        $(document).ready(function() {           
             var table = $('.table').DataTable({
                 responsive: true,
                 autoWidth: false,
@@ -111,7 +110,7 @@
                     {
                         "render": function( data, type, row ) {
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Tela" href="/telas/telas/'+row.id+'/edit"><i class="fas fa-edit"></i></a>' + 
-                                   ' <button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="/telas/telas/'+row.id+'/delete"><i class="fas fa-trash"></i></button>';
+                                   ' <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar(\'/telas/telas/'+row.id+'/delete\',\'/telas/telas\')"><i class="fa fa-trash"></i></button>';
                         },
                         orderable: false
                     },
@@ -140,7 +139,6 @@
             });
 
             $('#tela').keyup(function(){
-                console.log($('#tela').val());
                 table.ajax.reload();
             });
             $('#categoria').change(function(){

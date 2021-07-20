@@ -9,6 +9,7 @@ from django.http import HttpResponse
 import json
 from .models import Departamento, Ciudad
 from .forms import DepartamentoForm, CiudadForm
+from datetime import datetime
 
 class DepartamentoView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
@@ -17,7 +18,7 @@ class DepartamentoView(LoginRequiredMixin, generic.ListView):
     login_url = 'bases:login'
 
     def get_queryset(self):
-        queryset = Departamento.objects.filter(estado=True).order_by('descripcion')
+        queryset = Departamento.objects.filter(fecha_eliminacion__isnull=True).order_by('descripcion')
         return queryset
 
 
@@ -51,40 +52,21 @@ class DepartamentoEdit(LoginRequiredMixin, generic.UpdateView):
     
 
 def departamento_delete(request,id):
-    departamento= Departamento.objects.filter(pk=id).first()
-    if request.method=='GET':
-        try:
-            departamento.estado = False
-            departamento.save()
-            data = {
-                'error':False, 
-                'message':"Registro eliminado correctamente."
-            }
-            return JsonResponse(data, safe=False)
-            #messages.success(request, "Registro eliminado correctamente." )
-        except ProtectedError:
-            messages.error(request, "No se puede eliminar el registro" )
-        return redirect("ubicaciones:departamento_list")
+    try:
+        departamento= Departamento.objects.get(pk=id)
+        departamento.fecha_eliminacion = datetime.now()
+        departamento.save()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Departamento.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)
 
-
-
-def departamento_inactivar(request, id):
-    dpto= Departamento.objects.filter(pk=id).first()
-    contexto={}
-    template_name="base/modal_eliminar.html"
-
-    if not dpto:
-        return redirect("ubicaciones:departamento_list")
-    
-    if request.method=='GET':
-        contexto={'obj':dpto}
-    
-    if request.method=='POST':
-        dpto.estado=False
-        dpto.save()
-        return redirect("ubicaciones:departamento_list")
-
-    return render(request,template_name,contexto)
 
 class CiudadView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
@@ -93,7 +75,7 @@ class CiudadView(LoginRequiredMixin, generic.ListView):
     login_url = 'bases:login'
 
     def get_queryset(self):
-        queryset = Ciudad.objects.filter(estado=True).order_by('descripcion')
+        queryset = Ciudad.objects.filter(fecha_eliminacion__isnull=True).order_by('descripcion')
         return queryset
 
 
@@ -125,39 +107,21 @@ class CiudadEdit(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
     
 def ciudad_delete(request,id):
-    ciudad= Ciudad.objects.filter(pk=id).first()
-    if request.method=='GET':
-        try:
-            ciudad.estado = False
-            ciudad.save() 
-            data = {
-                'error':False, 
-                'message':"Registro eliminado correctamente."
-            }
-            return JsonResponse(data, safe=False)
-            #messages.success(request, "Registro eliminado correctamente." )
-        except ProtectedError:
-            messages.error(request, "No se puede eliminar el registro" )
-        return redirect("ubicaciones:ciudad_list")
+    try:
+        ciudad= Ciudad.objects.get(pk=id)
+        ciudad.fecha_eliminacion = datetime.now()
+        ciudad.save() 
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Ciudad.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)
 
-
-def ciudad_inactivar(request, id):
-    dpto= Ciudad.objects.filter(pk=id).first()
-    contexto={}
-    template_name="base/modal_eliminar.html"
-
-    if not dpto:
-        return redirect("ubicaciones:ciudad_list")
-    
-    if request.method=='GET':
-        contexto={'obj':dpto}
-    
-    if request.method=='POST':
-        dpto.estado=False
-        dpto.save()
-        return redirect("ubicaciones:ciudad_list")
-
-    return render(request,template_name,contexto)
 
 
 def ciudades_ajax(request):

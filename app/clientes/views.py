@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import json
 
 from .models import Cliente
@@ -16,46 +16,33 @@ from ubicaciones.models import Ciudad
 class ClienteView(LoginRequiredMixin,generic.ListView):
     model = Cliente 
     template_name = "clientes/cliente_list.html"
-    #context_object_name = "obj"
     login_url = 'bases:login'
 
-
-class ClienteList(LoginRequiredMixin,generic.ListView):
-    model = Cliente 
-    login_url = 'bases:login'
-
-    def get_queryset(self):
-        estado = int(self.request.GET.get('estado'))
-        clientes = self.model.objects.filter(estado=estado).values(
-                            'id','nombre_cliente','cedula','ruc','nro_celular','estado')
-        buscar_cliente = self.request.GET.get('cliente')
-
-        if estado:
-            print(estado)
-            clientes = clientes.filter(estado=estado)
+    def queryset(self):
+        estado = int(self.request.POST['estado'])
+        clientes = Cliente.objects.filter(estado=estado, fecha_eliminacion__isnull=True)
+        buscar_cliente = self.request.POST['cliente']
         if buscar_cliente:
             clientes = clientes.filter(Q(nombre_cliente__icontains=buscar_cliente) |
                 Q(cedula__icontains=buscar_cliente) | Q(ruc__icontains=buscar_cliente))
-
         return clientes
+
+
+    def post(self, request, *args, **kwargs):
+        data={}
+        try:
+            if request.POST['action'] == 'search':
+                data = []
+                clientes = self.queryset()
+                for cliente in clientes:
+                    data.append(cliente.toJSON())
+            else:
+                data['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            print(e)
+            data['error'] = str(e)
         
-
-    def get(self, request, *args, **kwargs):
-        if request.is_ajax():
-            inicio = int(request.GET.get('inicio'))
-            fin = int(request.GET.get('limite'))
-            clientes = self.get_queryset()
-            list_data = []
-            for indice, valor in enumerate (clientes[inicio:inicio+fin],inicio):
-                list_data.append(valor)
-
-            data = {
-                'length': clientes.count(),
-                'objects': list_data
-            }
-            return HttpResponse(json.dumps(data), 'application/json')
-        else:
-            return redirect("clientes:cliente_list")
+        return JsonResponse(data, safe=False)
 
 
 class ClienteNew(LoginRequiredMixin, generic.CreateView):

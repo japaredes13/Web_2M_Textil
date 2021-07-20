@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import CiudadCreate, DepartamentoView, DepartamentoCreate, DepartamentoEdit, departamento_inactivar, departamento_delete, \
-                    CiudadView, CiudadCreate, CiudadEdit, ciudad_inactivar, ciudad_delete, ciudades_ajax
+from .views import CiudadCreate, DepartamentoView, DepartamentoCreate, DepartamentoEdit, departamento_delete, \
+                    CiudadView, CiudadCreate, CiudadEdit, ciudad_delete, ciudades_ajax
 
 urlpatterns = [
     #rutas para departamento

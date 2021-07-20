@@ -9,8 +9,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'ubicaciones:departamento_list' %}">Departamentos</a></li>
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'proveedores:proveedor_list' %}">Proveedores</a></li>
                         <li class="breadcrumb-item active">Crear</li>
                     </ol>
                 </div>               
@@ -24,7 +24,7 @@
                 <div class="col-md-12">
                     <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Nuevo</h3>
+                            <h3 class="card-title">Datos del Proveedor</h3>
                         </div>
                         <div class="card-body">
                             {% if obj %}
@@ -32,80 +32,78 @@
                             {% else %}
                                 <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_new' %}">
                             {% endif %}
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_nombre_empresa"><strong>Nombre de la Empresa</strong></label>
-                                                    {{form.nombre_empresa}}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
-                                                    {{form.ruc}}
-                                            </div>
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_nombre_empresa"><strong>Nombre de la Empresa</strong></label>
+                                                {{form.nombre_empresa}}
                                         </div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
-                                                    <select class="form-control"  name = "ciudad" id="id_ciudad">
-                                                        {% for ciudad in ciudades %}
-                                                            <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_direccion"><strong>{{form.direccion.label}}</strong></label>
-                                                    {{form.direccion}}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_nro_celular"><strong>{{form.nro_celular.label}}</strong></label>
-                                                    {{form.nro_celular}}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_email"><strong>{{form.email.label}}</strong></label>
-                                                    {{form.email}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label form="id_telefono"><strong>{{form.telefono.label}}</strong></label>
-                                                    {{form.telefono}}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="dropdown-divider"></div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <button type="submit" class="btn btn-success"><span class="fa fa-save"></span>Guardar</button>
-                                            <a class="btn btn-danger float-right" href="{% url 'proveedores:proveedor_list' %}">Cancelar</a>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
+                                                {{form.ruc}}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
+                                                <select class="form-control"  name = "ciudad" id="id_ciudad">
+                                                    {% for ciudad in ciudades %}
+                                                        <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_direccion"><strong>{{form.direccion.label}}</strong></label>
+                                                {{form.direccion}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_nro_celular"><strong>{{form.nro_celular.label}}</strong></label>
+                                                {{form.nro_celular}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_email"><strong>{{form.email.label}}</strong></label>
+                                                {{form.email}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_telefono"><strong>{{form.telefono.label}}</strong></label>
+                                                {{form.telefono}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary"><span class="fa fa-save"></span> Guardar</button>
+                                        <a class="btn btn-danger float-right" href="{% url 'proveedores:proveedor_list' %}">Cancelar</a>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 {% endblock content %}
 {% block js_page %}
 <script>

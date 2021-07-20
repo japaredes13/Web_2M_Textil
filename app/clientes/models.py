@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import model_to_dict
 from bases.models import ClaseModelo
 from ubicaciones.models import Ciudad
 
@@ -15,6 +16,10 @@ class Cliente(ClaseModelo):
     nro_celular = models.CharField(max_length=20)
     direccion = models.CharField(max_length=200)
     ciudad = models.ForeignKey(Ciudad, models.PROTECT) 
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        return item
 
     class Meta:
         # sort by "fecha" in descending order unless
