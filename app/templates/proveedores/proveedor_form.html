@@ -30,7 +30,7 @@
                             {% if obj %}
                                 <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_edit' obj.pk %}">
                             {% else %}
-                                <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_new' %}">
+                                <form method="POST" role="form" id="form" action="{% url 'proveedores:proveedor_create' %}">
                             {% endif %}
                                 {% csrf_token %}
                                 <div class="row">

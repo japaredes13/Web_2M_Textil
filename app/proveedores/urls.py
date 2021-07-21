@@ -1,11 +1,9 @@
 from django.urls import path
-from .views import ProveedorView,ProveedorList, ProveedorNew, ProveedorEdit, proveedor_inactivar, proveedor_eliminar
+from .views import ProveedorView, ProveedorCreate, ProveedorEdit, proveedor_delete
 
 urlpatterns = [
     path('proveedores/',ProveedorView.as_view(), name='proveedor_list'),
-    path('proveedores/ajax_list',ProveedorList.as_view(), name='proveedor_list_ajax'),
-    path('proveedores/new', ProveedorNew.as_view(), name='proveedor_new'),
-    path('proveedores/edit/<int:pk>', ProveedorEdit.as_view(), name='proveedor_edit'),
-    path('proveedores/Inactivar/<int:id>', proveedor_inactivar, name='proveedor_inactivar'),
-    path('proveedores/eliminar/<int:id>', proveedor_eliminar, name='proveedor_delete'),
+    path('proveedores/create', ProveedorCreate.as_view(), name='proveedor_create'),
+    path('proveedores/<int:pk>/edit', ProveedorEdit.as_view(), name='proveedor_edit'),
+    path('proveedores/<int:id>/delete', proveedor_delete, name='proveedor_delete'),
 ]

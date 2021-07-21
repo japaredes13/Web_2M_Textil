@@ -55,7 +55,7 @@ class TelaCreate(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         form.instance.user_created = self.request.user
         form.instance.estado = True
-        messages.success(self.request, "Registro creado correctamente." )
+        messages.success(self.request, "Tela registrada éxitosamente." )
         return super().form_valid(form)
 
 
@@ -69,7 +69,7 @@ class TelaEdit(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         form.instance.user_updated_id = self.request.user.id
-        messages.success(self.request, "Registro actualizado correctamente." )
+        messages.success(self.request, "Tela modificada éxitosamente." )
         return super().form_valid(form)
 
 

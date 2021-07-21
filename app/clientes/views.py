@@ -45,7 +45,7 @@ class ClienteView(LoginRequiredMixin,generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class ClienteNew(LoginRequiredMixin, generic.CreateView):
+class ClienteCreate(LoginRequiredMixin, generic.CreateView):
     model=Cliente
     template_name="clientes/cliente_form.html"
     context_object_name="obj"
@@ -56,10 +56,11 @@ class ClienteNew(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         form.instance.user_created = self.request.user
         form.instance.estado = True
+        messages.success(self.request, 'Cliente registrado éxitosamente.')
         return super().form_valid(form)
 
     def get_context_data (self, **kwargs):
-        context = super(ClienteNew,self).get_context_data(**kwargs)
+        context = super(ClienteCreate,self).get_context_data(**kwargs)
         context ["ciudades"] = Ciudad.objects.all()
         return context
 
@@ -73,6 +74,7 @@ class ClienteEdit(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         form.instance.user_updated = self.request.user.id
+        messages.success(self.request, 'Cliente modificado éxitosamente.')
         return super().form_valid(form)
 
     def get_context_data (self, **kwargs):

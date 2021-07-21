@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.forms import model_to_dict
 from bases.models import ClaseModelo
 from ubicaciones.models import Ciudad
 
@@ -40,6 +40,10 @@ class Proveedor(ClaseModelo):
     def save(self):
         self.nombre_empresa=self.nombre_empresa.upper()
         super(Proveedor, self).save()
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        return item
 
     class Meta:
         verbose_name_plural = "Proveedores"

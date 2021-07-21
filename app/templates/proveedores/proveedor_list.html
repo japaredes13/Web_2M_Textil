@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Listado de Proveedores</h1>
+                    <h1 class="m-0">Proveedores</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -23,13 +23,12 @@
                 <div class="col-md-12">
                     <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Opciones</h3>
+                            <h3 class="card-title">Listado de Proveedores</h3>
                         </div>
-
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row justify-content-end">
                                 <div class="col-md-2">
-                                    <a href="{% url 'proveedores:proveedor_new' %}" class="btn btn-primary btn-block">
+                                    <a href="{% url 'proveedores:proveedor_create' %}" class="btn btn-primary btn-block">
                                         <i class="fas fa-plus-square"></i> Nuevo Proveedor
                                     </a>
                                 </div>
@@ -75,115 +74,67 @@
 {% endblock content %}
 
 {% block js_page %}
-{% include 'base/modal_delete.html' %}
-<script>
-    //Call the dataTables JQuery plugins
-    $(document).ready(function(){
-        //listar_usuario();
-        var table = $('.table').DataTable({
-            "dom": "Bfrltip",
-            "serverSide": true,
-            "processing": true,
-            "filter": false,
-            "ajax": function(data,callback,settings){
-                //console.log(data);
-                $.get("{% url 'proveedores:proveedor_list_ajax' %}",{
-                    limite: data.length,
-                    inicio: data.start,
-                    estado: $('#estado').val(),
-                    proveedor: $('#proveedor').val(),
-                    }, function(res){
-                        //console.log(res);
-                        callback({
-                            recordsTotal: res.length,
-                            recordsFiltered: res.length,
-                            data: res.objects
-                        });
+    {% include 'base/partials/sweet_delete.html' %}
+    <script>
+        $(document).ready(function() {           
+            var table = $('.table').DataTable({
+                responsive: true,
+                autoWidth: false,
+                filter: false,
+                ajax: {
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    url: window.location.pathname,
+                    type: 'POST',
+                    "data": function (d) {
+                        d.action = 'search',
+                        d.estado = $('#estado').val(),
+                        d.proveedor = $('#proveedor').val()
                     },
-                );
-            },
-            columns: [
-                { "data": "nombre_empresa"},
-                { "data": "ruc"},
-                { "data": "email"},
-                { "data": "nro_celular"},
-                { "data": "direccion"},
-                { 
-                    "render": function( data, type, full ) {
-                        return '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/proveedores/proveedores/edit/'+ full.id+'"> <i class="fas fa-edit"></i> </a>' + 
-                                '<button class="btn btn-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="/proveedores/proveedores/eliminar/'+full.id+'"><i class="fa fa-trash"></i></button>';
-                    },
-                    "orderable":false
-                }
-            ],
-            language:{
-                        "decimal": "",
-                        "emptyTable": "No hay información",
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                        "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-                        "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
-                        "infoPostFix": "",
-                        "thousands": ",",
-                        "lengthMenu": "Mostrar _MENU_ Entradas",
-                        "loadingRecords": "Cargando...",
-                        "processing": "Procesando...",
-                        "search": "Buscar:",
-                        "zeroRecords": "Sin resultados encotrados",
-                        "paginate": {
-                            "first": "Primero",
-                            "last": "Ultimo",
-                            "next": "Siguiente",
-                            "previous": "Anterior",
-                        }
+                    dataSrc: ""
+                },
+                columns: [
+                    { "data": "nombre_empresa"},
+                    { "data": "ruc"},
+                    { "data": "email"},
+                    { "data": "nro_celular"},
+                    { "data": "direccion"},
+                    { 
+                        "render": function( data, type, full ) {
+                            return '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/proveedores/proveedores/'+ full.id+'/edit"> <i class="fas fa-edit"></i> </a>' + 
+                                    ' <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar(\'/proveedores/proveedores/'+full.id+'/delete\',\'/proveedores/proveedores\')"><i class="fa fa-trash"></i></button>';
+                        },
+                        "orderable":false
                     }
-        });
-        $('#estado').change(function(){
-            table.draw();
-        });
-        $('#proveedor').keyup(function(){
-            table.draw();
-        });
-    });
-    function listar_usuario(){
-        $.ajax({
-            url: "{% url 'proveedores:proveedor_list_ajax' %}",
-            type: "GET",
-            dataType: "json",
-            success: function(response){
-                $('.table tbody').html("");
-                for(let i=0; i < response.length; i++){
-                    let fila = '<tr>';
-                    fila += '<td>' + response[i]["nombre_empresa"] +'</td>';
-                    id = response[i]["id"];
-                    fila += '<td> <button class="btn btn-danger btn-flat" data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="eliminar/' + id + '">';
-                    fila += '<i class="fa fa-trash"></i></button>';
-                    fila += '</tr>';
-                    $('.table tbody').append(fila);
-                }
-                $('.table').DataTable({
-                    language:{
-                        "decimal": "",
-                        "emptyTable": "No hay información",
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                        "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-                        "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
-                        "infoPostFix": "",
-                        "thousands": ",",
-                        "LengthMenu": "Mostrar _MENU_ Entradas",
-                        "LoadingRecords": "Cargando...",
-                        "processing": "Procesando...",
-                        "search": "Buscar:",
-                        "zeroRecords": "Sin resultados encotrados",
-                        "paginate": {
-                            "first": "Primero",
-                            "last": "Ultimo",
-                            "next": "Siguiente",
-                            "previous": "Anterior",
-                        }
+                ],
+                language:{
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encotrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior",
                     }
-                });
-            }
+                }
+            });
+
+            $('#estado').change(function(){
+                table.draw();
+            });
+            $('#proveedor').keyup(function(){
+                table.draw();
+            });
         });
-    }
-</script>
-{% endblock %}
+    </script>
+{% endblock js_page %}
