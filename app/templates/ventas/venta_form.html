@@ -62,7 +62,7 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label>IVA 10%:</label>
-                                                        {{ form.monto_total }}
+                                                        {{ form.total_iva_10 }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -80,7 +80,8 @@
                                                     <div class="form-group">
                                                         <label>Busacador de Telas:</label>
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Ingrese una descripción del producto" autocomplete="off">
+                                                            <input type="text" class="form-control" name="search"
+                                                            placeholder="Ingrese una descripción del producto" autocomplete="off">
                                                             <div class="input-group-append">
                                                                 <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-times"></i></button>
                                                             </div>
@@ -88,19 +89,19 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <div class="card-body table-responsive p-0">
-                                                        <table class="table table-hover text-nowrap" id="data">
+                                                    <!--<div class="card-body table-responsive p-0">-->
+                                                        <table class="table table-hover text-nowrap" id="table_telas">
                                                             <thead>
                                                                 <tr>
+                                                                    <th>Acciones</th>
                                                                     <th>Tela</th>
                                                                     <th>Precio Unitario</th>
                                                                     <th>Cantidad</th>
                                                                     <th>SubTotal</th>
-                                                                    <th>Acciones</th>
                                                                 </tr>
                                                             </thead>
                                                         </table>
-                                                    </div>
+                                                    <!--</div>-->
                                                 </div>
                                             </div>
                                         </div>
@@ -118,6 +119,98 @@
 {% block js_page %}
     {% include 'base/partials/sweet_delete.html' %}
     <script>
+        var venta = {
+            items: {
+                cliente: '',
+                fecha_venta: '',
+                condicion_venta: '',
+                monto_total: 0,
+                total_iva_10: 0,
+                telas: []
+            },
+            add: function (item){
+                this.items.telas.push(item);
+                console.log(this.items.telas);
+                this.list();
+            },
+            list: function() {
+                $('#table_telas').DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    data: this.items.telas,
+                    columns: [
+                        { "data": "id" },
+                        { "data": "nombre"},
+                        { "data": "precio" },
+                        { "data": "cantidad" },
+                        { "data": "subtotal" },
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [0],
+                            class: 'text-center',
+                            orderable: false,
+                            "render": function( data, type, row ) {
+                                return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
+                            },
+                        },
+                        {
+                            targets: [-3],
+                            orderable: false,
+                            "render": function( data, type, row ) {
+                                return 'Gs. '+parseInt(data);
+                            },
+                        },
+                        {
+                            targets: [-2],
+                            orderable: false,
+                            "render": function( data, type, row ) {
+                                return '<input type="text" name="cantidad" class="form-control form-control-sm" autocomplet="off" value="'+row.cantidad+'">';
+                            },
+                        },
+                        {
+                            targets: [-1],
+                            orderable: false,
+                            "render": function( data, type, row ) {
+                                return parseInt(data);
+                            },
+                        }
+                    ],
+                });
+            }
+        };
+        $('#fecha_venta').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'es'
+        });
         
+        $('input[name="search"]').autocomplete({
+            source: function (request,response){
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: {
+                        'action': 'search_tela',
+                        'term' : request.term
+                    },
+                    dataType: 'json',
+                }).done(function (data){
+                    response(data);
+                });
+            },
+            delay: 100,
+            minLength: 1,
+            select: function (event, ui){
+                event.preventDefault();
+                console.clear();
+                ui.item.cantidad = 1;
+                ui.item.subtotal = 0;
+                venta.add(ui.item);
+                $(this).val('');
+            }
+        });
     </script>
 {% endblock js_page %}
