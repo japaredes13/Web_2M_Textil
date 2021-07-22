@@ -1,0 +1,123 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear una Venta</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'ventas:ventas_list' %}">Ventas</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos de la Venta</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card card-primary">
+                                        <div class="card-header">
+                                            <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Cabecera
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Cliente:</label>
+                                                        {{ form.cliente }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Fecha Venta:</label>
+                                                        {{ form.fecha_venta }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Condición de Venta:</label>
+                                                        {{ form.condicion_venta }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Monto a Pagar:</label>
+                                                        {{ form.monto_total }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>IVA 10%:</label>
+                                                        {{ form.monto_total }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card card-primary">
+                                        <div class="card-header">
+                                            <h3 class="card-title"><i class="fas fa-boxes"></i> Detalle de Telas</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Busacador de Telas:</label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Ingrese una descripción del producto" autocomplete="off">
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-times"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="card-body table-responsive p-0">
+                                                        <table class="table table-hover text-nowrap" id="data">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Tela</th>
+                                                                    <th>Precio Unitario</th>
+                                                                    <th>Cantidad</th>
+                                                                    <th>SubTotal</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+    {% include 'base/partials/sweet_delete.html' %}
+    <script>
+        
+    </script>
+{% endblock js_page %}

@@ -21,6 +21,9 @@ class Cliente(ClaseModelo):
         item = model_to_dict(self)
         return item
 
+    def __str__(self):
+        return '{}'.format(self.nombre_cliente)
+
     class Meta:
         # sort by "fecha" in descending order unless
         # overridden in the query with order_by()
