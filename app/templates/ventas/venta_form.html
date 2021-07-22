@@ -93,11 +93,11 @@
                                                         <table class="table table-hover text-nowrap" id="table_telas">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Acciones</th>
                                                                     <th>Tela</th>
                                                                     <th>Precio Unitario</th>
                                                                     <th>Cantidad</th>
                                                                     <th>SubTotal</th>
+                                                                    <th>Acciones</th>
                                                                 </tr>
                                                             </thead>
                                                         </table>
@@ -117,7 +117,6 @@
 {% endblock content %}
 
 {% block js_page %}
-    {% include 'base/partials/sweet_delete.html' %}
     <script>
         var venta = {
             items: {
@@ -128,13 +127,25 @@
                 total_iva_10: 0,
                 telas: []
             },
+            calculate_invoice: function(){
+                var monto_total = 0;
+                $.each(this.items.telas,function(pos,dict){
+                    dict.subtotal = dict.cantidad * parseInt(dict.precio);
+                    monto_total += dict.subtotal; 
+                });
+                this.items.monto_total = monto_total;
+                $('input[name=monto_total]').val(this.items.monto_total);
+            },
             add: function (item){
                 this.items.telas.push(item);
-                console.log(this.items.telas);
                 this.list();
             },
             list: function() {
+                this.calculate_invoice();
                 $('#table_telas').DataTable({
+                    destroy: true,
+                    ordering: false,
+                    info: false,
                     responsive: true,
                     autoWidth: false,
                     filter: false,
@@ -142,42 +153,38 @@
                     searching: false,
                     data: this.items.telas,
                     columns: [
-                        { "data": "id" },
                         { "data": "nombre"},
                         { "data": "precio" },
                         { "data": "cantidad" },
                         { "data": "subtotal" },
+                        { "data": "id" },
                     ],
                     columnDefs: [
                         {
-                            targets: [0],
-                            class: 'text-center',
-                            orderable: false,
-                            "render": function( data, type, row ) {
-                                return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
-                            },
-                        },
-                        {
-                            targets: [-3],
-                            orderable: false,
+                            targets: [1],
                             "render": function( data, type, row ) {
                                 return 'Gs. '+parseInt(data);
                             },
                         },
                         {
-                            targets: [-2],
-                            orderable: false,
+                            targets: [2],
                             "render": function( data, type, row ) {
                                 return '<input type="text" name="cantidad" class="form-control form-control-sm" autocomplet="off" value="'+row.cantidad+'">';
                             },
                         },
                         {
-                            targets: [-1],
-                            orderable: false,
+                            targets: [3],
                             "render": function( data, type, row ) {
                                 return parseInt(data);
                             },
-                        }
+                        },
+                        {
+                            targets: [4],
+                            class: 'text-center',
+                            "render": function( data, type, row ) {
+                                return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
+                            },
+                        },
                     ],
                 });
             }
@@ -205,10 +212,18 @@
             minLength: 1,
             select: function (event, ui){
                 event.preventDefault();
-                console.clear();
                 ui.item.cantidad = 1;
                 ui.item.subtotal = 0;
-                venta.add(ui.item);
+                if (venta.items.telas.find(tela => tela.id === ui.item.id)){
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Atención!',
+                        text: 'Por favor, debe seleccionar otra tela',
+                        confirmButtonColor:"#007bff",
+                    });
+                } else {
+                    venta.add(ui.item);
+                }
                 $(this).val('');
             }
         });
