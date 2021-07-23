@@ -1,0 +1,22 @@
+<script>
+    function submit_with_ajax(url,title,content,parameters,callback) { 
+        Swal.fire({
+            "title":title,
+            "text":content,
+            "icon":"info",
+            "showCancelButton":true,
+            "cancelButtonText":"No, Cancelar",
+            "confirmButtonText":"Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#dc3545",
+            "showLoaderOnConfirm": true,
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url
+                });
+            }
+        });
+    }
+</script>

@@ -1,11 +1,15 @@
 {% extends 'base/base.html' %}
 
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.css" integrity="sha512-0GlDFjxPsBIRh0ZGa2IMkNT54XGNaGqeJQLtMAw6EMEDQJ0WqpnU6COVA91cUS0CeVA5HtfBfzS9rlJR3bPMyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock css %}
+
 {% block content %}
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Crear una Venta</h1>
+                    <h4 class="m-0">Crear una Venta</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -20,104 +24,17 @@
 
     <div class="content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-secondary">
-                        <div class="card-header">
-                            <h3 class="card-title">Datos de la Venta</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card card-primary">
-                                        <div class="card-header">
-                                            <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Cabecera
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Cliente:</label>
-                                                        {{ form.cliente }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Fecha Venta:</label>
-                                                        {{ form.fecha_venta }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Condición de Venta:</label>
-                                                        {{ form.condicion_venta }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Monto a Pagar:</label>
-                                                        {{ form.monto_total }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>IVA 10%:</label>
-                                                        {{ form.total_iva_10 }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card card-primary">
-                                        <div class="card-header">
-                                            <h3 class="card-title"><i class="fas fa-boxes"></i> Detalle de Telas</h3>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label>Busacador de Telas:</label>
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" name="search"
-                                                            placeholder="Ingrese una descripción del producto" autocomplete="off">
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-times"></i></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <!--<div class="card-body table-responsive p-0">-->
-                                                        <table class="table table-hover text-nowrap" id="table_telas">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Tela</th>
-                                                                    <th>Precio Unitario</th>
-                                                                    <th>Cantidad</th>
-                                                                    <th>SubTotal</th>
-                                                                    <th>Acciones</th>
-                                                                </tr>
-                                                            </thead>
-                                                        </table>
-                                                    <!--</div>-->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <form method="POST" role="form" id="form" action="{% url 'ventas:venta_create' %}">
+                {% include 'ventas/partials/form_content.html' %}
+            </form>
         </div>
     </div>
 {% endblock content %}
 
 {% block js_page %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        var table_telas;
         var venta = {
             items: {
                 cliente: '',
@@ -130,11 +47,13 @@
             calculate_invoice: function(){
                 var monto_total = 0;
                 $.each(this.items.telas,function(pos,dict){
-                    dict.subtotal = dict.cantidad * parseInt(dict.precio);
+                    dict.subtotal = dict.metraje * parseInt(dict.precio);
                     monto_total += dict.subtotal; 
                 });
                 this.items.monto_total = monto_total;
+                total_iva_10 = Math.round(monto_total / 11);
                 $('input[name=monto_total]').val(this.items.monto_total);
+                $('input[name=total_iva_10]').val(total_iva_10);
             },
             add: function (item){
                 this.items.telas.push(item);
@@ -142,7 +61,7 @@
             },
             list: function() {
                 this.calculate_invoice();
-                $('#table_telas').DataTable({
+                table_telas = $('#table_telas').DataTable({
                     destroy: true,
                     ordering: false,
                     info: false,
@@ -155,7 +74,7 @@
                     columns: [
                         { "data": "nombre"},
                         { "data": "precio" },
-                        { "data": "cantidad" },
+                        { "data": "metraje" },
                         { "data": "subtotal" },
                         { "data": "id" },
                     ],
@@ -169,7 +88,7 @@
                         {
                             targets: [2],
                             "render": function( data, type, row ) {
-                                return '<input type="text" name="cantidad" class="form-control form-control-sm" autocomplet="off" value="'+row.cantidad+'">';
+                                return '<input type="text" name="metraje" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje+'">';
                             },
                         },
                         {
@@ -186,6 +105,17 @@
                             },
                         },
                     ],
+                    rowCallback( row, data, displayNum, displayIndex, dataIndex ){
+                        console.log(data);
+                        $(row).find('input[name="metraje"]').TouchSpin({
+                            min: 0,
+                            max: 1000000000000,
+                            step: 1,
+                        });
+                    },
+                    language:{
+                        "emptyTable": "Ninguna información en el detalle.",
+                    }
                 });
             }
         };
@@ -193,7 +123,8 @@
             format: 'YYYY-MM-DD',
             locale: 'es'
         });
-        
+
+        //evento para buscar las telas y agregar en la tabla del detalle
         $('input[name="search"]').autocomplete({
             source: function (request,response){
                 $.ajax({
@@ -212,13 +143,13 @@
             minLength: 1,
             select: function (event, ui){
                 event.preventDefault();
-                ui.item.cantidad = 1;
+                ui.item.metraje = 1;
                 ui.item.subtotal = 0;
                 if (venta.items.telas.find(tela => tela.id === ui.item.id)){
                     Swal.fire({
                         icon: 'warning',
                         title: 'Atención!',
-                        text: 'Por favor, debe seleccionar otra tela',
+                        text: 'Por favor, debe seleccionar otra tela.',
                         confirmButtonColor:"#007bff",
                     });
                 } else {
@@ -226,6 +157,49 @@
                 }
                 $(this).val('');
             }
+        });
+
+        //evento para eliminar un detalle dentro del listado
+        //y evento para actualizar la cantidad
+        $('#table_telas tbody')
+        .on('click', 'a[rel="remove"]',function(){
+            Swal.fire({
+                title: '¿Estás seguro de eliminar el producto del detalle?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText:"Cancelar",
+                confirmButtonText: 'Si, Eliminar',
+                reverseButtons:true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var tr = table_telas.cell($(this).closest('td,li')).index();
+                    venta.items.telas.splice(tr.row, 1);
+                    venta.list();
+                }
+            })
+        })
+        .on('change keyup','input[name="metraje"]', function () {
+            var metraje = parseInt($(this).val());
+            var tr = table_telas.cell($(this).closest('td,li')).index();
+            venta.items.telas[tr.row].metraje = metraje;
+            venta.calculate_invoice();
+            $('td:eq(3)',table_telas.row(tr.row).node()).html(venta.items.telas[tr.row].subtotal);
+        });
+        
+        venta.list();
+
+        //evento para enviar el formulario
+        $(form).on('submit', function (e){
+            e.preventDefault();
+            venta.items.cliente = $('select[name="cliente"]').val();
+            venta.items.fecha_venta = $('input[name="fecha_venta"]').val();
+
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('venta', JSON.stringify(venta.items));
+        
         });
     </script>
 {% endblock js_page %}
