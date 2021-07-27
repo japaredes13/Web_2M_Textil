@@ -41,27 +41,35 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
-                print (request_venta)
-                '''
-                venta = new Venta()
-                venta.cliente_id = request_venta['cliente_id']
-                venta.fecha_venta = request_venta['fecha_venta]
-                venta.condicion_venta = request_venta['condicion_venta]
-                venta.save()
 
-                for det in request_venta['detalles']
-                    detalle = DetalleVenta()
+                venta = Venta()
+                venta.cliente_id = request_venta['cliente']
+                venta.fecha_venta = request_venta['fecha_venta']
+                venta.condicion_venta = request_venta['condicion_venta']
+                venta.user_created_id = self.request.user.id
+                venta.save()
+                
+                monto_total = 0
+                total_iva_10 = 0
+                for det in request_venta['telas']:
+                    detalle =  DetalleVenta()
                     detalle.venta_id = venta.id
                     detalle.tela_id = det['id']
-                    detalle.metraje_vendido = det['metraje_vendido']
-                    detalle.precio_unitario = det['precio']
-                    detalle.sub_total = calcular
-                    detalle.sub_total_iva_10 = calcular
+                    detalle.metraje_vendido = float(det['metraje_vendido'])
+                    detalle.precio_unitario = int(det['precio'])
+                    detalle.sub_total = float(det['metraje_vendido']) * int(det['precio'])
+                    detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
+                    monto_total += detalle.sub_total
+                    total_iva_10 += detalle.sub_total_iva_10
+                    detalle.user_created_id = self.request.user.id
+                    detalle.save()
 
-                venta.
-                '''
+                venta.monto_total = monto_total
+                venta.total_iva_10 = total_iva_10
+                venta.save()
             else:
                 data['error'] = 'No hay nada'
         except Exception as e:
+            print (e)
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
