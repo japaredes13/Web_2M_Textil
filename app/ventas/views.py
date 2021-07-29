@@ -37,7 +37,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
                 for tela in telas:
                     item = tela.toJSON()
-                    item['value'] = tela.nombre
+                    item['text'] = tela.nombre
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
@@ -68,8 +68,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 venta.total_iva_10 = total_iva_10
                 venta.save()
             else:
-                data['error'] = 'No hay nada'
+                data['error'] = 'No ha ingresado una opción'
         except Exception as e:
-            print (e)
             data['error'] = str(e)
         return JsonResponse(data, safe=False)

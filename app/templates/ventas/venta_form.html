@@ -126,7 +126,7 @@
         });
 
         //evento para buscar las telas y agregar en la tabla del detalle
-        $('input[name="search"]').autocomplete({
+        /*$('input[name="search"]').autocomplete({
             source: function (request,response){
                 $.ajax({
                     url: window.location.pathname,
@@ -158,8 +158,45 @@
                 }
                 $(this).val('');
             }
+        });*/
+        $('select[name="search"]').select2({
+            placeholder: 'Ingrese la descripción del producto',
+            language:'es',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                type: 'POST',
+                url: window.location.pathname,
+                data: function (params){
+                    var queryParameters = {
+                        term: params.term,
+                        action: 'search_tela'
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data){
+                    return {
+                        results: data
+                    };
+                }
+            },
+            minimumInputLength:1,
+        }).on('select2:select', function (e){
+            var data = e.params.data;
+            data.metraje_vendido = 1;
+            data.subtotal = 0;
+            if (venta.items.telas.find(tela => tela.id === data.id)){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención!',
+                    text: 'Por favor, debe seleccionar otra tela.',
+                    confirmButtonColor:"#007bff",
+                });
+            } else {
+                venta.add(data);
+            }
+            $(this).val('').trigger('change.select2');
         });
-
         //evento para eliminar un detalle dentro del listado
         //y evento para actualizar la cantidad
         $('#table_telas tbody')
