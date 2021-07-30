@@ -11,11 +11,44 @@ from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 
 
-class VentaView(LoginRequiredMixin, generic.CreateView):
+class VentaView(LoginRequiredMixin, generic.ListView):
     model = Venta 
-    fields = '__all__'
     template_name = "ventas/ventas_list.html"
     login_url = 'bases:login'
+
+    def queryset(self):
+        ventas = Venta.objects.filter(fecha_eliminacion__isnull=True)
+        cliente = self.request.POST['cliente']
+        condicion_venta = self.request.POST['condicion_venta']
+        if cliente:
+            ventas = ventas.filter(cliente_razon_social__icontains=cliente)
+       
+        if condicion_venta:
+            ventas = ventas.filter(condicion_venta=condicion_venta)
+        
+        return ventas
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        data={}
+        try:
+            if request.POST['action'] == 'search':
+                data = []
+                ventas = self.queryset()
+                for venta in ventas:
+                    data.append(venta.toJSON())
+            else:
+                data['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            data['error'] = str(e)
+        
+        return JsonResponse(data, safe=False)
+
 
 class VentaCreate(LoginRequiredMixin, generic.CreateView):
     model=Venta

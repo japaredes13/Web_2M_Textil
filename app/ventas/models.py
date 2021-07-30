@@ -3,6 +3,7 @@ from bases.models import ClaseModelo
 from clientes.models import Cliente
 from telas.models import Tela
 from datetime import datetime
+from django.forms.models import model_to_dict
 
 class Venta(ClaseModelo):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
@@ -18,6 +19,10 @@ class Venta(ClaseModelo):
     excentas = models.IntegerField(default=0,null=True, blank=True)
     total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
     total_iva_10 = models.IntegerField(default=0)
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        return item
 
 
 class DetalleVenta(ClaseModelo):

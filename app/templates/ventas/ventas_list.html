@@ -33,6 +33,44 @@
                                     </a>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="tela"><strong>Cliente:</strong></label>
+                                    <input type="text" class="form-control" id="cliente" placeholder="Buscar por Nombre del Cliente">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="tela"><strong>Fecha Desde:</strong></label>
+                                    <input type="text" class="form-control datetimepicker-input" id="fecha_desde" data-target:"#fecha_desde" data-toggle="datetimepicker" readonly >
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label><strong>Condición de venta:</strong></label>
+                                        <select id='condicion_venta' class="form-control">
+                                            <option value="">Todos</option>
+                                            <option value="contado">Contado</option>
+                                            <option value="credito">Crédito</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <th>N° de Factura</th>
+                                            <th>Cliente</th>
+                                            <th>Fecha Venta</th>
+                                            <th>Cond. de Venta</th>
+                                            <th>Monto Total</th>
+                                            <th>Acciones</th>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -40,3 +78,74 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block js_page %}
+    {% include 'base/partials/sweet_delete.html' %}
+    <script>
+        $(document).ready(function() { 
+            $('#fecha_desde').datetimepicker({
+                format: 'YYYY-MM-DD',
+                locale: 'es'
+            });
+
+
+            var table = $('.table').DataTable({
+                responsive: true,
+                autoWidth: false,
+                filter: false,
+                ajax: {
+                    url: window.location.pathname,
+                    type: 'POST',
+                    "data": function (d) {
+                        d.action = 'search',
+                        d.cliente = $('#cliente').val(),
+                        d.condicion_venta = $('#condicion_venta').val(),
+                        d.fecha_desde = $('#fecha_desde').val()
+                    },
+                    dataSrc: ""
+                },
+                columns: [
+                    { "data": "nro_factura" },
+                    { "data": "cliente_razon_social" },
+                    { "data": "fecha_venta" },
+                    { "data": "condicion_venta" },
+                    { "data": "monto_total" },
+                    {
+                        "render": function( data, type, row ) {
+                            return '<a class="btn btn-outline-secondary btn-circle btn-sm" title="Ver Venta"><i class="fas fa-eye"></i></a>';
+                        },
+                        orderable: false
+                    },
+                ],
+                language:{
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encotrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior",
+                    }
+                }
+            });
+
+            $('#cliente').keyup(function(){
+                table.ajax.reload();
+            });
+            $('#condicion_venta').change(function(){
+                table.ajax.reload();
+            });
+        });
+    </script>
+{% endblock js_page %}
