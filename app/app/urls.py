@@ -23,4 +23,5 @@ urlpatterns = [
     path('clientes/',include(('clientes.urls','clientes'), namespace='clientes')),
     path('telas/',include(('telas.urls','telas'), namespace='telas')),
     path('proveedores/',include(('proveedores.urls','proveedores'), namespace='proveedores')),
+    path('compras/',include(('compras.urls','compras'), namespace='compras')),
 ]

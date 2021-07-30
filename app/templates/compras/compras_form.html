@@ -1,0 +1,320 @@
+{% extends 'base/base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.css" integrity="sha512-0GlDFjxPsBIRh0ZGa2IMkNT54XGNaGqeJQLtMAw6EMEDQJ0WqpnU6COVA91cUS0CeVA5HtfBfzS9rlJR3bPMyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock css %}
+
+{% block content %}
+    <form method="post">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {% if action == 'add' %}
+                        <i class="fas fa-plus"></i>
+                    {% else %}
+                        <i class="fas fa-edit"></i>
+                    {% endif %}
+                    {{ title }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-boxes"></i> Detalle de las Telas</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Buscador de Telas:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="search"
+                                               placeholder="Ingrese una descripción de la tela" autocomplete="off">
+                                        <span class="input-group-append">
+                                        <button type="button" class="btn btn-danger btn-flat btnClearSearch"><i
+                                                class="fas fa-times"></i></button>
+                                      </span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <button type="button" class="btn btn-danger btn-xs btn-flat btnRemoveAll">
+                                    <i class="fas fa-trash"></i> Eliminar todos mis items
+                                </button>
+                                <hr>
+                                <table class="table table-bordered" id="tblTelas">
+                                    <thead>
+                                    <tr>
+                                        <th>Eliminar</th>
+                                        <th>Tela</th>
+                                        <th>Precio</th>
+                                        <th>Metraje</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Datos de la Compra</h3>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" name="action" value="{{ action }}">
+                                <div class="form-group">
+                                    <label>Fecha de Compra:</label>
+                                    {{ form.date_joined }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Proveedor:</label>
+                                    {{ form.prov }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Subtotal:</label>
+                                    {{ form.subtotal }}
+                                </div>
+                                <div class="form-group">
+                                    <label>IVA:</label>
+                                    {{ form.iva }}
+                                </div>
+                                <div class="form-group">
+                                    <label>IVA Calculado:</label>
+                                    <input type="text" class="form-control" readonly name="ivacalc" value="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Total a pagar:</label>
+                                    {{ form.total }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary btn-flat">
+                    <i class="fas fa-save"></i> Guardar registro
+                </button>
+                <a href="{{ list_url }}" class="btn btn-danger btn-flat">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block js_page %}
+{%include 'base/functions.html'%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var tblTelas;
+    var compras = {
+        items: {
+            prov: '',
+            date_joined: '',
+            subtotal: 0.00,
+            iva: 0.00,
+            total: 0.00,
+            telas: []
+        },
+        calculate_invoice: function () {
+            var subtotal = 0.00;
+            var iva = $('input[name="iva"]').val();
+            $.each(this.items.telas, function (pos, dict) {
+                dict.pos = pos;
+                dict.subtotal = (dict.metraje) * dict.precio;
+                subtotal += dict.subtotal;
+            });
+            this.items.subtotal = subtotal;
+            this.items.iva = this.items.subtotal * iva;
+            this.items.total = this.items.subtotal + this.items.iva;
+
+            $('input[name="subtotal"]').val(this.items.subtotal.toFixed(2));
+            $('input[name="ivacalc"]').val(this.items.iva.toFixed(2));
+            $('input[name="total"]').val(this.items.total.toFixed(2));
+        },
+        add: function (item) {
+            this.items.telas.push(item);
+            this.list();
+        },
+        list: function () {
+            this.calculate_invoice();
+            tblTelas = $('#tblTelas').DataTable({
+                responsive: true,
+                autoWidth: false,
+                destroy: true,
+                data: this.items.telas,
+                columns: [
+                    {"data": "id"},
+                    {"data": "nombre"},
+                    {"data": "precio"},
+                    {"data": "metraje"},
+                    {"data": "subtotal"},
+                ],
+                columnDefs: [
+                    {
+                        targets: [0],
+                        class: 'text-center',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<a rel="remove" class="btn btn-danger btn-xs btn-flat" style="color: white;"><i class="fas fa-trash-alt"></i></a>';
+                        }
+                    },
+                    {
+                        targets: [-3],
+                        class: 'text-center',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '$' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        targets: [-2],
+                        class: 'text-center',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<input type="text" name="metraje" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.metraje + '">';
+                        }
+                    },
+                    {
+                        targets: [-1],
+                        class: 'text-center',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '$' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                ],
+                rowCallback(row, data, displayNum, displayIndex, dataIndex) {
+
+                    $(row).find('input[name="metraje"]').TouchSpin({
+                        min: 1,
+                        max: 1.000000000,
+                        step: 1
+                    });
+
+                },
+                initComplete: function (settings, json) {
+
+                }
+            });
+        },
+    };
+
+    $(function () {
+
+        $('.select2').select2({
+            theme: "bootstrap4",
+            language: 'es'
+        });
+
+        $('#date_joined').datetimepicker({
+            format: 'YYYY-MM-DD',
+            date: moment().format("YYYY-MM-DD"),
+            locale: 'es',
+            //minDate: moment().format("YYYY-MM-DD")
+        });
+
+        $("input[name='iva']").TouchSpin({
+            min: 0,
+            max: 100,
+            step: 0.01,
+            decimals: 2,
+            boostat: 5,
+            maxboostedstep: 10,
+            postfix: '%'
+        }).on('change', function () {
+            compras.calculate_invoice();
+        })
+            .val(0.10);
+
+        // search telas
+
+        $('input[name="search"]').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: {
+                        'action': 'search_telas',
+                        'term': request.term
+                    },
+                    dataType: 'json',
+                }).done(function (data) {
+                    response(data);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    //alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
+
+                });
+            },
+            delay: 500,
+            minLength: 1,
+            select: function (event, ui) {
+                event.preventDefault();
+                console.clear();
+                ui.item.metraje = 1.00;
+                ui.item.subtotal = 0.00;
+                console.log(compras.items);
+                compras.add(ui.item);
+                $(this).val('');
+            }
+        });
+
+        $('.btnRemoveAll').on('click', function () {
+            if (compras.items.telas.length === 0) return false;
+            alert_action('Notificación', '¿Estas seguro de eliminar todos los items de tu detalle?', function () {
+                compras.items.telas = [];
+                compras.list();
+            });
+        });
+
+        // event metraje
+        $('#tblTelas tbody')
+            .on('click', 'a[rel="remove"]', function () {
+                var tr = tblTelas.cell($(this).closest('td, li')).index();
+                alert_action('Notificación', '¿Estas seguro de eliminar la tela de tu detalle?', function () {
+                    compras.items.telas.splice(tr.row, 1);
+                    compras.list();
+                });
+            })
+            .on('change', 'input[name="metraje"]', function () {
+                console.clear();
+                var metraje = parseInt($(this).val());
+                var tr = tblTelas.cell($(this).closest('td, li')).index();
+                compras.items.telas[tr.row].metraje = metraje;
+                compras.calculate_invoice();
+                $('td:eq(5)', tblTelas.row(tr.row).node()).html('$' + compras.items.telas[tr.row].subtotal.toFixed(2));
+            }); 
+
+        $('.btnClearSearch').on('click', function () {
+            $('input[name="search"]').val('').focus();
+        });
+
+        // event submit
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+
+            if(compras.items.telas.length === 0){
+                message_error('Debe al menos tener un item en su detalle de compra');
+                return false;
+            }
+
+            compras.items.date_joined = $('input[name="date_joined"]').val();
+            compras.items.prov = $('select[name="prov"]').val();
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('compras', JSON.stringify(compras.items));  
+            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+                location.href = '/compras/compra/list/';
+            });
+        });
+        
+        // Esto se puso aqui para que funcione bien el editar y calcule bien los valores del iva. // sino tomaría el valor del iva de la base debe
+        // coger el que pusimos al inicializarlo. 
+        compras.list();
+    });
+</script>
+{% endblock js_page %}
