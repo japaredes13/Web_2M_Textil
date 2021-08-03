@@ -1,6 +1,6 @@
 from datetime import datetime
 from django import forms
-from .models import Compra, DetCompra
+from .models import Compra
 
 class CompraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -10,29 +10,37 @@ class CompraForm(forms.ModelForm):
         model = Compra
         fields = '__all__'
         widgets = {
-            'prov': forms.Select(attrs={
+            'proveedor': forms.Select(attrs={
                 'class': 'form-control select2',
                 'style': 'width: 100%'
             }),
-            'date_joined': forms.DateInput(
+            'nro_factura': forms.TextInput(attrs={
+                'autocomplete': 'off',
+                'class': 'form-control',
+            }),
+            'timbrado': forms.TextInput(attrs={
+                'autocomplete': 'off',
+                'class': 'form-control',
+            }),
+            'condicion_compra':forms.Select(attrs={
+                'class': 'form-control' 
+            }),
+            'fecha_compra': forms.DateInput(
                 format='%Y-%m-%d',
                 attrs={
                     'value': datetime.now().strftime('%Y-%m-%d'),
                     'autocomplete': 'off',
                     'class': 'form-control datetimepicker-input',
-                    'id': 'date_joined',
-                    'data-target': '#date_joined',
+                    'id': 'fecha_compra',
+                    'data-target': '#fecha_compra',
                     'data-toggle': 'datetimepicker'
                 }
             ),
-            'iva': forms.TextInput(attrs={
-                'class': 'form-control',
-            }),
-            'subtotal': forms.TextInput(attrs={
+            'total_iva_10': forms.TextInput(attrs={
                 'readonly': True,
                 'class': 'form-control',
             }),
-            'total': forms.TextInput(attrs={
+            'monto_total': forms.TextInput(attrs={
                 'readonly': True,
                 'class': 'form-control',
             })

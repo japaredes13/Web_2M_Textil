@@ -1,29 +1,33 @@
 from datetime import datetime
 from django.db import models
-
 from django.forms import model_to_dict
 from bases.models import ClaseModelo
 from proveedores.models import Proveedor
 from telas.models import Tela
 
 class Compra(ClaseModelo):
-    prov = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
-    date_joined = models.DateField(default=datetime.now)
-    subtotal = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
-    iva = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
-    total = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    nro_factura = models.CharField(max_length=30)
+    timbrado = models.CharField(max_length=30)
+    proveedor_ruc = models.CharField(max_length=20)
+    proveedor_nombre =  models.CharField(max_length=20)
+    condiciones = ( ('contado', 'Contado'),
+                    ('credito', 'Crédito'))
+    condicion_compra = models.CharField(max_length=20, choices = condiciones, default = 'contado')
+    fecha_compra = models.DateField(default=datetime.now)
+    excentas = models.IntegerField(default=0,null=True, blank=True)
+    total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
+    total_iva_10 = models.IntegerField(default=0)
+    plazo = models.IntegerField(null=True, blank=True)
+    monto_total = models.IntegerField(default=0)    
 
     def __str__(self):
         return self.cli.names
 
     def toJSON(self):
         item = model_to_dict(self)
-        item['prov'] = self.prov.nombre_empresa
-        item['subtotal'] = format(self.subtotal, '.2f')
-        item['iva'] = format(self.iva, '.2f')
-        item['total'] = format(self.total, '.2f')
-        item['date_joined'] = self.date_joined.strftime('%Y-%m-%d')
-        item['det'] = [i.toJSON() for i in self.detcompra_set.all()]
+        item['proveedor'] = self.proveedor.nombre_empresa
+        #item['detalle'] = [i.toJSON() for i in self.detcompra_set.all()]
         return item
 
     class Meta:
@@ -31,12 +35,16 @@ class Compra(ClaseModelo):
         verbose_name_plural = 'Compras'
 
 
-class DetCompra(ClaseModelo):
+class DetalleCompra(ClaseModelo):
     compra = models.ForeignKey(Compra, on_delete=models.CASCADE)
     tela = models.ForeignKey(Tela, on_delete=models.CASCADE)
-    precio = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
-    metraje = models.FloatField(default=0.00)
-    subtotal = models.DecimalField(default=0.00, max_digits=9, decimal_places=2)
+    descripcion =  models.CharField(max_length=50)
+    precio_costo = models.IntegerField(default=0)
+    metraje_comprado = models.FloatField(default=0.00)
+    sub_total_excentas = models.IntegerField(default=0,null=True, blank=True)
+    sub_total_iva_5 = models.IntegerField(default=0)
+    sub_total_iva_10 = models.IntegerField(default=0)
+    sub_total = models.IntegerField(default=0)
 
     def __str__(self):
         return self.tela.nombre
