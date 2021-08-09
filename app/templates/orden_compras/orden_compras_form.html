@@ -9,12 +9,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Compras</h1>
+                    <h1 class="m-0">Orden de Compras</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'compras:compras_list' %}">Compras </a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'compras:orden_compras_list' %}">Orden de Compras </a></li>
                         <li class="breadcrumb-item active">Crear</li>
                     </ol>
                 </div>               
@@ -78,29 +78,17 @@
                     <div class="col-lg-4">
                         <div class="card card-secondary">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Datos de la Compra</h3>
+                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Datos de la Orden de Compra</h3>
                             </div>
                             <div class="card-body">
                                 <input type="hidden" name="action" value="{{ action }}">
                                 <div class="form-group">
-                                    <label>Fecha de Compra:</label>
-                                    {{ form.fecha_compra }}
+                                    <label>Fecha de Orden:</label>
+                                    {{ form.fecha_orden }}
                                 </div>
                                 <div class="form-group">
                                     <label>Proveedor:</label>
                                     {{ form.proveedor }}
-                                </div>
-                                <div class="form-group">
-                                    <label>Nro. Factura:</label>
-                                    {{ form.nro_factura }}
-                                </div>
-                                <div class="form-group">
-                                    <label>Timbrado:</label>
-                                    {{ form.timbrado }}
-                                </div>
-                                <div class="form-group">
-                                    <label>Condición de Compra:</label>
-                                    {{ form.condicion_compra }}
                                 </div>
                                 <div class="form-group">
                                     <label>Subtotal:</label>
@@ -119,7 +107,7 @@
                 <button type="submit" class="btn btn-primary btn-flat">
                     <i class="fas fa-save"></i> Guardar registro
                 </button>
-                <a href="{% url 'compras:compras_list' %}" class="btn btn-danger float-right btn-flat">
+                <a href="{% url 'compras:orden_compras_list' %}" class="btn btn-danger float-right btn-flat">
                     <i class="fas fa-times"></i> Cancelar
                 </a>
             </div>
@@ -132,11 +120,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     var tblTelas;
-    var compras = {
+    var orden_compras = {
         items: {
             proveedor: '',
-            fecha_compra: '',
-            condicion_compra: '',
+            fecha_orden: '',
             monto_total: 0,
             total_iva_10: 0,
             telas: []
@@ -145,7 +132,8 @@
             var monto_total = 0;
             $.each(this.items.telas, function (pos, dict) {
                 dict.pos = pos;
-                dict.subtotal = Math.round(dict.metraje_comprado * parseInt(dict.precio));
+                dict.subtotal = Math.round(dict.metraje * parseInt(dict.precio_unitario
+                ));
                 monto_total += dict.subtotal;
             });
             this.items.monto_total = monto_total;
@@ -171,9 +159,9 @@
                 data: this.items.telas,
                 columns: [
                     {"data": "nombre"},
-                    {"data": "precio_costo"},
-                    {"data": "metraje_comprado"},
-                    {"data": "sub_total"},
+                    {"data": "precio_unitario"},
+                    {"data": "metraje"},
+                    {"data": "subtotal"},
                     {"data": "id"},
                 ],
                 columnDefs: [
@@ -182,7 +170,7 @@
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
-                            return 'Gs. ' + parseInt(data);
+                            return '<input type="text" name="precio_unitario" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.precio_unitario + '">';
                         }
                     },
                     {
@@ -190,7 +178,7 @@
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<input type="text" name="metraje_comprado" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.metraje_comprado + '">';
+                            return '<input type="text" name="metraje" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.metraje + '">';
                         }
                     },
                     {
@@ -212,7 +200,7 @@
                 ],
                 rowCallback(row, data, displayNum, displayIndex, dataIndex) {
 
-                    $(row).find('input[name="metraje_comprado"]').TouchSpin({
+                    $(row).find('input[name="metraje"]').TouchSpin({
                         min: 1,
                         max: 1000000000,
                         step: 1
@@ -230,7 +218,7 @@
         language: "es"
     });
 
-    $('#fecha_compra').datetimepicker({
+    $('#fecha_orden').datetimepicker({
         format: 'YYYY-MM-DD',
         locale: 'es',
         //minDate: moment().format("YYYY-MM-DD")
@@ -275,9 +263,11 @@
         minimumInputLength:1,
     }).on('select2:select', function (e){
         var data = e.params.data;
-        data.metraje_comprado = 1;
+        console.log(data)
+        data.metraje = 1;
+        data.precio_unitario = 0
         data.subtotal = 0;
-        if (compras.items.telas.find(tela => tela.id === data.id)){
+        if (orden_compras.items.telas.find(tela => tela.id === data.id)){
             Swal.fire({
                 icon: 'warning',
                 title: 'Atención!',
@@ -285,16 +275,17 @@
                 confirmButtonColor:"#007bff",
             });
         } else {
-            compras.add(data);
+            orden_compras.add(data);
+            console.log(orden_compras)
         }
         $(this).val('').trigger('change.select2');
     });
 
     $('.btnRemoveAll').on('click', function () {
-        if (compras.items.telas.length === 0) return false;
+        if (orden_compras.items.telas.length === 0) return false;
         alert_action('Notificación', '¿Estas seguro de eliminar todos los items de tu detalle?', function () {
-            compras.items.telas = [];
-            compras.list();
+            orden_compras.items.telas = [];
+            orden_compras.list();
         });
     });
 
@@ -313,18 +304,25 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 var tr = tblTelas.cell($(this).closest('td,li')).index();
-                compras.items.telas.splice(tr.row, 1);
-                compras.list();
+                orden_compras.items.telas.splice(tr.row, 1);
+                orden_compras.list();
             }
         })
     })
-    .on('change keyup', 'input[name="metraje_comprado"]', function () {
-        var metraje_comprado = parseFloat($(this).val());
+    .on('change keyup', 'input[name="metraje"]', function () {
+        var metraje = parseFloat($(this).val());
         var tr = tblTelas.cell($(this).closest('td, li')).index();
-        compras.items.telas[tr.row].metraje_comprado = metraje_comprado;
-        compras.calculate_invoice();
-        $('td:eq(3)', tblTelas.row(tr.row).node()).html(compras.items.telas[tr.row].subtotal);
-    }); 
+        orden_compras.items.telas[tr.row].metraje = metraje;
+        orden_compras.calculate_invoice();
+        $('td:eq(3)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+    })
+    .on('change keyup', 'input[name="precio_unitario"]', function () {
+        var precio_unitario = parseFloat($(this).val());
+        var tr = tblTelas.cell($(this).closest('td, li')).index();
+        orden_compras.items.telas[tr.row].precio_unitario = precio_unitario;
+        orden_compras.calculate_invoice();
+        $('td:eq(3)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+    });
 
     $('.btnClearSearch').on('click', function () {
         $('input[name="search"]').val('').focus();
@@ -334,28 +332,23 @@
     $('form').on('submit', function (e) {
         e.preventDefault();
 
-        if(compras.items.telas.length === 0){
-            message_error('Debe al menos tener un item en su detalle de compra');
+        if(orden_compras.items.telas.length === 0){
+            message_error('Debe al menos tener un item en su detalle de Orden de compra');
             return false;
         }
 
-        compras.items.fecha_compra = $('input[name="fecha_compra"]').val();
-        compras.items.proveedor = $('select[name="proveedor"]').val();
-        compras.items.nro_factura = $('input[name="nro_factura"]').val();
-        compras.items.timbrado = $('input[name="timbrado"]').val();
+        orden_compras.items.fecha_compra = $('input[name="fecha_orden"]').val();
+        orden_compras.items.proveedor = $('select[name="proveedor"]').val();
         var parameters = new FormData();
         parameters.append('action', $('input[name="action"]').val());
-        parameters.append('compras', JSON.stringify(compras.items));  
+        parameters.append('orden_compras', JSON.stringify(orden_compras.items));  
         submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-            location.href = '/compras/compra/list/';
+            location.href = '/compras/orden_compra/list/';
         });
     });
-    compras.items.telas = {{ detalles|safe }};
-    var detalle = {{ detalles|safe }}
-    console.log(detalle);
     // Esto se puso aqui para que funcione bien el editar y calcule bien los valores del iva. // sino tomaría el valor del iva de la base debe
     // coger el que pusimos al inicializarlo. 
-    compras.list();
+    orden_compras.list();
 
 </script>
 {% endblock js_page %}

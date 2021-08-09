@@ -10,12 +10,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Compras</h1>
+                    <h1 class="m-0">Orden de Compras</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-                        <li class="breadcrumb-item active">Compras</li>
+                        <li class="breadcrumb-item active">Orden Compras</li>
                     </ol>
                 </div>               
             </div>
@@ -28,11 +28,14 @@
                 <div class="col-md-12">
                     <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Listado de Compras</h3>
+                            <h3 class="card-title">Listado de Orden de Compras</h3>
                         </div>
                         <div class="card-body">
                             <div class="row justify-content-end">
                                 <div class="col-md-2">
+                                    <a href="{% url 'compras:orden_compra_create' %}" class="btn btn-primary btn-block">
+                                        <i class="fas fa-plus-square"></i> Nueva Orden de Compra
+                                    </a>
                                 </div>
                             </div>
                             <div class="row">
@@ -81,14 +84,12 @@
                             <br>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <table class="table table-striped table-hover" id ="tblCompras">
+                                    <table class="table table-striped table-hover" id ="tblOrdenCompras">
                                         <thead>
-                                            <th>Nro. Factura</th>
-                                            <th>Timbrado</th>
                                             <th>Proveedor</th>
-                                            <th>Fecha Compra</th>
-                                            <th>Condición de Compra</th>
+                                            <th>Fecha de Orden Compra</th>
                                             <th>Monto Total</th>
+                                            <th>Estado</th>
                                             <th>Acciones</th>
                                         </thead>
                                         <tbody>
@@ -123,7 +124,7 @@
                 autoHide: true,
             });
 
-            var table = $('#tblCompras').DataTable({
+            var table = $('#tblOrdenCompras').DataTable({
                 responsive: true,
                 autoWidth: false,
                 filter: false,
@@ -132,22 +133,32 @@
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'searchdata',
-                        d.compra = $('#compra').val(),
+                        d.orden_compra = $('#orden_compra').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
                         d.fecha_hasta = $('#fecha_hasta').val()
                     },
                     dataSrc: ""
                 },
                 columns: [
-                    { "data": "nro_factura"},
-                    { "data": "timbrado"},
                     { "data": "proveedor.nombre_empresa"},
-                    { "data": "fecha_compra"},
-                    { "data": "condicion_compra"},
+                    { "data": "fecha_orden"},
                     { "data": "monto_total"},
                     { 
                         "render": function( data, type, full ) {
-                            return  '<a rel="details" class="btn btn-secondary btn-block btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>';
+                            if (full.estado){
+                                return '<span class="badge bg-success">Comprado</span>';
+                            } else {
+                                return '<span class="badge bg-danger">En proceso</span>';
+                            }
+                        },
+                        "orderable":false
+                    },
+                    { 
+                        "render": function( data, type, full ) {
+                            var buttons = '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/compras/orden_compra/'+ full.id+'/update"> <i class="fas fa-edit"></i> </a>';
+                            if (!full.estado)
+                                buttons += '<a class="btn btn-success btn-circle btn-sm" title="Confirmar" href="/compras/compras/'+ full.id+'/add"> <i class="fas fa-check"></i> </a>';
+                            return buttons
                         },
                         "orderable":false
                     }
@@ -189,9 +200,9 @@
                         
                         columns: [
                             {"data": "tela.nombre"},
-                            {"data": "precio_costo"},
-                            {"data": "metraje_comprado"},
-                            {"data": "sub_total"},
+                            {"data": "precio_unitario"},
+                            {"data": "metraje"},
+                            {"data": "subtotal"},
                         ],
                         columnDefs: [
                             {
@@ -220,7 +231,7 @@
             });
 
 
-            $('#compra').keyup(function(){
+            $('#orden_compra').keyup(function(){
                 table.draw();
             });
             $('#fecha_desde').change(function(){
