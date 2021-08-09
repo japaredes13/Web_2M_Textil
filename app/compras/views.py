@@ -83,7 +83,6 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
             elif action == 'add':
                 with transaction.atomic():
                     request_orden_compra = json.loads(request.POST['orden_compras'])
-                    print(request_orden_compra)
                     orden_compra = OrdenCompra()
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
                     orden_compra.fecha_compra = request_orden_compra['fecha_compra']
@@ -150,7 +149,6 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
             elif action == 'edit':
                 with transaction.atomic():
                     request_orden_compra = json.loads(request.POST['orden_compras'])
-                    print(request_orden_compra)
                     orden_compra = self.get_object()
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
                     orden_compra.fecha_orden = request_orden_compra['fecha_orden']
@@ -276,7 +274,7 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class CompraCreateView(LoginRequiredMixin, generic.CreateView):
+class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
     model = OrdenCompra
     form_class = CompraForm
     template_name = 'compras/compras_form.html'
@@ -299,8 +297,9 @@ class CompraCreateView(LoginRequiredMixin, generic.CreateView):
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
+                    
                     request_compra = json.loads(request.POST['compras'])
-                    orden_compra = OrdenCompra.objects.filter(id=self.get_object().id)
+                    orden_compra = OrdenCompra.objects.get(id=self.get_object().id)
                     orden_compra.estado = True
                     orden_compra.save()
 
@@ -386,7 +385,6 @@ class CompraUpdateView(LoginRequiredMixin, generic.UpdateView):
             elif action == 'edit':
                 with transaction.atomic():
                     request_compra = json.loads(request.POST['compras'])
-                    print(request_compra)
                     compra = self.get_object()
                     compra.proveedor_id = request_compra['proveedor']
                     compra.nro_factura = request_compra['nro_factura']
