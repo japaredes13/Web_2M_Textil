@@ -145,7 +145,7 @@
             var monto_total = 0;
             $.each(this.items.telas, function (pos, dict) {
                 dict.pos = pos;
-                dict.subtotal = Math.round(dict.metraje_comprado * parseInt(dict.precio));
+                dict.subtotal = Math.round(dict.metraje_comprado * parseInt(dict.precio_costo));
                 monto_total += dict.subtotal;
             });
             this.items.monto_total = monto_total;
@@ -343,6 +343,7 @@
         compras.items.proveedor = $('select[name="proveedor"]').val();
         compras.items.nro_factura = $('input[name="nro_factura"]').val();
         compras.items.timbrado = $('input[name="timbrado"]').val();
+        compras.items.condicion_compra = $('select[name="condicion_compra"]').val();
         var parameters = new FormData();
         parameters.append('action', $('input[name="action"]').val());
         parameters.append('compras', JSON.stringify(compras.items));  
