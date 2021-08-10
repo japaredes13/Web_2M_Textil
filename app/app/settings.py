@@ -45,11 +45,8 @@ INSTALLED_APPS = [
     'clientes',
     'telas',
     'proveedores',
-<<<<<<< HEAD
     'compras',
-=======
     'ventas',
->>>>>>> b07bb746b1b35a36643495fa63d6d812aeea4dd5
 ]
 
 MESSAGE_TAGS = {
