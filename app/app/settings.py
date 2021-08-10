@@ -45,7 +45,11 @@ INSTALLED_APPS = [
     'clientes',
     'telas',
     'proveedores',
+<<<<<<< HEAD
     'compras',
+=======
+    'ventas',
+>>>>>>> b07bb746b1b35a36643495fa63d6d812aeea4dd5
 ]
 
 MESSAGE_TAGS = {
@@ -99,7 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bd_proyecto',
         'USER': 'postgres',
-        #'PASSWORD': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': 5432
     }

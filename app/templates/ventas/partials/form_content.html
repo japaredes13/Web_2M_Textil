@@ -1,0 +1,108 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">Datos de la Venta</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-shopping-cart"></i> Cabecera
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" name="action" value="add">
+                                        <div class="form-group">
+                                            <label>Cliente:</label>
+                                            {{ form.cliente }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Fecha Venta:</label>
+                                            {{ form.fecha_venta }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Condición de Venta:</label>
+                                            {{ form.condicion_venta }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Monto a Pagar:</label>
+                                            {{ form.monto_total }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>IVA 10%:</label>
+                                            {{ form.total_iva_10 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-boxes"></i> Detalle de Telas</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Busacador de Telas:</label>
+                                            <div class="input-group">
+                                                <!--<input type="text" class="form-control" name="search"
+                                                placeholder="Ingrese la descripción del producto" autocomplete="off">
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-danger btn-flat"><i class="fas fa-times"></i></button>
+                                                </div>-->
+                                                <select class="form-control select2" style="width:100%" name="search">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <!--<div class="card-body table-responsive p-0">-->
+                                            <table class="table table-hover text-nowrap" id="table_telas">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tela</th>
+                                                        <th>Precio Unitario</th>
+                                                        <th>Metraje</th>
+                                                        <th>SubTotal</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        <!--</div>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                            
+                            <a class="btn btn-danger float-right" href="{% url 'ventas:ventas_list' %}">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
