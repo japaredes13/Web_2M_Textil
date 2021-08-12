@@ -55,9 +55,8 @@
                                         <thead>
                                             <th>Empresa</th>
                                             <th>Ruc</th>
-                                            <th>E-mail</th>
-                                            <th>Celular</th>
-                                            <th>Dirección</th>
+                                            <th>Ciudad</th>
+                                            <th>Teléfono/Celular</th>
                                             <th class="all">Acciones</th>
                                         </thead>
                                         <tbody>
@@ -95,9 +94,8 @@
                 columns: [
                     { "data": "nombre_empresa"},
                     { "data": "ruc"},
-                    { "data": "email"},
-                    { "data": "nro_celular"},
-                    { "data": "direccion"},
+                    { "data": "ciudad"},
+                    { "data": "telefono"},
                     { 
                         "render": function( data, type, full ) {
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/proveedores/proveedores/'+ full.id+'/edit"> <i class="fas fa-edit"></i> </a>' + 

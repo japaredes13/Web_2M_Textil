@@ -7,32 +7,23 @@ class Proveedor(ClaseModelo):
     ciudad = models.ForeignKey(Ciudad, models.PROTECT)
 
     nombre_empresa=models.CharField(
-        max_length=100,
-        unique=True
+        max_length=100
     )
     direccion=models.CharField(
         max_length=250,
         null=True, blank=True
     )
-    contacto=models.CharField(
-        max_length=100, blank=True
-    )
     telefono=models.CharField(
-        max_length=10,
-        null=True, blank=True
-    )
-    nro_celular=models.CharField(
-        max_length=10,
+        max_length=20,
         null=True, blank=True
     )
     email=models.CharField(
         max_length=250,
+        null=True, blank=True
     )
     ruc=models.CharField(
-        max_length=100, blank=True
+        max_length=100
     )
-    email =models.EmailField(
-        max_length=254)
 
     def __str__(self):
         return '{}'.format(self.nombre_empresa)
@@ -43,6 +34,7 @@ class Proveedor(ClaseModelo):
 
     def toJSON(self):
         item = model_to_dict(self)
+        item['ciudad'] = self.ciudad.descripcion
         return item
 
     class Meta:

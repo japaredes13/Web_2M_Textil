@@ -34,16 +34,20 @@
                             {% endif %}
                                 {% csrf_token %}
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="grupo_nombre_empresa">
                                         <div class="form-group">
                                             <label form="id_nombre_empresa"><strong>Nombre de la Empresa</strong></label>
                                                 {{form.nombre_empresa}}
+                                            <p class="input_vacio" style="display:none;">* Campo requerido</p>
+                                            <p class="input_error" style="display:none;">* Debe ingresar solo letras</p>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="form-group" id="grupo_ruc">
                                             <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
                                                 {{form.ruc}}
+                                            <p class="input_vacio" style="display:none;">* Campo requerido</p>
+                                            <p class="input_error" style="display:none;">* Debe ingresar el formato correcto</p>
                                         </div>
                                     </div>
                                 </div>
@@ -69,27 +73,20 @@
 
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label form="id_nro_celular"><strong>{{form.nro_celular.label}}</strong></label>
-                                                {{form.nro_celular}}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label form="id_email"><strong>{{form.email.label}}</strong></label>
-                                                {{form.email}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="form-group" id="grupo_telefono">
                                             <label form="id_telefono"><strong>{{form.telefono.label}}</strong></label>
                                                 {{form.telefono}}
+                                            <p class="input_error" style="display:none;">* Debe ingresar solo números</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group" id="grupo_email">
+                                            <label form="id_email"><strong>{{form.email.label}}</strong></label>
+                                                {{form.email}}
+                                            <p class="input_error" style="display:none;">* Debe ingresar un correo válido</p>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="dropdown-divider"></div>
                                 <div class="row">
                                     <div class="col">
@@ -107,28 +104,84 @@
 {% endblock content %}
 {% block js_page %}
 <script>
-    var options = {
-        rules: {
-            'nombre_empresa': { required: [ true, 'Campo requerido']},
-            'ruc': { required:[ true, 'Campo requerido']},
-            'ciudad': { required: [ true, 'Campo requerido']},
-            'direccion': { required: [ true, 'Campo requerido']},
-            'nro_celular': { required: [ true, 'Campo requerido']},
-            'email': { required: [ true, 'Campo requerido']},
-            'telefono': { required: false }
-        }
-    };
-    var formObject = new ej.inputs.FormValidator('#form', options);
-    formObject.addRules('telefono',{number: [true,'Ingrese solo números']});
-    formObject.addRules('email', {email: [ true, 'Introduzca una direccion de correo válido']});
-</script>
-<script>
     $(document).ready(function(){
         $('#id_ciudad').val("{{ obj.ciudad.id }}").change();
         $('#id_ciudad').select2({
             width: '100%'
         });
         
+        const formulario = document.getElementById('form');
+        const inputs = document.querySelectorAll('#form input');
+        
+        const expresiones = {
+            nombre_empresa: /^[a-zA-Z.'-\s]{1,40}$/,
+            ruc: /^[0-9]+(?:-[0-9])$/,
+            telefono: /^[0-9]+$/,
+            email: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
+        }
+
+        const validarFormulario = (e) => {
+            switch (e.target.name) {
+                case "nombre_empresa":
+                    validarCampo(expresiones.nombre_empresa, e.target ,'nombre_empresa');
+                break;
+                case "ruc":
+                    validarCampo(expresiones.ruc, e.target ,'ruc');
+                break;
+                case "telefono":
+                    validarCampoSecundario(expresiones.telefono, e.target ,'telefono');
+                break;
+                case "email":
+                    validarCampoSecundario(expresiones.email, e.target ,'email');
+                break;
+            }
+        }
+
+        const validarCampo = (expresion, input, campo) => {
+            if(expresion.test(input.value)){
+                document.getElementById(`id_${campo}`).classList.remove('is-invalid');
+                document.getElementById(`id_${campo}`).classList.add('is-valid'); 
+                document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:none');
+                document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none');
+
+            } else {
+                document.getElementById(`id_${campo}`).classList.add('is-invalid');
+                if (input.value == ''){
+                    document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:block; color: red;');
+                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none;');
+                } else {
+                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:block; color: red;');
+                    document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:none;');
+                }
+            }
+        }
+
+        const validarCampoSecundario = (expresion, input, campo) => {
+            if(expresion.test(input.value)){
+                document.getElementById(`id_${campo}`).classList.remove('is-invalid');
+                document.getElementById(`id_${campo}`).classList.add('is-valid'); 
+                document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none');
+
+            } else {
+                if(input.value == '') {
+                    document.getElementById(`id_${campo}`).classList.remove('is-invalid');
+                    document.getElementById(`id_${campo}`).classList.remove('is-valid');
+                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none;');
+                } else {
+                    document.getElementById(`id_${campo}`).classList.add('is-invalid');
+                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:block; color: red;');
+                }
+            }
+        }
+
+        inputs.forEach((input) => {
+            input.addEventListener('keyup', validarFormulario);
+            input.addEventListener('blur', validarFormulario);
+        });
+
+        formulario.addEventListener('submit', () => {
+            e.preventDefault();
+        });
     });
 </script>
 {% endblock js_page %}

@@ -13,9 +13,7 @@ class ProveedorForm(forms.ModelForm):
             'ciudad',
             'nombre_empresa',
             'direccion',
-            'contacto',
             'telefono',
-            'nro_celular',
             'email',
             'ruc',
         ]
@@ -23,9 +21,7 @@ class ProveedorForm(forms.ModelForm):
             'ciudad':'Ciudad',
             'nombre_empresa':'Nombre de la Empresa',
             'direccion':'Dirección',
-            'contacto':'Contacto',
-            'telefono':'Teléfono',
-            'nro_celular':'Número de Celular',
+            'telefono':'Teléfono/Celular',
             'email':'E-mail',
             'ruc':'Ruc',
 		}
@@ -33,9 +29,7 @@ class ProveedorForm(forms.ModelForm):
             'ciudad' : forms.Select(attrs={'class':'form-control'}),
 			'nombre_empresa' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'direccion' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'contacto' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'telefono' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'nro_celular' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
             'email':forms.EmailInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'ruc' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 		}
