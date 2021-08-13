@@ -5,6 +5,10 @@
         span.error{
             color: red; font-size: 0.8em;
         }
+        .select2-error {
+            border: 1px solid #dc3545 !important;
+            border-radius: 4px;
+        }
     </style>
 {% endblock css %}
 
@@ -60,11 +64,11 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
-                                                <select class="form-control"  name = "ciudad" id="id_ciudad">
-                                                    {% for ciudad in ciudades %}
-                                                        <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
-                                                    {% endfor %}
-                                                </select>
+                                            <select class="form-control"  name = "ciudad" id="id_ciudad">
+                                                {% for ciudad in ciudades %}
+                                                    <option value="{{ ciudad.id }}">{{ ciudad.descripcion }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -112,6 +116,10 @@
             width: '100%'
         });
 
+        $('#id_ciudad').on('change', function () {
+            $(this).valid();
+        });
+
         $("#form").validate({
 		    rules: {
 		    	nombre_empresa: {required: true, empresaRule:true},
@@ -127,15 +135,27 @@
             },
             errorElement: 'span',
             highlight: function(element){
-                if (element.name == 'nombre_empresa' || element.name == 'ruc' || element.name == 'ciudad') {
+                console.log(element);
+                if (element.name == 'nombre_empresa' || element.name == 'ruc') {
                     $(element).closest('.form-control').addClass('is-invalid');
                     $(element).closest('.form-control').removeClass('is-valid');
                 }
             },
             unhighlight: function(element){
-                if (element.name == 'nombre_empresa' || element.name == 'ruc' || element.name == 'ciudad') {
-                    $(element).closest('.form-control').addClass('is-valid');
+                console.log(element);
+
+                if (element.name == 'nombre_empresa' || element.name == 'ruc') {
+                    $(element).addClass('is-valid');
                     $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            },
+            errorPlacement: function (error, element) {
+                console.log(element);
+                if(element.hasClass("select2-hidden-accessible")) {
+                    $(element).closest('.form-control').addClass('select2-error');
+                    error.insertAfter(element.next('span'));
+                } else {
+                    error.insertAfter(element);
                 }
             }
         });
