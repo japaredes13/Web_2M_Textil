@@ -1,5 +1,13 @@
 {% extends 'base/base.html' %}
 
+{% block css %}
+    <style>
+        span.error{
+            color: red; font-size: 0.8em;
+        }
+    </style>
+{% endblock css %}
+
 {% block content %}
     <div class="content-header">
         <div class="container-fluid">
@@ -38,16 +46,12 @@
                                         <div class="form-group">
                                             <label form="id_nombre_empresa"><strong>Nombre de la Empresa</strong></label>
                                                 {{form.nombre_empresa}}
-                                            <p class="input_vacio" style="display:none;">* Campo requerido</p>
-                                            <p class="input_error" style="display:none;">* Debe ingresar solo letras</p>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group" id="grupo_ruc">
                                             <label form="id_ruc"><strong>{{form.ruc.label}}</strong></label>
                                                 {{form.ruc}}
-                                            <p class="input_vacio" style="display:none;">* Campo requerido</p>
-                                            <p class="input_error" style="display:none;">* Debe ingresar el formato correcto</p>
                                         </div>
                                     </div>
                                 </div>
@@ -76,14 +80,12 @@
                                         <div class="form-group" id="grupo_telefono">
                                             <label form="id_telefono"><strong>{{form.telefono.label}}</strong></label>
                                                 {{form.telefono}}
-                                            <p class="input_error" style="display:none;">* Debe ingresar solo números</p>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group" id="grupo_email">
                                             <label form="id_email"><strong>{{form.email.label}}</strong></label>
                                                 {{form.email}}
-                                            <p class="input_error" style="display:none;">* Debe ingresar un correo válido</p>
                                         </div>
                                     </div>
                                 </div>
@@ -109,79 +111,50 @@
         $('#id_ciudad').select2({
             width: '100%'
         });
-        
-        const formulario = document.getElementById('form');
-        const inputs = document.querySelectorAll('#form input');
-        
-        const expresiones = {
-            nombre_empresa: /^[a-zA-Z.'-\s]{1,40}$/,
-            ruc: /^[0-9]+(?:-[0-9])$/,
-            telefono: /^[0-9]+$/,
-            email: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
-        }
 
-        const validarFormulario = (e) => {
-            switch (e.target.name) {
-                case "nombre_empresa":
-                    validarCampo(expresiones.nombre_empresa, e.target ,'nombre_empresa');
-                break;
-                case "ruc":
-                    validarCampo(expresiones.ruc, e.target ,'ruc');
-                break;
-                case "telefono":
-                    validarCampoSecundario(expresiones.telefono, e.target ,'telefono');
-                break;
-                case "email":
-                    validarCampoSecundario(expresiones.email, e.target ,'email');
-                break;
-            }
-        }
-
-        const validarCampo = (expresion, input, campo) => {
-            if(expresion.test(input.value)){
-                document.getElementById(`id_${campo}`).classList.remove('is-invalid');
-                document.getElementById(`id_${campo}`).classList.add('is-valid'); 
-                document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:none');
-                document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none');
-
-            } else {
-                document.getElementById(`id_${campo}`).classList.add('is-invalid');
-                if (input.value == ''){
-                    document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:block; color: red;');
-                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none;');
-                } else {
-                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:block; color: red;');
-                    document.querySelector(`#grupo_${campo} .input_vacio`).setAttribute('style','display:none;');
+        $("#form").validate({
+		    rules: {
+		    	nombre_empresa: {required: true, empresaRule:true},
+		    	ruc: {required: true, rucRule:true},
+                ciudad: {required: true},
+                email: {required: false, email: true ,emailRule:true},
+            },
+            messages: {
+                nombre_empresa : {required: "* El campo es requerido"},
+                ruc : {required: "* El campo es requerido"},
+                ciudad : {required: "* Debe seleccionar una ciudad"},
+                email : {email: "* Ingrese un correo válido. Ej: example@gmail.com"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                if (element.name == 'nombre_empresa' || element.name == 'ruc' || element.name == 'ciudad') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                if (element.name == 'nombre_empresa' || element.name == 'ruc' || element.name == 'ciudad') {
+                    $(element).closest('.form-control').addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
                 }
             }
-        }
-
-        const validarCampoSecundario = (expresion, input, campo) => {
-            if(expresion.test(input.value)){
-                document.getElementById(`id_${campo}`).classList.remove('is-invalid');
-                document.getElementById(`id_${campo}`).classList.add('is-valid'); 
-                document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none');
-
-            } else {
-                if(input.value == '') {
-                    document.getElementById(`id_${campo}`).classList.remove('is-invalid');
-                    document.getElementById(`id_${campo}`).classList.remove('is-valid');
-                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:none;');
-                } else {
-                    document.getElementById(`id_${campo}`).classList.add('is-invalid');
-                    document.querySelector(`#grupo_${campo} .input_error`).setAttribute('style','display:block; color: red;');
-                }
-            }
-        }
-
-        inputs.forEach((input) => {
-            input.addEventListener('keyup', validarFormulario);
-            input.addEventListener('blur', validarFormulario);
         });
 
-        formulario.addEventListener('submit', () => {
-            e.preventDefault();
-        });
+        $.validator.addMethod("empresaRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+
+        $.validator.addMethod("rucRule", function (value, element) {
+            var pattern = /^[0-9]+(?:-[0-9])$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El formato del ruc debe ser: 123456-0");
+
+        $.validator.addMethod("emailRule", function (value, element) {
+            var pattern = /^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/;
+            return this.optional(element) || pattern.test(value);
+        }, "* Formato del correo incorrecto. Ej: example@gmail.com");
+
     });
 </script>
 {% endblock js_page %}
