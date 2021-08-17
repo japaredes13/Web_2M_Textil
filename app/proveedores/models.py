@@ -23,7 +23,10 @@ class Proveedor(ClaseModelo):
     )
     ruc=models.CharField(
         max_length=100,
-        unique=True
+        unique=True,
+        error_messages={
+            'unique': 'El campo RUC ya existe'
+        }
     )
 
     def __str__(self):

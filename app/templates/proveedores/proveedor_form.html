@@ -137,29 +137,42 @@
             },
             errorElement: 'span',
             highlight: function(element){
-                console.log(element);
                 if (element.name == 'nombre_empresa' || element.name == 'ruc') {
                     $(element).closest('.form-control').addClass('is-invalid');
                     $(element).closest('.form-control').removeClass('is-valid');
                 }
             },
             unhighlight: function(element){
-                console.log(element);
-
                 if (element.name == 'nombre_empresa' || element.name == 'ruc') {
                     $(element).addClass('is-valid');
                     $(element).closest('.form-control').removeClass('is-invalid');
                 }
             },
             errorPlacement: function (error, element) {
-                console.log(element);
                 if(element.hasClass("select2-hidden-accessible")) {
                     $(element).closest('.form-control').addClass('select2-error');
                     error.insertAfter(element.next('span'));
                 } else {
                     error.insertAfter(element);
                 }
-            }
+            },
+            /*submitHandler: function(form){
+                $.ajax({
+                    url: 'search_ruc',
+                    type: 'GET',
+                    data: {
+                        'ruc' : $('#id_ruc').val()
+                    },
+                    success: function(response) {
+                        if (response.existe){
+                            var element = document.getElementById("id_ruc");
+                            element.classList.add('is-invalid');
+                            document.getElementById("ruc_duplicate").setAttribute('style','display:block;color:red');
+                        }
+                    }            
+                });
+                return false;		
+            }*/
         });
 
         $.validator.addMethod("empresaRule", function (value, element) {

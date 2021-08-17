@@ -38,15 +38,6 @@
                                     <label for="proveedor"><strong>Proveedores:</strong></label>
                                     <input type="text" class="form-control" id="proveedor" placeholder="Buscar por Nombre de la Empresa, Ruc">
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label><strong>Estado:</strong></label>
-                                        <select id='estado' class="form-control" style="width: 200px">
-                                            <option value="1">ACTIVOS</option>
-                                            <option value="0">INACTIVOS</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                             <br>
                             <div class="row">
@@ -86,7 +77,6 @@
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'search',
-                        d.estado = $('#estado').val(),
                         d.proveedor = $('#proveedor').val()
                     },
                     dataSrc: ""
@@ -126,12 +116,8 @@
                     }
                 }
             });
-
-            $('#estado').change(function(){
-                table.draw();
-            });
             $('#proveedor').keyup(function(){
-                table.draw();
+                table.ajax.reload();
             });
         });
     </script>

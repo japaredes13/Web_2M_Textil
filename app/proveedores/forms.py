@@ -34,7 +34,7 @@ class ProveedorForm(forms.ModelForm):
 			'ruc' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 		}
 
-    def clean (self):
+    '''def clean (self):
         try:
             proveedor = Proveedor.objects.get(
                 ruc = self.cleaned_data["ruc"]
@@ -45,4 +45,4 @@ class ProveedorForm(forms.ModelForm):
                 raise forms.ValidationError("Cambio no permitido, ya existe este regristro")
         except Proveedor.DoesNotExist:
             pass
-        return self.cleaned_data
+        return self.cleaned_data'''

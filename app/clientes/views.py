@@ -19,8 +19,7 @@ class ClienteView(LoginRequiredMixin,generic.ListView):
     login_url = 'bases:login'
 
     def queryset(self):
-        estado = int(self.request.POST['estado'])
-        clientes = Cliente.objects.filter(estado=estado, fecha_eliminacion__isnull=True)
+        clientes = Cliente.objects.filter(fecha_eliminacion__isnull=True)
         buscar_cliente = self.request.POST['cliente']
         if buscar_cliente:
             clientes = clientes.filter(Q(razon_social__icontains=buscar_cliente) | Q(ruc__icontains=buscar_cliente))

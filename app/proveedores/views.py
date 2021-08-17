@@ -18,8 +18,7 @@ class ProveedorView(LoginRequiredMixin,generic.ListView):
     login_url = 'bases:login'
     
     def queryset(self):
-        estado = int(self.request.POST['estado'])
-        proveedores = Proveedor.objects.filter(estado=estado, fecha_eliminacion__isnull=True)
+        proveedores = Proveedor.objects.filter(fecha_eliminacion__isnull=True)
         proveedor = self.request.POST['proveedor']
         if proveedor:
             proveedores = proveedores.filter(Q(nombre_empresa__icontains=proveedor))
@@ -56,6 +55,7 @@ class ProveedorCreate(LoginRequiredMixin, generic.CreateView):
         form.instance.estado = True
         messages.success(self.request, 'Proveedor registrado éxitosamente.')
         return super().form_valid(form)
+
 
     def get_context_data (self, **kwargs):
         context = super(ProveedorCreate,self).get_context_data(**kwargs)
@@ -96,5 +96,21 @@ def proveedor_delete(request,id):
         data = {
             'error':True, 
             'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)
+
+def search_ruc(request):
+    ruc = request.GET.get('ruc')
+    proveedor = Proveedor.objects.get(ruc = ruc)
+    print(proveedor)
+    if proveedor:
+        data = {
+            'existe':True,
+            'message':'El campo ruc ya existe'
+        }
+    else:
+        data = {
+            'existe':False,
+            'message':''
         }
     return JsonResponse(data, safe=False)

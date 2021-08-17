@@ -1,0 +1,16 @@
+<script type=text/javascript>
+    toastr.options = {
+        "progressBar": true,
+        "timeOut": "6000",
+        "extendedTimeOut": "2000",
+    }
+
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                toastr.error('{{ error }}','Error')
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+</script>
