@@ -63,6 +63,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
+
                                             <label form="id_ciudad"><strong>{{form.ciudad.label}}</strong></label>
                                             <select class="form-control"  name = "ciudad" id="id_ciudad">
                                                 {% for ciudad in ciudades %}
@@ -125,6 +126,7 @@
 		    	nombre_empresa: {required: true, empresaRule:true},
 		    	ruc: {required: true, rucRule:true},
                 ciudad: {required: true},
+		    	telefono: {required: false, telRule:true},
                 email: {required: false, email: true ,emailRule:true},
             },
             messages: {
@@ -170,11 +172,16 @@
             return this.optional(element) || pattern.test(value);
         }, "* El formato del ruc debe ser: 123456-0");
 
+        $.validator.addMethod("telRule", function (value, element) {
+            var pattern = /^[0-9]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El formato del telefono debe ser: 0987654321. 646713");
+
         $.validator.addMethod("emailRule", function (value, element) {
             var pattern = /^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/;
             return this.optional(element) || pattern.test(value);
         }, "* Formato del correo incorrecto. Ej: example@gmail.com");
-
+    
     });
 </script>
 {% endblock js_page %}

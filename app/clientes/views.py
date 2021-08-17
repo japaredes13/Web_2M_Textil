@@ -23,8 +23,7 @@ class ClienteView(LoginRequiredMixin,generic.ListView):
         clientes = Cliente.objects.filter(estado=estado, fecha_eliminacion__isnull=True)
         buscar_cliente = self.request.POST['cliente']
         if buscar_cliente:
-            clientes = clientes.filter(Q(nombre_cliente__icontains=buscar_cliente) |
-                Q(cedula__icontains=buscar_cliente) | Q(ruc__icontains=buscar_cliente))
+            clientes = clientes.filter(Q(razon_social__icontains=buscar_cliente) | Q(ruc__icontains=buscar_cliente))
         return clientes
 
 

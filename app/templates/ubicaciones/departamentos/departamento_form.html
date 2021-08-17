@@ -62,12 +62,45 @@
 
 {% block js_page %}
 <script>
-    var options = {
-        rules: {
-            'descripcion': { required: [true,'* El campo descripción es requerido'] },
-        }
-    };
-    var formObject = new ej.inputs.FormValidator('#form', options);
+ $(document).ready(function(){
+    $("#form").validate({
+		    rules: {
+		    	descripcion: {required: true, empresaRule:true},
+            },
+            messages: {
+                descripcion : {required: "* El campo es requerido"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                console.log(element);
+                if (element.name == 'descripcion') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                console.log(element);
 
+                if (element.name == 'descripcion') {
+                    $(element).addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            },
+            errorPlacement: function (error, element) {
+                console.log(element);
+                if(element.hasClass("select2-hidden-accessible")) {
+                    $(element).closest('.form-control').addClass('select2-error');
+                    error.insertAfter(element.next('span'));
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+
+        $.validator.addMethod("empresaRule", function (value, element) {
+            var pattern = /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+ });
 </script>
 {% endblock js_page %}

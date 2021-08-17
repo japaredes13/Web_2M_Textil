@@ -33,3 +33,16 @@ class ProveedorForm(forms.ModelForm):
             'email':forms.EmailInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'ruc' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 		}
+
+    def clean (self):
+        try:
+            proveedor = Proveedor.objects.get(
+                ruc = self.cleaned_data["ruc"]
+            )
+            if not self.instance.pk:
+                raise forms.ValidationError("Registro ya existe")
+            elif self.instance.pk != proveedor.pk:
+                raise forms.ValidationError("Cambio no permitido, ya existe este regristro")
+        except Proveedor.DoesNotExist:
+            pass
+        return self.cleaned_data

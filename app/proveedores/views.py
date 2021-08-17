@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, response
 from datetime import datetime
 from .models import Proveedor
 from .forms import ProveedorForm
@@ -61,6 +61,7 @@ class ProveedorCreate(LoginRequiredMixin, generic.CreateView):
         context = super(ProveedorCreate,self).get_context_data(**kwargs)
         context ["ciudades"] = Ciudad.objects.all()
         return context
+
 
 class ProveedorEdit(LoginRequiredMixin, generic.UpdateView):
     model=Proveedor

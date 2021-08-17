@@ -65,12 +65,38 @@
 
 {% block js_page %}
 <script>
-    var options = {
-        rules: {
-            'departamento' : {required: [true, '* Debe seleccionar un departamento'] },
-            'descripcion': { required: [true,'* El campo descripción es requerido'] },
-        }
-    };
-    var formObject = new ej.inputs.FormValidator('#form', options);
+ $(document).ready(function(){
+    $("#form").validate({
+		    rules: {
+		    	descripcion: {required: true, empresaRule:true},
+		    	departamento: {required: true},
+            },
+            messages: {
+                descripcion : {required: "* El campo es requerido"},
+                departamento : {required: "* Debe seleccionar un departamento"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                console.log(element);
+                if (element.name == 'descripcion') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                console.log(element);
+
+                if (element.name == 'descripcion') {
+                    $(element).addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            }
+        });
+
+        $.validator.addMethod("empresaRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+ });
 </script>
 {% endblock js_page %}

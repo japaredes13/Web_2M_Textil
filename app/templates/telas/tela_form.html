@@ -60,6 +60,12 @@
                                                 {{form.categoria}}
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_precio_compra"><strong>{{form.precio_compra.label}}</strong></label>
+                                                {{form.precio_compra}}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -70,8 +76,8 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="id_precio"><strong>{{form.precio.label}}</strong></label>
-                                                {{form.precio}}
+                                            <label for="id_precio_venta"><strong>{{form.precio_venta.label}}</strong></label>
+                                                {{form.precio_venta}}
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -102,18 +108,55 @@
 
 {% block js_page %}
 <script>
-    var options = {
-        rules: {
-            'codigo':{required: false },
-            'nombre':{required: [true, '* El campo es requerido'] },
-            'color':{required: [true, '* El campo es requerido'] },
-            'metraje':{required: [true, '* El campo es requerido'] },
-            'precio':{required: [true, '* El campo es requerido'] },
-            'disenho':{required: [true, '* El campo es requerido'] },
-            'categoria':{required: [true, '* El campo es requerido'] },
-        }
-    };
-    var formObject = new ej.inputs.FormValidator('#form', options);
-    formObject.removeRules('codigo');
+$(document).ready(function(){
+    $("#form").validate({
+		    rules: {
+		    	nombre: {required: true, nombreRule:true},
+		    	codigo: {required: true, codigoRule:true},
+		    	precio_compra: {required: true, numRule:true},
+		    	precio_venta: {required: true, numRule:true},
+		    	metraje: {required: true, telaRule:true},
+            },
+            messages: {
+                nombre : {required: "* El campo es requerido"},
+                codigo : {required: "* El campo es requerido"},
+                precio_compra: {required: "* El campo es requerido"},
+                metraje : {required: "* El campo es requerido"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_venta' || element.name == 'metraje') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_venta' || element.name == 'metraje') {
+                    $(element).closest('.form-control').addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            }
+        });
+
+        $.validator.addMethod("nombreRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+
+        $.validator.addMethod("codigoRule", function (value, element) {
+                var pattern = /^[\w-]+$/i;
+                return this.optional(element) || pattern.test(value);
+            }, "El campo debe tener un valor alfanumérico (azAZ09)");
+
+        $.validator.addMethod("numRule", function (value, element) {
+            var pattern = /^[0-9]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe ser numerico");
+
+        $.validator.addMethod("telaRule", function (value, element) {
+            var pattern = /^[0-9.]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe ser numerico");
+});
 </script>
 {% endblock js_page %}

@@ -10,7 +10,8 @@ class TelaForm(forms.ModelForm):
             'nombre',
             'color',
             'metraje',
-            'precio',
+            'precio_compra',
+            'precio_venta',
             'disenho',
             'categoria',
         ]
@@ -19,16 +20,18 @@ class TelaForm(forms.ModelForm):
             'nombre':'Nombre',
             'color':'Color',
             'metraje':'Metraje',
-            'precio':'Precio',
+            'precio:compra':'Precio Compra',
+            'precio_venta':'Precio Venta',
             'disenho':'Diseño',
             'categoria':'Categoria',
 		}
         widgets = {
             'codigo' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
             'nombre' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'color' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+			'color' : forms.TextInput(attrs={'type':'color','class':'form-control','autocomplete':'off'}),
 			'metraje' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'precio' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+			'precio_compra' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+			'precio_venta' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'disenho' : forms.Select(attrs={'class':'form-control','autocomplete':'off'}),
 			'categoria' : forms.Select(attrs={'class':'form-control','autocomplete':'off'}),
 		}

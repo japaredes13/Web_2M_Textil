@@ -22,7 +22,8 @@ class Proveedor(ClaseModelo):
         null=True, blank=True
     )
     ruc=models.CharField(
-        max_length=100
+        max_length=100,
+        unique=True
     )
 
     def __str__(self):

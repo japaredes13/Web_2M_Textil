@@ -54,9 +54,9 @@
                                 <div class="col-md-12">
                                     <table class="table table-striped table-hover">
                                         <thead>
-                                            <th>Nombre Cliente</th>
-                                            <th>Cedula</th>
-                                            <th>Nro Celular</th>
+                                            <th>Nombre/Razon Social</th>
+                                            <th>Cedula/Ruc</th>
+                                            <th>Teléfono/Celular</th>
                                             <th class="all">Acciones</th>
                                         </thead>
                                         <tbody>
@@ -93,9 +93,9 @@
                     dataSrc: ""
                 },
                 columns: [
-                    { "data": "nombre_cliente" },
-                    { "data": "cedula" },
-                    { "data": "nro_celular" },
+                    { "data": "razon_social" },
+                    { "data": "ruc" },
+                    { "data": "nro_telefono" },
                     {
                         "render": function( data, type, row ) {
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Tela" href="/clientes/clientes/'+row.id+'/edit"><i class="fas fa-edit"></i></a>' + 
