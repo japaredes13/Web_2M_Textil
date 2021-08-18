@@ -5,7 +5,11 @@ from ubicaciones.models import Ciudad
 
 class Cliente(ClaseModelo):
     razon_social = models.CharField(max_length=200,null=True, blank=True)
-    ruc = models.CharField(max_length=50,null=True, blank=True)
+    ruc = models.CharField(max_length=50,null=True, blank=True,
+                            unique=True,
+                            error_messages={
+                                'unique': 'El campo Cedula/Ruc ya existe'
+                            })
     email = models.EmailField(max_length = 200,null=True, blank=True)
     nro_telefono = models.CharField(max_length=20,null=True, blank=True)
     direccion = models.CharField(max_length=200,null=True, blank=True)

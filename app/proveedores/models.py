@@ -25,7 +25,7 @@ class Proveedor(ClaseModelo):
         max_length=100,
         unique=True,
         error_messages={
-            'unique': 'El campo RUC ya existe'
+            'unique': 'El campo Ruc ya existe'
         }
     )
 
