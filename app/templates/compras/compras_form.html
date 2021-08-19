@@ -41,32 +41,17 @@
                                 <h3 class="card-title"><i class="fas fa-boxes"></i> Detalle de las Telas</h3>
                             </div>
                             <div class="card-body">
-                                <div class="form-group">
-                                    <label>Buscador de Telas:</label>
-                                    <div class="input-group">
-                                        <!--<input type="text" class="form-control" name="search"
-                                               placeholder="Ingrese una descripción de la tela" autocomplete="off">
-                                        <span class="input-group-append">
-                                        <button type="button" class="btn btn-danger btn-flat btnClearSearch"><i
-                                                class="fas fa-times"></i></button>
-                                      </span>-->
-                                        <select class="form-control select2" style="width:100%" name="search">
-                                        </select>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-danger btn-sm btn-flat btnRemoveAll">
-                                    <i class="fas fa-trash"></i> Eliminar todos mis items
-                                </button>
+
                                 <br>
 
                                 <table class="table table-hover text-nowrap" id="tblTelas">
                                     <thead>
                                     <tr>
                                         <th>Tela</th>
+                                        <th>Codigo</th>
                                         <th>Precio</th>
                                         <th>Metraje</th>
                                         <th>Subtotal</th>
-                                        <th>Acciones</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -97,6 +82,14 @@
                                 <div class="form-group">
                                     <label>Timbrado:</label>
                                     {{ form.timbrado }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Valido Desde:</label>
+                                    {{ form.inicio_timbrado }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Valido Hasta:</label>
+                                    {{ form.fin_timbrado }}
                                 </div>
                                 <div class="form-group">
                                     <label>Condición de Compra:</label>
@@ -136,6 +129,8 @@
         items: {
             proveedor: '',
             fecha_compra: '',
+            inicio_timbrado: '',
+            fin_timbrado: '',
             condicion_compra: '',
             monto_total: 0,
             total_iva_10: 0,
@@ -171,14 +166,14 @@
                 data: this.items.telas,
                 columns: [
                     {"data": "nombre"},
+                    {"data": "codigo"},
                     {"data": "precio_costo"},
                     {"data": "metraje_comprado"},
                     {"data": "sub_total"},
-                    {"data": "id"},
                 ],
                 columnDefs: [
                     {
-                        targets: [1],
+                        targets: [2],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
@@ -186,29 +181,13 @@
                         }
                     },
                     {
-                        targets: [2],
+                        targets: [3],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
                             return '<input type="text" name="metraje_comprado" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.metraje_comprado + '">';
                         }
                     },
-                    {
-                        targets: [3],
-                        class: 'text-center',
-                        orderable: false,
-                        render: function (data, type, row) {
-                            return parseInt(data);
-                        }
-                    },
-                    {
-                        targets: [4],
-                        class: 'text-center',
-                        orderable: false,
-                        render: function (data, type, row) {
-                            return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash-alt"></i></a>';
-                        }
-                    }
                 ],
                 rowCallback(row, data, displayNum, displayIndex, dataIndex) {
 
@@ -236,6 +215,16 @@
         locale: 'es',
         //minDate: moment().format("YYYY-MM-DD")
     });
+    $('#inicio_timbrado').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'es',
+        //minDate: moment().format("YYYY-MM-DD")
+    });
+    $('#fin_timbrado').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'es',
+        //minDate: moment().format("YYYY-MM-DD")
+    });
 
     /*$("input[name='iva']").TouchSpin({
         min: 0,
@@ -252,79 +241,15 @@
 
     // search telas
 
-    $('select[name="search"]').select2({
-        placeholder: 'Ingrese la descripción del producto',
-        language:'es',
-        allowClear: true,
-        ajax: {
-            delay: 250,
-            type: 'POST',
-            url: window.location.pathname,
-            data: function (params){
-                var queryParameters = {
-                    term: params.term,
-                    action: 'search_telas'
-                }
-                return queryParameters;
-            },
-            processResults: function (data){
-                return {
-                    results: data
-                };
-            }
-        },
-        minimumInputLength:1,
-    }).on('select2:select', function (e){
-        var data = e.params.data;
-        data.metraje_comprado = 1;
-        data.subtotal = 0;
-        if (compras.items.telas.find(tela => tela.id === data.id)){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Atención!',
-                text: 'Por favor, debe seleccionar otra tela.',
-                confirmButtonColor:"#007bff",
-            });
-        } else {
-            compras.add(data);
-        }
-        $(this).val('').trigger('change.select2');
-    });
-
-    $('.btnRemoveAll').on('click', function () {
-        if (compras.items.telas.length === 0) return false;
-        alert_action('Notificación', '¿Estas seguro de eliminar todos los items de tu detalle?', function () {
-            compras.items.telas = [];
-            compras.list();
-        });
-    });
-
+    
     // event metraje
     $('#tblTelas tbody')
-    .on('click', 'a[rel="remove"]', function () {
-        Swal.fire({
-            title: '¿Estás seguro de eliminar el producto del detalle?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#dc3545',
-            cancelButtonText:"Cancelar",
-            confirmButtonText: 'Si, Eliminar',
-            reverseButtons:true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var tr = tblTelas.cell($(this).closest('td,li')).index();
-                compras.items.telas.splice(tr.row, 1);
-                compras.list();
-            }
-        })
-    })
     .on('change keyup', 'input[name="metraje_comprado"]', function () {
         var metraje_comprado = parseFloat($(this).val());
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         compras.items.telas[tr.row].metraje_comprado = metraje_comprado;
         compras.calculate_invoice();
-        $('td:eq(3)', tblTelas.row(tr.row).node()).html(compras.items.telas[tr.row].subtotal);
+        $('td:eq(4)', tblTelas.row(tr.row).node()).html(compras.items.telas[tr.row].subtotal);
     }); 
 
     $('.btnClearSearch').on('click', function () {
@@ -341,6 +266,8 @@
         }
 
         compras.items.fecha_compra = $('input[name="fecha_compra"]').val();
+        compras.items.inicio_timbrado = $('input[name="inicio_timbrado"]').val();
+        compras.items.fin_timbrado = $('input[name="fin_timbrado"]').val();
         compras.items.proveedor = $('select[name="proveedor"]').val();
         compras.items.nro_factura = $('input[name="nro_factura"]').val();
         compras.items.timbrado = $('input[name="timbrado"]').val();

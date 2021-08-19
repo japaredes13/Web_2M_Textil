@@ -36,6 +36,27 @@ class CompraForm(forms.ModelForm):
                     'data-toggle': 'datetimepicker'
                 }
             ),
+            'inicio_timbrado': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    'id': 'inicio_timbrado',
+                    'data-target': '#inicio_timbrado',
+                    'data-toggle': 'datetimepicker'
+                }
+            ),'fin_timbrado': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    'id': 'fin_timbrado',
+                    'data-target': '#fin_timbrado',
+                    'data-toggle': 'datetimepicker'
+                }
+            ),
             'total_iva_10': forms.TextInput(attrs={
                 'readonly': True,
                 'class': 'form-control',

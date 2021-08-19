@@ -63,6 +63,7 @@
                                     <thead>
                                     <tr>
                                         <th>Tela</th>
+                                        <th>Codigo</th>
                                         <th>Precio</th>
                                         <th>Metraje</th>
                                         <th>Subtotal</th>
@@ -159,6 +160,7 @@
                 data: this.items.telas,
                 columns: [
                     {"data": "nombre"},
+                    {"data": "codigo"},
                     {"data": "precio_unitario"},
                     {"data": "metraje"},
                     {"data": "subtotal"},
@@ -166,7 +168,7 @@
                 ],
                 columnDefs: [
                     {
-                        targets: [1],
+                        targets: [2],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
@@ -174,7 +176,7 @@
                         }
                     },
                     {
-                        targets: [2],
+                        targets: [3],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
@@ -182,7 +184,7 @@
                         }
                     },
                     {
-                        targets: [3],
+                        targets: [4],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
@@ -190,7 +192,7 @@
                         }
                     },
                     {
-                        targets: [4],
+                        targets: [5],
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
@@ -315,14 +317,14 @@
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         orden_compras.items.telas[tr.row].metraje = metraje;
         orden_compras.calculate_invoice();
-        $('td:eq(3)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+        $('td:eq(4)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
     })
     .on('change keyup', 'input[name="precio_unitario"]', function () {
         var precio_unitario = parseFloat($(this).val());
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         orden_compras.items.telas[tr.row].precio_unitario = precio_unitario;
         orden_compras.calculate_invoice();
-        $('td:eq(3)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+        $('td:eq(4)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
     });
 
     $('.btnClearSearch').on('click', function () {

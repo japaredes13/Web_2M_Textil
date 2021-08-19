@@ -3,7 +3,11 @@ from django.forms import model_to_dict
 from bases.models import ClaseModelo
 
 class Tela(ClaseModelo):
-    codigo= models.CharField(max_length=200)
+    codigo= models.CharField(max_length=200,
+                            unique=True,
+                            error_messages={
+                                'unique': 'El campo Ruc ya existe'
+                            })
     nombre = models.CharField(max_length=200)
     color = models.CharField(max_length=200)
     metraje = models.FloatField(default=0)

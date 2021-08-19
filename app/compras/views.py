@@ -78,7 +78,7 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = tela.nombre
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
@@ -308,6 +308,8 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.nro_factura = request_compra['nro_factura']
                     compra.timbrado = request_compra['timbrado']
                     compra.fecha_compra = request_compra['fecha_compra']
+                    compra.inicio_timbrado = request_compra['inicio_timbrado']
+                    compra.fin_timbrado = request_compra['fin_timbrado']
                     compra.condicion_compra = request_compra['condicion_compra']
                     compra.user_created_id = self.request.user.id
                     compra.save()
@@ -327,6 +329,8 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                         detalle.user_created_id = self.request.user.id
                         detalle.save()
 
+                        detalle.tela.metraje += detalle.metraje_comprado
+                        detalle.tela.save()
                     compra.monto_total = monto_total
                     compra.total_iva_10 = total_iva_10
                     compra.save()

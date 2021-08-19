@@ -64,6 +64,8 @@ class Compra(ClaseModelo):
                     ('credito', 'Crédito'))
     condicion_compra = models.CharField(max_length=20, choices = condiciones, default = 'contado')
     fecha_compra = models.DateField(default=datetime.now)
+    inicio_timbrado = models.DateField(default=datetime.now)
+    fin_timbrado = models.DateField(default=datetime.now)
     excentas = models.IntegerField(default=0,null=True, blank=True)
     total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
     total_iva_10 = models.IntegerField(default=0)
