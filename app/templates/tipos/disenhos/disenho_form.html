@@ -1,0 +1,106 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear Diseño</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'tipos:disenho_list' %}">Diseños</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos del Diseño</h3>
+                        </div>
+                    
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'tipos:disenho_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'tipos:disenho_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_descripcion"><strong>{{form.descripcion.label}}</strong></label>
+                                    {{form.descripcion}}
+                                </div>
+                            </div>
+                            <br>
+                            <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'tipos:disenho_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+<script>
+ $(document).ready(function(){
+    $("#form").validate({
+		    rules: {
+		    	descripcion: {required: true, empresaRule:true},
+            },
+            messages: {
+                descripcion : {required: "* El campo es requerido"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                console.log(element);
+                if (element.name == 'descripcion') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                console.log(element);
+
+                if (element.name == 'descripcion') {
+                    $(element).addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            },
+            errorPlacement: function (error, element) {
+                console.log(element);
+                if(element.hasClass("select2-hidden-accessible")) {
+                    $(element).closest('.form-control').addClass('select2-error');
+                    error.insertAfter(element.next('span'));
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+
+        $.validator.addMethod("empresaRule", function (value, element) {
+            var pattern = /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+ });
+</script>
+{% endblock js_page %}

@@ -46,6 +46,12 @@
                                                 {{form.codigo}}
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_precio_compra_anterior"><strong>{{form.precio_compra_anterior.label}}</strong></label>
+                                                {{form.precio_compra_anterior}}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -108,30 +114,55 @@
 
 {% block js_page %}
 <script>
+
 $(document).ready(function(){
+    var precio_compra = document.getElementById("id_precio_compra");
+    precio_compra.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g,"")
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+        precio_compra.value = n;
+    }, false);
+
+    var precio_compra_anterior = document.getElementById("id_precio_compra_anterior");
+    precio_compra_anterior.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g,"")
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+        precio_compra_anterior.value = n;
+    }, false);
+
+    var precio_venta = document.getElementById("id_precio_venta");
+    precio_venta.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g,"")
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+        precio_venta.value = n;
+    }, false);
+
+    
     $("#form").validate({
 		    rules: {
 		    	nombre: {required: true, nombreRule:true},
 		    	codigo: {required: true, codigoRule:true},
-		    	precio_compra: {required: true, numRule:true},
-		    	precio_venta: {required: true, numRule:true},
 		    	metraje: {required: true, telaRule:true},
             },
             messages: {
                 nombre : {required: "* El campo es requerido"},
+                categoria : {required: "* Selecciona una opcion"},
+                disenho : {required: "* Selecciona una opcion"},
                 codigo : {required: "* El campo es requerido"},
                 precio_compra: {required: "* El campo es requerido"},
+                precio_compra_anterior: {required: "* El campo es requerido"},
+                precio_venta: {required: "* El campo es requerido"},
                 metraje : {required: "* El campo es requerido"},
             },
             errorElement: 'span',
             highlight: function(element){
-                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_venta' || element.name == 'metraje') {
+                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
                     $(element).closest('.form-control').addClass('is-invalid');
                     $(element).closest('.form-control').removeClass('is-valid');
                 }
             },
             unhighlight: function(element){
-                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_venta' || element.name == 'metraje') {
+                if (element.name == 'nombre' || element.name == 'codigo' | element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
                     $(element).closest('.form-control').addClass('is-valid');
                     $(element).closest('.form-control').removeClass('is-invalid');
                 }
@@ -151,12 +182,12 @@ $(document).ready(function(){
         $.validator.addMethod("numRule", function (value, element) {
             var pattern = /^[0-9]+$/;
             return this.optional(element) || pattern.test(value);
-        }, "* El campo debe ser numerico");
+        }, "* El campo debe ser numerico y mayor a 0");
 
         $.validator.addMethod("telaRule", function (value, element) {
             var pattern = /^[0-9.]+$/;
             return this.optional(element) || pattern.test(value);
-        }, "* El campo debe ser numerico");
+        }, "* El campo debe ser numerico y mayor a 0");
 });
 </script>
 {% endblock js_page %}

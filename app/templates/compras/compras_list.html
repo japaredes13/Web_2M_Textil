@@ -152,6 +152,16 @@
                         "orderable":false
                     }
                 ],
+                columnDefs: [
+                            {
+                                targets: [5],
+                                class: 'text-center',
+                                render: function (data, type, row) {
+                                    return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                                }
+                            },
+
+                        ],
                 language:{
                     "decimal": "",
                     "emptyTable": "No hay información",
@@ -199,14 +209,14 @@
                                 targets: [-1],
                                 class: 'text-center',
                                 render: function (data, type, row) {
-                                    return 'Gs ' + Intl.NumberFormat('de-DE').format(data);
+                                    return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
                                 }
                             },
                             {
                                 targets: [-3],
                                 class: 'text-center',
                                 render: function (data, type, row) {
-                                    return 'Gs ' + Intl.NumberFormat('de-DE').format(data);
+                                    return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
                                 }
                             },
                             {

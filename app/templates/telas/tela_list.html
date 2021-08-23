@@ -50,13 +50,18 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label><strong>Categorias:</strong></label>
-                                        <select id='categoria' class="form-control">
-                                            <option value="">----</option>
-                                            <option value="manteleria">Mantelería</option>
-                                            <option value="pantaloneria">Pantalonería</option>
-                                            <option value="camiseria">Camisería</option>
+                                        <select id='categoria' name="categorias" class="form-control">
+                                            <option value="">Todos</option>
+                                        {% for categoria in categorias%}
+                                            <option value={{categoria.id}}>{{categoria.descripcion}}</option>
+                                        {% endfor %}
                                         </select>
                                     </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="{% url 'telas:tela_listado_pdf' %}" id="exportar_pdf" class="btn btn-danger btn-block">
+                                        <i class="fas fa-file-pdf"></i> Exportar en Pdf
+                                    </a>
                                 </div>
                             </div>
                             <br>

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'proveedores',
     'compras',
     'ventas',
+    'tipos',
 ]
 
 MESSAGE_TAGS = {

@@ -1,4 +1,6 @@
 
+from django.http.response import HttpResponse, HttpResponseRedirect
+from tipos.models import Categoria
 from django.shortcuts import render, redirect
 from django.utils.translation import activate
 from django.views import generic
@@ -12,6 +14,11 @@ from .models import Tela
 from .forms import TelaForm
 from datetime import datetime
 
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
 
 class TelaList(LoginRequiredMixin,generic.ListView):
     model = Tela 
@@ -27,6 +34,11 @@ class TelaList(LoginRequiredMixin,generic.ListView):
         if buscar_tela:
             telas = telas.filter(Q(codigo__icontains=buscar_tela) | Q(nombre__icontains=buscar_tela))
         return telas
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categorias'] = Categoria.objects.filter(fecha_eliminacion__isnull=True)
+        return context
 
 
     def post(self, request, *args, **kwargs):
@@ -88,3 +100,28 @@ def tela_delete(request,id):
             'message':"No se encontro el registro."
         }
     return JsonResponse(data, safe=False)
+
+
+class TelaInvoicePdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+            print(request.GET)
+            template = get_template('telas/listado_pdf.html')
+            context = {
+                'telas':Tela.objects.all()
+            }
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except:
+            pass
+        return HttpResponseRedirect(reverse_lazy('telas:telas_list'))
+
+
+
+
+
+
+ 

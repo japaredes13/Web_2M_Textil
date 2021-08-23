@@ -256,28 +256,47 @@
         $('input[name="search"]').val('').focus();
     });
 
+    $('input[name="fecha_compra"]').on('change.datetimepicker', function() {
+        var fecha_inicio_timbrado = $('#inicio_timbrado').val();
+        var fecha_fin_timbrado = $('#fin_timbrado').val();
+        var fecha_compra = $('input[name="fecha_compra"]').val();
+
+
+    });
+
     // event submit
     $('form').on('submit', function (e) {
         e.preventDefault();
+
+        var fecha_inicio_timbrado = new Date($('#inicio_timbrado').val());
+        var fecha_fin_timbrado = new Date ($('#fin_timbrado').val());
+        var fecha_compra = new Date($('input[name="fecha_compra"]').val());
 
         if(compras.items.telas.length === 0){
             message_error('Debe al menos tener un item en su detalle de compra');
             return false;
         }
 
-        compras.items.fecha_compra = $('input[name="fecha_compra"]').val();
-        compras.items.inicio_timbrado = $('input[name="inicio_timbrado"]').val();
-        compras.items.fin_timbrado = $('input[name="fin_timbrado"]').val();
-        compras.items.proveedor = $('select[name="proveedor"]').val();
-        compras.items.nro_factura = $('input[name="nro_factura"]').val();
-        compras.items.timbrado = $('input[name="timbrado"]').val();
-        compras.items.condicion_compra = $('select[name="condicion_compra"]').val();
-        var parameters = new FormData();
-        parameters.append('action', $('input[name="action"]').val());
-        parameters.append('compras', JSON.stringify(compras.items));  
-        submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-            location.href = '/compras/compra/list/';
+        if ( fecha_inicio_timbrado <= fecha_compra && fecha_compra <= fecha_fin_timbrado){
+            compras.items.fecha_compra = $('input[name="fecha_compra"]').val();
+            compras.items.inicio_timbrado = $('input[name="inicio_timbrado"]').val();
+            compras.items.fin_timbrado = $('input[name="fin_timbrado"]').val();
+            compras.items.proveedor = $('select[name="proveedor"]').val();
+            compras.items.nro_factura = $('input[name="nro_factura"]').val();
+            compras.items.timbrado = $('input[name="timbrado"]').val();
+            compras.items.condicion_compra = $('select[name="condicion_compra"]').val();
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('compras', JSON.stringify(compras.items));  
+            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+                location.href = '/compras/compra/list/';
         });
+        }
+        else{
+            message_error('La fecha de compra debe estar en el rango de fecha inicio y fin del timbrado');
+            return false;
+        }   
+
     });
     compras.items.telas = {{ detalles|safe }};
     var detalle = {{ detalles|safe }}

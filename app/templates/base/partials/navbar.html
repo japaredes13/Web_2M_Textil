@@ -92,10 +92,32 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'telas:tela_list' %}" class="nav-link">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
-                        <p>Telas</p>
+                        <p> Mercaderias <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'telas:tela_list' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Telas</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'tipos:categoria_list' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Categorias</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'tipos:disenho_list' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Diseños</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
