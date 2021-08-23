@@ -9,6 +9,7 @@ import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
+from datetime import datetime
 
 
 class VentaView(LoginRequiredMixin, generic.ListView):
@@ -18,6 +19,9 @@ class VentaView(LoginRequiredMixin, generic.ListView):
 
     def queryset(self):
         ventas = Venta.objects.filter(fecha_eliminacion__isnull=True)
+        fecha_desde = self.request.POST['fecha_desde']
+        fecha_hasta = self.request.POST['fecha_hasta']
+        ventas = ventas.filter(fecha_venta__range=(fecha_desde,fecha_hasta))
         cliente = self.request.POST['cliente']
         condicion_venta = self.request.POST['condicion_venta']
         if cliente:
@@ -27,6 +31,13 @@ class VentaView(LoginRequiredMixin, generic.ListView):
             ventas = ventas.filter(condicion_venta=condicion_venta)
         
         return ventas
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Listado de Orden de Compras'
+        context['fecha_desde'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
+        return context
 
 
     @method_decorator(csrf_exempt)

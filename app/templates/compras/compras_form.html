@@ -290,7 +290,7 @@
             parameters.append('compras', JSON.stringify(compras.items));  
             submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
                 location.href = '/compras/compra/list/';
-        });
+            });
         }
         else{
             message_error('La fecha de compra debe estar en el rango de fecha inicio y fin del timbrado');

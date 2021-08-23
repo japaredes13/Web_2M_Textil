@@ -34,13 +34,35 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="tela"><strong>Cliente:</strong></label>
                                     <input type="text" class="form-control" id="cliente" placeholder="Buscar por Nombre del Cliente">
                                 </div>
                                 <div class="col-md-3">
-                                    <label for="tela"><strong>Fecha Desde:</strong></label>
-                                    <input type="text" class="form-control datetimepicker-input" id="fecha_desde" data-target:"#fecha_desde" data-toggle="datetimepicker" readonly >
+                                    <div class="form-group">
+                                        <label>Fecha Desde:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Fecha Hasta:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
@@ -85,7 +107,11 @@
         $(document).ready(function() { 
             $('#fecha_desde').datetimepicker({
                 format: 'YYYY-MM-DD',
-                locale: 'es'
+                locale: 'es',
+            });
+            $('#fecha_hasta').datetimepicker({
+                format: 'YYYY-MM-DD',
+                locale: 'es',
             });
 
 
@@ -100,7 +126,8 @@
                         d.action = 'search',
                         d.cliente = $('#cliente').val(),
                         d.condicion_venta = $('#condicion_venta').val(),
-                        d.fecha_desde = $('#fecha_desde').val()
+                        d.fecha_desde = $('#fecha_desde').val(),
+                        d.fecha_hasta = $('#fecha_hasta').val()
                     },
                     dataSrc: ""
                 },
@@ -144,6 +171,12 @@
                 table.ajax.reload();
             });
             $('#condicion_venta').change(function(){
+                table.ajax.reload();
+            });
+            $('input[name="fecha_desde"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
+            $('input[name="fecha_hasta"]').on('change.datetimepicker', function() {
                 table.ajax.reload();
             });
         });
