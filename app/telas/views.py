@@ -105,10 +105,20 @@ def tela_delete(request,id):
 class TelaInvoicePdfView(generic.View):
     def get(self,request, *args, **kwargs):
         try:
-            print(request.GET)
+            print(request.GET['categoria'])
+            if request.GET['extension'] == 'excel':
+                return HttpResponseRedirect(reverse_lazy('telas:tela_list'))
+            telas = Tela.objects.filter(fecha_eliminacion__isnull=True).order_by('nombre')
+            buscar_tela = request.GET['tela']
+            categoria = request.GET['categoria']
+            if categoria:
+                telas = telas.filter(categoria=categoria)
+            if buscar_tela:
+                telas = telas.filter(Q(codigo__icontains=buscar_tela) | Q(nombre__icontains=buscar_tela))
+            
             template = get_template('telas/listado_pdf.html')
             context = {
-                'telas':Tela.objects.all()
+                'telas': telas
             }
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')
@@ -117,7 +127,7 @@ class TelaInvoicePdfView(generic.View):
             return response
         except:
             pass
-        return HttpResponseRedirect(reverse_lazy('telas:telas_list'))
+        return HttpResponseRedirect(reverse_lazy('telas:tela_list'))
 
 
 

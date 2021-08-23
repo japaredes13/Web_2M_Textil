@@ -42,28 +42,39 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="tela"><strong>Tela:</strong></label>
-                                    <input type="text" class="form-control" id="tela" placeholder="Buscar por Código, Nombre">
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label><strong>Categorias:</strong></label>
-                                        <select id='categoria' name="categorias" class="form-control">
-                                            <option value="">Todos</option>
-                                        {% for categoria in categorias%}
-                                            <option value={{categoria.id}}>{{categoria.descripcion}}</option>
-                                        {% endfor %}
-                                        </select>
+                            <form method="GET" role="form" id="pdf" action="{% url 'telas:tela_listado_pdf' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="extension" id="extension">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="tela"><strong>Tela:</strong></label>
+                                        <input type="text" class="form-control" name="tela" id="tela" placeholder="Buscar por Código, Nombre" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label><strong>Categorias:</strong></label>
+                                            <select id='categoria' name="categoria" class="form-control">
+                                                <option value="">Todos</option>
+                                            {% for categoria in categorias%}
+                                                <option value={{categoria.id}}>{{categoria.descripcion}}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <a href="{% url 'telas:tela_listado_pdf' %}" id="exportar_pdf" class="btn btn-danger btn-block">
-                                        <i class="fas fa-file-pdf"></i> Exportar en Pdf
-                                    </a>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <button type="submit" id="exportar_pdf" class="btn btn-block btn-outline-danger">
+                                            <i class="fas fa-file-pdf"></i> Exportar en Pdf
+                                        </button>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" id="exportar_excel" class="btn btn-block btn-outline-success">
+                                            <i class="fas fa-file-pdf"></i> Exportar a Excel
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                             <br>
                             <div class="row">
                                 <div class="col-md-12">
@@ -153,6 +164,14 @@
             });
             $('#categoria').change(function(){
                 table.ajax.reload();
+            });
+
+            $('#exportar_pdf').on('click',function(){
+                console.log('hoa');
+                $('#extension').val('pdf');
+            });
+            $('#exportar_excel').on('click',function(){
+                $('#extension').val('excel');
             });
         });
     </script>
