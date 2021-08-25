@@ -133,8 +133,7 @@
             var monto_total = 0;
             $.each(this.items.telas, function (pos, dict) {
                 dict.pos = pos;
-                dict.subtotal = Math.round(dict.metraje * parseInt(dict.precio_unitario
-                ));
+                dict.subtotal = Math.round(dict.metraje * parseInt(dict.precio_unitario));
                 monto_total += dict.subtotal;
             });
             this.items.monto_total = monto_total;
@@ -172,7 +171,7 @@
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<input type="text" name="precio_unitario" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.precio_unitario + '">';
+                            return '<input type="text" name="precio_unitario" onkeyup="validate(this)" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.precio_unitario + '">';
                         }
                     },
                     {
@@ -216,6 +215,11 @@
             });
         },
     };
+    
+    function validate(valor){
+        //console.log(valor.value);
+        valor.value = valor.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+    }
 
     $('#id_proveedor').select2({
         language: "es"
@@ -266,7 +270,6 @@
         minimumInputLength:1,
     }).on('select2:select', function (e){
         var data = e.params.data;
-        console.log(data)
         data.metraje = 1;
         data.precio_unitario = 0
         data.subtotal = 0;
@@ -279,7 +282,6 @@
             });
         } else {
             orden_compras.add(data);
-            console.log(orden_compras)
         }
         $(this).val('').trigger('change.select2');
     });
@@ -320,7 +322,7 @@
         $('td:eq(4)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
     })
     .on('change keyup', 'input[name="precio_unitario"]', function () {
-        var precio_unitario = parseFloat($(this).val());
+        var precio_unitario = parseFloat($(this).val().replace('.',''));
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         orden_compras.items.telas[tr.row].precio_unitario = precio_unitario;
         orden_compras.calculate_invoice();

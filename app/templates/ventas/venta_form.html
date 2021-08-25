@@ -48,7 +48,7 @@
             calculate_invoice: function(){
                 var monto_total = 0;
                 $.each(this.items.telas,function(pos,dict){
-                    dict.subtotal = Math.round(dict.metraje_vendido * parseInt(dict.precio));
+                    dict.subtotal = Math.round(dict.metraje_vendido * parseInt(dict.precio_venta));
                     monto_total += dict.subtotal; 
                 });
                 this.items.monto_total = monto_total;
@@ -74,32 +74,33 @@
                     data: this.items.telas,
                     columns: [
                         { "data": "nombre"},
-                        { "data": "precio" },
+                        { "data": "codigo"},
+                        { "data": "precio_venta" },
                         { "data": "metraje_vendido" },
                         { "data": "subtotal" },
                         { "data": "id" },
                     ],
                     columnDefs: [
                         {
-                            targets: [1],
+                            targets: [2],
                             "render": function( data, type, row ) {
                                 return 'Gs. '+parseInt(data);
                             },
                         },
                         {
-                            targets: [2],
+                            targets: [3],
                             "render": function( data, type, row ) {
-                                return '<input type="text" oninput="onlyNumbers(this.value)" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
+                                return '<input type="text" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
                             },
                         },
                         {
-                            targets: [3],
+                            targets: [4],
                             "render": function( data, type, row ) {
                                 return parseInt(data);
                             },
                         },
                         {
-                            targets: [4],
+                            targets: [5],
                             class: 'text-center',
                             "render": function( data, type, row ) {
                                 return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
@@ -109,8 +110,9 @@
                     rowCallback( row, data, displayNum, displayIndex, dataIndex ){
                         $(row).find('input[name="metraje_vendido"]').TouchSpin({
                             min: 0,
-                            max: 1000000000000,
-                            //step: 1,
+                            max: data.metraje,
+                            step: 0.01,
+                            decimals: 2
                         });
                     },
                     language:{
@@ -223,7 +225,7 @@
             var tr = table_telas.cell($(this).closest('td,li')).index();
             venta.items.telas[tr.row].metraje_vendido = metraje_vendido;
             venta.calculate_invoice();
-            $('td:eq(3)',table_telas.row(tr.row).node()).html(venta.items.telas[tr.row].subtotal);
+            $('td:eq(4)',table_telas.row(tr.row).node()).html(venta.items.telas[tr.row].subtotal);
         });
         
         venta.list();
@@ -246,7 +248,7 @@
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('venta', JSON.stringify(venta.items));
             submit_with_ajax(window.location.pathname, 'Notificación', '¿Estás seguro de registrar la venta?', parameters, function() {
-                location.href = "/";
+                location.href = "/ventas/ventas";
             });
         });
     </script>

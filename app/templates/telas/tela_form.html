@@ -97,7 +97,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            <button type="submit" id="button" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
                                             
                                             <a class="btn btn-danger float-right" href="{% url 'telas:tela_list' %}">Cancelar</a>
                                         </div>
@@ -188,6 +188,19 @@ $(document).ready(function(){
             var pattern = /^[0-9.]+$/;
             return this.optional(element) || pattern.test(value);
         }, "* El campo debe ser numerico y mayor a 0");
+    
+    $(form).on('submit', function (e){
+        var precio_compra = String($('#id_precio_compra').val());
+        var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
+        var precio_venta = String($('#id_precio_venta').val());
+
+        precio_compra = precio_compra.replace('.','');
+        precio_compra_anterior = precio_compra_anterior.replace('.','');
+        precio_venta = precio_venta.replace('.','');
+        $('#id_precio_compra').val(precio_compra);
+        $('#id_precio_compra_anterior').val(precio_compra_anterior);
+        $('#id_precio_venta').val(precio_venta);
+    });
 });
 </script>
 {% endblock js_page %}

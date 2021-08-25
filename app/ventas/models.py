@@ -22,6 +22,7 @@ class Venta(ClaseModelo):
 
     def toJSON(self):
         item = model_to_dict(self)
+        item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
         return item
 
 
@@ -34,3 +35,11 @@ class DetalleVenta(ClaseModelo):
     sub_total_iva_5 = models.IntegerField(default=0,null=True)
     sub_total_iva_10 = models.IntegerField(default=0)
     sub_total = models.IntegerField(default=0)
+
+    def toJSON(self):
+        item = model_to_dict(self, exclude=['Venta'])
+        item['descripcion'] = self.tela.nombre + ' ' + self.tela.codigo
+        item['metraje_vendido'] = self.metraje_vendido
+        item['precio_unitario'] = self.precio_unitario
+        item['sub_total'] = self.sub_total
+        return item

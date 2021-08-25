@@ -2,6 +2,7 @@ from django.http.response import JsonResponse
 from .models import Venta, DetalleVenta
 from .forms import VentaForm
 from telas.models import Tela
+from clientes.models import Cliente
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -10,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 from datetime import datetime
+from django.db import transaction
 
 
 class VentaView(LoginRequiredMixin, generic.ListView):
@@ -81,36 +83,41 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = tela.nombre
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
+                with transaction.atomic():
+                    venta = Venta()
+                    cliente = Cliente.objects.get(pk=request_venta['cliente'])
+                    venta.cliente_id = request_venta['cliente']
+                    venta.cliente_razon_social = cliente.razon_social
+                    venta.fecha_venta = request_venta['fecha_venta']
+                    venta.condicion_venta = request_venta['condicion_venta']
+                    venta.user_created_id = self.request.user.id
+                    venta.save()
+                    
+                    monto_total = 0
+                    total_iva_10 = 0
+                    for det in request_venta['telas']:
+                        detalle =  DetalleVenta()
+                        detalle.venta_id = venta.id
+                        detalle.tela_id = det['id']
+                        detalle.metraje_vendido = float(det['metraje_vendido'])
+                        detalle.precio_unitario = int(det['precio_venta'])
+                        detalle.sub_total = float(det['metraje_vendido']) * int(det['precio_venta'])
+                        detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
+                        monto_total += detalle.sub_total
+                        total_iva_10 += detalle.sub_total_iva_10
+                        detalle.user_created_id = self.request.user.id
+                        tela = Tela.objects.get(pk=detalle.tela_id)
+                        tela.metraje -=  detalle.metraje_vendido
+                        tela.save()
+                        detalle.save()
 
-                venta = Venta()
-                venta.cliente_id = request_venta['cliente']
-                venta.fecha_venta = request_venta['fecha_venta']
-                venta.condicion_venta = request_venta['condicion_venta']
-                venta.user_created_id = self.request.user.id
-                venta.save()
-                
-                monto_total = 0
-                total_iva_10 = 0
-                for det in request_venta['telas']:
-                    detalle =  DetalleVenta()
-                    detalle.venta_id = venta.id
-                    detalle.tela_id = det['id']
-                    detalle.metraje_vendido = float(det['metraje_vendido'])
-                    detalle.precio_unitario = int(det['precio'])
-                    detalle.sub_total = float(det['metraje_vendido']) * int(det['precio'])
-                    detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
-                    monto_total += detalle.sub_total
-                    total_iva_10 += detalle.sub_total_iva_10
-                    detalle.user_created_id = self.request.user.id
-                    detalle.save()
-
-                venta.monto_total = monto_total
-                venta.total_iva_10 = total_iva_10
-                venta.save()
+                    venta.monto_total = monto_total
+                    venta.total_iva_10 = total_iva_10
+                    venta.save()
             else:
                 data['error'] = 'No ha ingresado una opción'
         except Exception as e:
