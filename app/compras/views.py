@@ -1,3 +1,4 @@
+from django.db.models.fields import CharField, IntegerField
 from django.shortcuts import render, redirect
 from django.db import transaction
 from django.views import generic
@@ -75,10 +76,10 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
             action = request.POST['action']
             if action == 'search_telas':
                 data = []
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=90)
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo 
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
@@ -141,7 +142,7 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
             action = request.POST['action']
             if action == 'search_telas':
                 data = []
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
+                telas  = Tela.objects.filter()
                 for tela in telas:
                     item = tela.toJSON()
                     item['text'] = tela.nombre
@@ -330,6 +331,9 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                         detalle.save()
 
                         detalle.tela.metraje += detalle.metraje_comprado
+                        detalle.tela.precio_compra_anterior = detalle.tela.precio_compra
+                        detalle.tela.precio_compra = detalle.precio_costo
+                        detalle.tela.precio_venta = detalle.tela.precio_compra + (0.30 * detalle.tela.precio_compra)
                         detalle.tela.save()
                     compra.monto_total = monto_total
                     compra.total_iva_10 = total_iva_10

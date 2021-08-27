@@ -12,11 +12,12 @@ class CompraForm(forms.ModelForm):
         widgets = {
             'proveedor': forms.Select(attrs={
                 'class': 'form-control select2',
-                'style': 'width: 100%'
+                'style': 'width: 100%',
+                'disabled':'disabled'
             }),
             'nro_factura': forms.TextInput(attrs={
                 'autocomplete': 'off',
-                'class': 'form-control',
+                'class': 'form-control'
             }),
             'timbrado': forms.TextInput(attrs={
                 'autocomplete': 'off',

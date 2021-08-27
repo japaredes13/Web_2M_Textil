@@ -83,7 +83,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + tela.metraje
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])

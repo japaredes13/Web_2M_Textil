@@ -11,7 +11,7 @@ class Tela(ClaseModelo):
                             })
     nombre = models.CharField(max_length=200)
     color = models.CharField(max_length=200)
-    metraje = models.IntegerField()
+    metraje = models.FloatField()
     precio_venta  = models.IntegerField()
     precio_compra = models.IntegerField()
     precio_compra_anterior = models.IntegerField()

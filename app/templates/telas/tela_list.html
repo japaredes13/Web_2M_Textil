@@ -68,11 +68,11 @@
                                             <i class="fas fa-file-pdf"></i> Exportar en Pdf
                                         </button>
                                     </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" id="exportar_excel" class="btn btn-block btn-outline-success">
+                                    <!--  <div class="col-md-2">
+                                       <button type="submit" id="exportar_excel" class="btn btn-block btn-outline-success">
                                             <i class="fas fa-file-pdf"></i> Exportar a Excel
-                                        </button>
-                                    </div>
+                                        </button> 
+                                    </div> -->
                                 </div>
                             </form>
                             <br>
@@ -84,6 +84,7 @@
                                             <th>Codigo</th>
                                             <th>Color</th>
                                             <th>metraje</th>
+                                            <th>Precio Compra Anterior</th>
                                             <th>Precio Compra</th>
                                             <th>Precio Venta</th>
                                             <th>Acciones</th>
@@ -105,8 +106,20 @@
 {% block js_page %}
     {% include 'base/partials/sweet_delete.html' %}
     <script>
-        $(document).ready(function() {           
+        $(document).ready(function() {      
             var table = $('.table').DataTable({
+                //dom: 'Bfrtip',     
+                //buttons: [
+                //    {
+                //        extend: 'pdfHtml5',
+                //        text: 'exportar_pdf',
+                //        exportOptions: {
+                //            columns: [
+                //                0,1,2,3
+                //            ]
+                //        }
+                //    }
+                //],
                 responsive: true,
                 autoWidth: false,
                 filter: false,
@@ -126,6 +139,7 @@
                     { "data": "codigo" },
                     { "data": "color" },
                     { "data": "metraje" },
+                    { "data": "precio_compra_anterior" },
                     { "data": "precio_compra" },
                     { "data": "precio_venta" },
                     {

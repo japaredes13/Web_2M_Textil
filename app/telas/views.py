@@ -1,6 +1,6 @@
 
 from django.http.response import HttpResponse, HttpResponseRedirect
-from tipos.models import Categoria
+from tipos.models import Categoria, Disenho
 from django.shortcuts import render, redirect
 from django.utils.translation import activate
 from django.views import generic
@@ -70,6 +70,12 @@ class TelaCreate(LoginRequiredMixin, generic.CreateView):
         messages.success(self.request, "Tela registrada éxitosamente." )
         return super().form_valid(form)
 
+    def get_context_data (self, **kwargs):
+        context = super(TelaCreate,self).get_context_data(**kwargs)
+        context ["disenhos"] = Disenho.objects.all()
+        context ["categorias"] = Categoria.objects.all()
+        return context
+
 
 class TelaEdit(LoginRequiredMixin, generic.UpdateView):
     model=Tela
@@ -84,6 +90,13 @@ class TelaEdit(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, "Tela modificada éxitosamente." )
         return super().form_valid(form)
 
+    def get_context_data (self, **kwargs):
+        pk = self.kwargs.get('pk')
+        context = super(TelaEdit,self).get_context_data(**kwargs)
+        context ["disenhos"] = Disenho.objects.all()
+        context ["categorias"] = Categoria.objects.all()
+        context ["obj"] = Tela.objects.filter(pk=pk).first()
+        return context
 
 def tela_delete(request,id):
     try:

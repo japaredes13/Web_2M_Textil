@@ -40,9 +40,9 @@ class TelaForm(forms.ModelForm):
             'nombre' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
 			'color' : forms.TextInput(attrs={'type':'color','class':'form-control','autocomplete':'off'}),
 			'metraje' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'precio_compra_anterior' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'precio_compra' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
-			'precio_venta' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'onkeyup':'format_number(this)'}),
+			'precio_compra_anterior' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off','min':'1'}),
+			'precio_compra' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off','min':'1'}),
+			'precio_venta' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off','min':'1'}),
 			'disenho' : forms.Select(attrs={'class':'form-control','autocomplete':'off'}),
 			'categoria' : forms.Select(attrs={'class':'form-control','autocomplete':'off'}),
 		}

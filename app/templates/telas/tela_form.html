@@ -57,13 +57,21 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="id_disenho"><strong>{{form.disenho.label}}</strong></label>
-                                                {{form.disenho}}
+                                                <select class="form-control" name="disenho" id="id_disenho">
+                                                    {% for disenho in disenhos %}
+                                                        <option value="{{ disenho.id }}">{{ disenho.descripcion }}</option>
+                                                    {% endfor %}
+                                                </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="id_categoria"><strong>{{form.categoria.label}}</strong></label>
-                                                {{form.categoria}}
+                                                <select class="form-control"  name="categoria" id="id_categoria">
+                                                    {% for categoria in categorias %}
+                                                        <option value="{{ categoria.id }}">{{ categoria.descripcion }}</option>
+                                                    {% endfor %}
+                                                </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -76,6 +84,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
+
                                             <label for="id_color"><strong>{{form.color.label}}</strong></label>
                                                 {{form.color}}
                                         </div>
@@ -116,6 +125,31 @@
 <script>
 
 $(document).ready(function(){
+    $.extend( $.validator.messages, {
+        min: $.validator.format("Por favor ingrese un valor mayor a 0")
+    });
+
+    $('#id_disenho').val("{{ obj.disenho.id }}").change();
+    $('#id_disenho').select2({
+        width: '100%',
+        placeholder: 'Seleccione el Diseño'
+    });
+
+    $('#id_disenho').on('change', function () {
+        $(this).valid();
+    });
+
+
+    $('#id_categoria').val("{{ obj.categoria.id }}").change();
+    $('#id_categoria').select2({
+        width: '100%',
+        placeholder: 'Seleccione la Categoria'
+    });
+
+    $('#id_categoria').on('change', function () {
+        $(this).valid();
+    });
+
     var precio_compra = document.getElementById("id_precio_compra");
     precio_compra.addEventListener('keyup', function(evt){
         var n = this.value.replace(/\D/g,"")
@@ -137,12 +171,24 @@ $(document).ready(function(){
         precio_venta.value = n;
     }, false);
 
+    var metraje = document.getElementById("id_metraje");
+    metraje.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g, "")
+                          .replace(/([0-9])([0-9]{2})$/, '$1,$2')  
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".")
+        metraje.value = n;
+    }, false);
     
     $("#form").validate({
 		    rules: {
 		    	nombre: {required: true, nombreRule:true},
 		    	codigo: {required: true, codigoRule:true},
-		    	metraje: {required: true, telaRule:true},
+                disenho: {required: true},
+                categoria: {required: true},
+                precio_compra: {required: true, min:true},
+                precio_compra_anterior: {required: true, min:true},
+                precio_venta: {required: true, min:true},
+                metraje: {required: true, metrajeRule:true},
             },
             messages: {
                 nombre : {required: "* El campo es requerido"},
@@ -156,15 +202,24 @@ $(document).ready(function(){
             },
             errorElement: 'span',
             highlight: function(element){
-                if (element.name == 'nombre' || element.name == 'codigo' || element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
+                if (element.name == 'nombre' || element.name=='disenho' || element.name=='categoria' || element.name == 'codigo' || element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
                     $(element).closest('.form-control').addClass('is-invalid');
                     $(element).closest('.form-control').removeClass('is-valid');
                 }
             },
             unhighlight: function(element){
-                if (element.name == 'nombre' || element.name == 'codigo' | element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
+                if (element.name == 'nombre' || element.name=='disenho' || element.name=='categoria' || element.name == 'codigo' | element.name == 'precio_compra' || element.name == 'precio_compra_anterior' || element.name == 'precio_venta' || element.name == 'metraje') {
                     $(element).closest('.form-control').addClass('is-valid');
                     $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            },
+            errorPlacement: function (error, element) {
+                console.log(element);
+                if(element.hasClass("select2-hidden-accessible")) {
+                    $(element).closest('.form-control').addClass('select2-error');
+                    error.insertAfter(element.next('span'));
+                } else {
+                    error.insertAfter(element);
                 }
             }
         });
@@ -185,21 +240,30 @@ $(document).ready(function(){
         }, "* El campo debe ser numerico y mayor a 0");
 
         $.validator.addMethod("telaRule", function (value, element) {
-            var pattern = /^[0-9.]+$/;
+            var pattern = /^[0-9,.]+$/;
             return this.optional(element) || pattern.test(value);
         }, "* El campo debe ser numerico y mayor a 0");
-    
+
+        $.validator.addMethod("metrajeRule", function (value, element) {
+            return parseInt(value) > 0
+        }, "* El campo debe ser mayor a 0");
+        
+
     $(form).on('submit', function (e){
         var precio_compra = String($('#id_precio_compra').val());
         var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
         var precio_venta = String($('#id_precio_venta').val());
+        var metraje = String($('#id_metraje').val());
 
         precio_compra = precio_compra.replace('.','');
         precio_compra_anterior = precio_compra_anterior.replace('.','');
         precio_venta = precio_venta.replace('.','');
+        metraje = metraje.replace('.','')
+                         .replace(',','.');
         $('#id_precio_compra').val(precio_compra);
         $('#id_precio_compra_anterior').val(precio_compra_anterior);
         $('#id_precio_venta').val(precio_venta);
+        $('#id_metraje').val(metraje);
     });
 });
 </script>
