@@ -38,7 +38,7 @@ class DetalleVenta(ClaseModelo):
 
     def toJSON(self):
         item = model_to_dict(self, exclude=['Venta'])
-        item['descripcion'] = self.tela.nombre + ' ' + self.tela.codigo + ' ' + self.tela.metraje
+        item['descripcion'] = self.tela.nombre + ' ' + self.tela.codigo
         item['metraje_vendido'] = self.metraje_vendido
         item['precio_unitario'] = self.precio_unitario
         item['sub_total'] = self.sub_total

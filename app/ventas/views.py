@@ -36,7 +36,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Listado de Orden de Compras'
+        context['title'] = 'Listado de Ventas'
         context['fecha_desde'] = datetime.now().strftime("%Y-%m-%d")
         context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
         return context
