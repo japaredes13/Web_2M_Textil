@@ -150,6 +150,22 @@
                         orderable: false
                     },
                 ],
+                columnDefs: [
+                            {
+                                targets: [4,5,6],
+                                class: 'text-center',
+                                render: function (data, type, row) {
+                                    return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                                }
+                            },
+                            {
+                                targets: [3],
+                                class: 'text-center',
+                                render: function (data, type, row) {
+                                    return data.toLocaleString();
+                                }
+                            },
+                        ],
                 language:{
                     "decimal": "",
                     "emptyTable": "No hay información",

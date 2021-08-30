@@ -171,7 +171,7 @@
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<input type="text" name="precio_unitario" onkeyup="validate(this)" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.precio_unitario + '">';
+                            return '<input type="text" name="precio_unitario" onkeyup="validate(this)" class="form-control form-control-sm input-sm" autocomplete="off" required="required" value="' + row.precio_unitario + '">';
                         }
                     },
                     {
@@ -218,7 +218,7 @@
     
     function validate(valor){
         //console.log(valor.value);
-        valor.value = valor.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+        valor.value = valor.value.replace(/\D/g,"").replace(/^0+/, '').replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
     }
 
     $('#id_proveedor').select2({
@@ -272,7 +272,7 @@
     }).on('select2:select', function (e){
         var data = e.params.data;
         data.metraje = 1;
-        data.precio_unitario = 0
+        data.precio_unitario = 1
         data.subtotal = 0;
         if (orden_compras.items.telas.find(tela => tela.id === data.id)){
             Swal.fire({
@@ -343,7 +343,7 @@
             return false;
         }
 
-        orden_compras.items.fecha_compra = $('input[name="fecha_orden"]').val();
+        orden_compras.items.fecha_orden = $('input[name="fecha_orden"]').val();
         orden_compras.items.proveedor = $('select[name="proveedor"]').val();
         var parameters = new FormData();
         parameters.append('action', $('input[name="action"]').val());
@@ -352,6 +352,10 @@
             location.href = '/compras/orden_compra/list/';
         });
     });
+    orden_compras.items.telas = {{ detalles|safe }};
+    var detalle = {{ detalles|safe }}
+    console.log(detalle);
+
     // Esto se puso aqui para que funcione bien el editar y calcule bien los valores del iva. // sino tomaría el valor del iva de la base debe
     // coger el que pusimos al inicializarlo. 
     orden_compras.list();

@@ -76,17 +76,18 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
             action = request.POST['action']
             if action == 'search_telas':
                 data = []
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=90)
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=100)
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo 
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
+                    print('text')
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
                     request_orden_compra = json.loads(request.POST['orden_compras'])
                     orden_compra = OrdenCompra()
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
-                    orden_compra.fecha_compra = request_orden_compra['fecha_compra']
+                    orden_compra.fecha_orden = request_orden_compra['fecha_orden']
                     orden_compra.user_created_id = self.request.user.id
                     orden_compra.estado = False
                     orden_compra.save()
@@ -122,7 +123,7 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
         context['entity'] = 'Orden de Compras'
         context['list_url'] = self.success_url
         context['action'] = 'add'
-        context['det'] = []
+        context['detalles'] = []
         return context
 
 
@@ -142,23 +143,24 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
             action = request.POST['action']
             if action == 'search_telas':
                 data = []
-                telas  = Tela.objects.filter()
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=100)
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = tela.nombre
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
                     data.append(item)
             elif action == 'edit':
                 with transaction.atomic():
                     request_orden_compra = json.loads(request.POST['orden_compras'])
-                    orden_compra = self.get_object()
+                    orden_compra = OrdenCompra.objects.get(id=self.get_object().id)
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
                     orden_compra.fecha_orden = request_orden_compra['fecha_orden']
-                    orden_compra.user_created_id = self.request.user.id
+                    orden_compra.user_updated_id = self.request.user.id
+                    orden_compra.estado = False
                     orden_compra.save()
+                    orden_compra.detalleordencompra_set.all().delete()
                     
                     monto_total = 0
                     total_iva_10 = 0
-                    OrdenCompra.detalleordencompra_set.all().delete()
                     for det in request_orden_compra['telas']:
                         detalle = DetalleOrdenCompra()
                         detalle.orden_compra_id = orden_compra.id
@@ -169,7 +171,8 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
                         detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
                         monto_total += detalle.sub_total
                         total_iva_10 += detalle.sub_total_iva_10
-                        detalle.user_created_id = self.request.user.id
+                        detalle.user_created_id = orden_compra.user_created_id
+                        detalle.user_updated_id = self.request.user.id
                         detalle.save()
 
                     orden_compra.monto_total = monto_total
@@ -182,19 +185,6 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
 
-    def get_details_product(self):
-        data = []
-        try:
-            for i in DetalleCompra.objects.filter(compra_id=self.get_object().id):
-                item = i.tela.toJSON()
-                item['precio'] = i.precio
-                item['metraje'] = i.metraje
-                item['sub_total'] = i.sub_total
-                data.append(item)
-        except:
-            pass
-        return data
-        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edición de una Orden de Compra'
@@ -204,6 +194,19 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
         context['detalles'] = json.dumps(self.get_details_product())
         return context
 
+    def get_details_product(self):
+        data = []
+        try:
+            for i in DetalleOrdenCompra.objects.filter(orden_compra_id=self.get_object().id):
+                item = i.tela.toJSON()
+                item['precio_unitario'] = i.precio_unitario
+                item['metraje'] = i.metraje
+                item['sub_total'] = i.sub_total
+                data.append(item)
+        except:
+            pass
+        print(data)
+        return data
 
 class OrdenCompraDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = OrdenCompra
