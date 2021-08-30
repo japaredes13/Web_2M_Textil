@@ -214,7 +214,6 @@ $(document).ready(function(){
                 }
             },
             errorPlacement: function (error, element) {
-                console.log(element);
                 if(element.hasClass("select2-hidden-accessible")) {
                     $(element).closest('.form-control').addClass('select2-error');
                     error.insertAfter(element.next('span'));
@@ -249,7 +248,12 @@ $(document).ready(function(){
         }, "* El campo debe ser mayor a 0");
         
 
+    $('input[name="precio_compra"], input[name="precio_venta"], input[name="precio_compra_anterior"]').on('change', function(){
+        validatePrecioVenta();
+    })
+
     $(form).on('submit', function (e){
+        validatePrecioVenta();
         var precio_compra = String($('#id_precio_compra').val());
         var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
         var precio_venta = String($('#id_precio_venta').val());
@@ -265,6 +269,30 @@ $(document).ready(function(){
         $('#id_precio_venta').val(precio_venta);
         $('#id_metraje').val(metraje);
     });
+
+
+    function validatePrecioVenta(){
+        var precio_venta = $('#id_precio_venta').val();
+        p_venta = precio_venta.replace('.','');
+        
+        var precio_compra = $('#id_precio_compra').val();
+        p_compra = precio_compra.replace('.','');
+        
+        var precio_compra_anterior = $('#id_precio_compra_anterior').val();
+        p_compra_anterior = precio_compra_anterior.replace('.','');
+
+        if ((p_compra != '' && p_venta) || (p_compra_anterior != '' && p_venta)){
+            if (parseInt(p_compra) > parseInt(p_venta) || parseInt(p_compra_anterior) > parseInt(p_venta)) {
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El precio de venta es menor al precio de compra",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+            }
+        }
+        
+    }
 });
 </script>
 {% endblock js_page %}
