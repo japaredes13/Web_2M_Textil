@@ -90,7 +90,7 @@
                         {
                             targets: [3],
                             "render": function( data, type, row ) {
-                                return '<input type="text" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
+                                return '<input type="text" required="required" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
                             },
                         },
                         {
@@ -124,7 +124,12 @@
         
         $('#fecha_venta').datetimepicker({
             format: 'YYYY-MM-DD',
-            locale: 'es'
+            locale: 'es',
+            maxDate: Date()
+        });
+
+        $('#id_cliente').select2({
+            language: "es"
         });
 
         //evento para buscar las telas y agregar en la tabla del detalle

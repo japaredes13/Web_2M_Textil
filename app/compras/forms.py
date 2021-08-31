@@ -34,6 +34,7 @@ class CompraForm(forms.ModelForm):
                     'class': 'form-control datetimepicker-input',
                     'id': 'fecha_compra',
                     'data-target': '#fecha_compra',
+                    'onkeydown':'return false',
                     'data-toggle': 'datetimepicker'
                 }
             ),
@@ -88,6 +89,7 @@ class OrdenCompraForm(forms.ModelForm):
                     'class': 'form-control datetimepicker-input',
                     'id': 'fecha_orden',
                     'data-target': '#fecha_orden',
+                    'onkeydown':'return false',
                     'data-toggle': 'datetimepicker'
                 }
             ),

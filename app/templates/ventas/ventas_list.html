@@ -47,7 +47,7 @@
                                                     <i class="far fa-calendar-alt"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
                                         </div>
                                     </div>
                                 </div>
@@ -60,7 +60,7 @@
                                                     <i class="far fa-calendar-alt"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
                                         </div>
                                     </div>
                                 </div>
@@ -109,10 +109,12 @@
             $('#fecha_desde').datetimepicker({
                 format: 'YYYY-MM-DD',
                 locale: 'es',
+                ignoreReadonly: true
             });
             $('#fecha_hasta').datetimepicker({
                 format: 'YYYY-MM-DD',
                 locale: 'es',
+                ignoreReadonly: true
             });
 
 

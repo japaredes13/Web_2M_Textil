@@ -18,6 +18,7 @@ class VentaForm(forms.ModelForm):
                 'id':'fecha_venta',
                 'data-target':'#fecha_venta',
                 'data-toggle':'datetimepicker',
+                'onkeydown':'return false',
                 'value':datetime.now().strftime('%Y-%m-%d')
             }),
             'condicion_venta':forms.Select(attrs={'class':'form-control' }),

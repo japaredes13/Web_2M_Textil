@@ -55,7 +55,7 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
         context['create_url'] = reverse_lazy('compras:orden_compra_create')
         context['list_url'] = reverse_lazy('compras:orden_compra_list')
         context['entity'] = 'Orden de Compras'
-        context['fecha_desde'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
         context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
         return context
 
@@ -273,7 +273,7 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         context['title'] = 'Listado de Compras'
         context['list_url'] = reverse_lazy('compras:compras_list')
         context['entity'] = 'Compras'
-        context['fecha_desde'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
         context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
         return context
 

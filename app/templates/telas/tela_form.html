@@ -249,11 +249,12 @@ $(document).ready(function(){
         
 
     $('input[name="precio_compra"], input[name="precio_venta"], input[name="precio_compra_anterior"]').on('change', function(){
-        validatePrecioVenta();
+        var validate = validatePrecioVenta();
     })
 
     $(form).on('submit', function (e){
-        validatePrecioVenta();
+        var error = validatePrecioVenta();
+        if (error) return false;
         var precio_compra = String($('#id_precio_compra').val());
         var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
         var precio_venta = String($('#id_precio_venta').val());
@@ -289,9 +290,10 @@ $(document).ready(function(){
                     icon: "warning",
                     confirmButtonColor:"#007bff",
                 });
+                return true;
             }
         }
-        
+        return false;
     }
 });
 </script>

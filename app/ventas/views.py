@@ -37,7 +37,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Listado de Ventas'
-        context['fecha_desde'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
         context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
         return context
 
@@ -83,7 +83,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
                 for tela in telas:
                     item = tela.toJSON()
-                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + tela.metraje
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
