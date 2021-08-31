@@ -41,7 +41,7 @@
     <tr>
         <th class="text-center">Nombre</th>
         <th class="text-center">Codigo</th>
-        <th class="text-center" >Color</th>
+        <th class="text-center">Color</th>
         <th class="text-center">Metraje</th>
     </tr>
     </thead>
@@ -50,7 +50,7 @@
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
             <td class="text-center">{{ tela.nombre }}</td>
             <td class="text-center">{{ tela.codigo }}</td>
-            <td class="text-center">{{ tela.color }}</td>
+            <td class="text-center" width="25%" style="background-color: '{{ tela.color }}';"></td>
             <td class="text-center">{{ tela.metraje }}</td>
         </tr>
     {% endfor %}
