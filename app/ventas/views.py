@@ -21,8 +21,10 @@ class VentaView(LoginRequiredMixin, generic.ListView):
 
     def queryset(self):
         ventas = Venta.objects.filter(fecha_eliminacion__isnull=True)
-        fecha_desde = self.request.POST['fecha_desde']
-        fecha_hasta = self.request.POST['fecha_hasta']
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
         ventas = ventas.filter(fecha_venta__range=(fecha_desde,fecha_hasta))
         cliente = self.request.POST['cliente']
         condicion_venta = self.request.POST['condicion_venta']
@@ -37,8 +39,8 @@ class VentaView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Listado de Ventas'
-        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
-        context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
         return context
 
 
@@ -92,7 +94,8 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     cliente = Cliente.objects.get(pk=request_venta['cliente'])
                     venta.cliente_id = request_venta['cliente']
                     venta.cliente_razon_social = cliente.razon_social
-                    venta.fecha_venta = request_venta['fecha_venta']
+                    venta.fecha_venta = str(request_venta['fecha_venta'])
+                    venta.fecha_venta = datetime.strptime(venta.fecha_venta, "%d/%m/%Y").strftime("%Y-%m-%d")
                     venta.condicion_venta = request_venta['condicion_venta']
                     venta.user_created_id = self.request.user.id
                     venta.save()

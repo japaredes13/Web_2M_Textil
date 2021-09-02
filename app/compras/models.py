@@ -20,6 +20,7 @@ class OrdenCompra(ClaseModelo):
     def toJSON(self):
         item = model_to_dict(self)
         item['proveedor'] = self.proveedor.toJSON()
+        item['fecha_orden'] = self.fecha_orden.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detalleordencompra_set.all()]
         return item
 
@@ -78,6 +79,9 @@ class Compra(ClaseModelo):
     def toJSON(self):
         item = model_to_dict(self)
         item['proveedor'] = self.proveedor.toJSON()
+        item['fecha_compra'] = self.fecha_compra.strftime('%d/%m/%Y')
+        #item['inicio_timbrado'] = self.inicio_timbrado.strftime('%d/%m/%Y')
+        #item['fin_timbrado'] = self.fin_timbrado.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detallecompra_set.all()]
         return item
 

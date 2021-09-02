@@ -179,7 +179,7 @@
                         class: 'text-center',
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<input type="text" name="metraje" class="form-control form-control-sm input-sm" autocomplete="off" value="' + row.metraje + '">';
+                            return '<input type="text" name="metraje" class="form-control form-control-sm input-sm" autocomplete="off" required="required" value="' + row.metraje + '">';
                         }
                     },
                     {
@@ -226,7 +226,7 @@
     });
 
     $('#fecha_orden').datetimepicker({
-        format: 'YYYY-MM-DD',
+        format: 'DD/MM/YYYY',
         locale: 'es',
         maxDate: Date()
         //minDate: moment().format("YYYY-MM-DD")

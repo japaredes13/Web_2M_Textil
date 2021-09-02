@@ -27,9 +27,9 @@ class CompraForm(forms.ModelForm):
                 'class': 'form-control' 
             }),
             'fecha_compra': forms.DateInput(
-                format='%Y-%m-%d',
+                format='%d-%m-%Y',
                 attrs={
-                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'value': datetime.now().strftime('%d/%m/%Y'),
                     'autocomplete': 'off',
                     'class': 'form-control datetimepicker-input',
                     'id': 'fecha_compra',
@@ -39,9 +39,9 @@ class CompraForm(forms.ModelForm):
                 }
             ),
             'inicio_timbrado': forms.DateInput(
-                format='%Y-%m-%d',
+                format='%d-%m-%Y',
                 attrs={
-                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'value': datetime.now().strftime('%d/%m/%Y'),
                     'autocomplete': 'off',
                     'class': 'form-control datetimepicker-input',
                     'id': 'inicio_timbrado',
@@ -49,9 +49,9 @@ class CompraForm(forms.ModelForm):
                     'data-toggle': 'datetimepicker'
                 }
             ),'fin_timbrado': forms.DateInput(
-                format='%Y-%m-%d',
+                format='%d-%m-%Y',
                 attrs={
-                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'value': datetime.now().strftime('%d/%m/%Y'),
                     'autocomplete': 'off',
                     'class': 'form-control datetimepicker-input',
                     'id': 'fin_timbrado',

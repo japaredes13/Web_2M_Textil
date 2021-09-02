@@ -1,4 +1,5 @@
 from django.db.models.fields import CharField, IntegerField
+from django.db.models.fields.related import ForeignObject
 from django.shortcuts import render, redirect
 from django.db import transaction
 from django.views import generic
@@ -24,10 +25,16 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def queryset(self):
-        orden_compras = OrdenCompra.objects.filter(fecha_eliminacion__isnull=True)
-        fecha_desde = self.request.POST['fecha_desde']
-        fecha_hasta = self.request.POST['fecha_hasta']
+        orden_compras = OrdenCompra.objects.select_related('proveedor').filter(fecha_eliminacion__isnull=True)
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
+
         orden_compras = orden_compras.filter(fecha_orden__range=(fecha_desde,fecha_hasta))
+        proveedor = self.request.POST['proveedor']
+        if proveedor:
+            orden_compras = orden_compras.filter(proveedor__nombre_empresa__icontains=proveedor)
         return orden_compras
 
     def post(self, request, *args, **kwargs):
@@ -55,8 +62,8 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
         context['create_url'] = reverse_lazy('compras:orden_compra_create')
         context['list_url'] = reverse_lazy('compras:orden_compra_list')
         context['entity'] = 'Orden de Compras'
-        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
-        context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
         return context
 
 
@@ -87,7 +94,8 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
                     request_orden_compra = json.loads(request.POST['orden_compras'])
                     orden_compra = OrdenCompra()
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
-                    orden_compra.fecha_orden = request_orden_compra['fecha_orden']
+                    orden_compra.fecha_orden = str(request_orden_compra['fecha_orden'])
+                    orden_compra.fecha_orden = datetime.strptime(orden_compra.fecha_orden, "%d/%m/%Y").strftime("%Y-%m-%d")
                     orden_compra.user_created_id = self.request.user.id
                     orden_compra.estado = False
                     orden_compra.save()
@@ -153,7 +161,8 @@ class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
                     request_orden_compra = json.loads(request.POST['orden_compras'])
                     orden_compra = OrdenCompra.objects.get(id=self.get_object().id)
                     orden_compra.proveedor_id = request_orden_compra['proveedor']
-                    orden_compra.fecha_orden = request_orden_compra['fecha_orden']
+                    orden_compra.fecha_orden = str(request_orden_compra['fecha_orden'])
+                    orden_compra.fecha_orden = datetime.strptime(orden_compra.fecha_orden, "%d/%m/%Y").strftime("%Y-%m-%d")
                     orden_compra.user_updated_id = self.request.user.id
                     orden_compra.estado = False
                     orden_compra.save()
@@ -244,8 +253,10 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
 
     def queryset(self):
         compras = Compra.objects.filter(fecha_eliminacion__isnull=True)
-        fecha_desde = self.request.POST['fecha_desde']
-        fecha_hasta = self.request.POST['fecha_hasta']
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
         compras = compras.filter(fecha_compra__range=(fecha_desde,fecha_hasta))
         return compras
 
@@ -273,8 +284,9 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         context['title'] = 'Listado de Compras'
         context['list_url'] = reverse_lazy('compras:compras_list')
         context['entity'] = 'Compras'
-        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%Y-%m-%d")
-        context['fecha_hasta'] = datetime.now().strftime("%Y-%m-%d")
+        context['fecha_compra'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
         return context
 
 
@@ -311,9 +323,12 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.proveedor_id = request_compra['proveedor']
                     compra.nro_factura = request_compra['nro_factura']
                     compra.timbrado = request_compra['timbrado']
-                    compra.fecha_compra = request_compra['fecha_compra']
-                    compra.inicio_timbrado = request_compra['inicio_timbrado']
-                    compra.fin_timbrado = request_compra['fin_timbrado']
+                    compra.fecha_compra = str(request_compra['fecha_compra'])
+                    compra.fecha_compra = datetime.strptime(compra.fecha_compra, "%d/%m/%Y").strftime("%Y-%m-%d")
+                    compra.inicio_timbrado = str(request_compra['inicio_timbrado'])
+                    compra.inicio_timbrado = datetime.strptime(compra.inicio_timbrado, "%d/%m/%Y").strftime("%Y-%m-%d")
+                    compra.fin_timbrado = str(request_compra['fin_timbrado'])
+                    compra.fin_timbrado = datetime.strptime(compra.fin_timbrado, "%d/%m/%Y").strftime("%Y-%m-%d")
                     compra.condicion_compra = request_compra['condicion_compra']
                     compra.user_created_id = self.request.user.id
                     compra.save()

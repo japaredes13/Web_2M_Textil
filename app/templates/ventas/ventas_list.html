@@ -107,12 +107,12 @@
     <script>
         $(document).ready(function() { 
             $('#fecha_desde').datetimepicker({
-                format: 'YYYY-MM-DD',
+                format: 'DD/MM/YYYY',
                 locale: 'es',
                 ignoreReadonly: true
             });
             $('#fecha_hasta').datetimepicker({
-                format: 'YYYY-MM-DD',
+                format: 'DD/MM/YYYY',
                 locale: 'es',
                 ignoreReadonly: true
             });
@@ -142,7 +142,7 @@
                     { "data": "monto_total" },
                     {
                         "render": function( data, type, row ) {
-                            return  '<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>';
+                            return  '<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>';
                         },
                         orderable: false
                     },

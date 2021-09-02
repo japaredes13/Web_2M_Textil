@@ -211,18 +211,18 @@
     });
 
     $('#fecha_compra').datetimepicker({
-        format: 'YYYY-MM-DD',
+        format: 'DD/MM/YYYY',
         locale: 'es',
         maxDate: Date()
         //minDate: moment().format("YYYY-MM-DD")
     });
     $('#inicio_timbrado').datetimepicker({
-        format: 'YYYY-MM-DD',
+        format: 'DD/MM/YYYY',
         locale: 'es',
         //minDate: moment().format("YYYY-MM-DD")
     });
     $('#fin_timbrado').datetimepicker({
-        format: 'YYYY-MM-DD',
+        format: 'DD/MM/YYYY',
         locale: 'es',
         //minDate: moment().format("YYYY-MM-DD")
     });
@@ -269,9 +269,10 @@
     $('form').on('submit', function (e) {
         e.preventDefault();
 
-        var fecha_inicio_timbrado = new Date($('#inicio_timbrado').val());
-        var fecha_fin_timbrado = new Date ($('#fin_timbrado').val());
-        var fecha_compra = new Date($('input[name="fecha_compra"]').val());
+        var fecha_inicio_timbrado = moment($('#inicio_timbrado').val().split("/").reverse().join("-")).toDate();
+        console.log(fecha_inicio_timbrado)
+        var fecha_fin_timbrado = moment($('#fin_timbrado').val().split("/").reverse().join("-")).toDate();
+        var fecha_compra = moment($('#fecha_compra').val().split("/").reverse().join("-")).toDate();
 
         if(compras.items.telas.length === 0){
             message_error('Debe al menos tener un item en su detalle de compra');

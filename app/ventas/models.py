@@ -22,6 +22,7 @@ class Venta(ClaseModelo):
 
     def toJSON(self):
         item = model_to_dict(self)
+        item['fecha_venta'] = self.fecha_venta.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
         return item
 

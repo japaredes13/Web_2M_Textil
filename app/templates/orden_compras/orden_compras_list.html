@@ -52,6 +52,10 @@
                                         </select>
                                     </div>
                                 </div>-->
+                                <div class="col-md-4">
+                                    <label for="tela"><strong>Proveedor:</strong></label>
+                                    <input type="text" class="form-control" id="proveedor" placeholder="Buscar por Nombre del Proveedor">
+                                </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -113,13 +117,13 @@
     <script>
         $(document).ready(function() {   
             $('#fecha_desde').datepicker({
-                format: 'YYYY-MM-DD',
+                format: 'DD/MM/YYYY',
                 locale: 'es',
                 autoHide: true,
             });
 
             $('#fecha_hasta').datepicker({
-                format: 'YYYY-MM-DD',
+                format: 'DD/MM/YYYY',
                 locale: 'es',
                 autoHide: true,
             });
@@ -128,12 +132,14 @@
                 responsive: true,
                 autoWidth: false,
                 filter: false,
+                order: [1, 'desc'],
                 ajax: {
                     url: window.location.pathname,
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'searchdata',
                         d.orden_compra = $('#orden_compra').val(),
+                        d.proveedor = $('#proveedor').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
                         d.fecha_hasta = $('#fecha_hasta').val()
                     },
@@ -249,6 +255,9 @@
                         
             });
 
+            $('#proveedor').keyup(function(){
+                table.ajax.reload();
+            });
 
             $('#orden_compra').keyup(function(){
                 table.draw();
