@@ -38,6 +38,9 @@
                                     </a>
                                 </div>
                             </div>
+                        <form method="GET" role="form" id="pdf" action="{% url 'compras:orden_compra_listado_pdf' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="extension" id="extension">
                             <div class="row">
                                 <!--<div class="col-md-4">
                                     <label for="proveedor"><strong>Proveedores:</strong></label>
@@ -53,8 +56,8 @@
                                     </div>
                                 </div>-->
                                 <div class="col-md-4">
-                                    <label for="tela"><strong>Proveedor:</strong></label>
-                                    <input type="text" class="form-control" id="proveedor" placeholder="Buscar por Nombre del Proveedor">
+                                    <label for="proveedor"><strong>Proveedor:</strong></label>
+                                    <input type="text" class="form-control" name="proveedor" id="proveedor" value="{{proveedor}}" placeholder="Buscar por Nombre del Proveedor">
                                 </div>
 
                                 <div class="col-md-3">
@@ -85,6 +88,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                    <div class="col-md-2">
+                                        <button type="submit" id="exportar_pdf" class="btn btn-block btn-outline-danger">
+                                            <i class="fas fa-file-pdf"></i> Exportar en Pdf
+                                        </button>
+                                    </div>
+                                    <!--  <div class="col-md-2">
+                                       <button type="submit" id="exportar_excel" class="btn btn-block btn-outline-success">
+                                            <i class="fas fa-file-pdf"></i> Exportar a Excel
+                                        </button> 
+                                    </div> -->
+                                </div>
+                        </form>
                             <br>
                             <div class="row">
                                 <div class="col-md-12">
@@ -134,14 +150,15 @@
                 filter: false,
                 order: [1, 'desc'],
                 ajax: {
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
                     url: window.location.pathname,
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'searchdata',
-                        d.orden_compra = $('#orden_compra').val(),
-                        d.proveedor = $('#proveedor').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
-                        d.fecha_hasta = $('#fecha_hasta').val()
+                        d.fecha_hasta = $('#fecha_hasta').val(),
+                        d.proveedor = $('#proveedor').val()
+
                     },
                     dataSrc: ""
                 },
@@ -262,11 +279,18 @@
             $('#orden_compra').keyup(function(){
                 table.draw();
             });
+
             $('#fecha_desde').change(function(){
                 table.ajax.reload();
             });
+
             $('#fecha_hasta').change(function(){
                 table.ajax.reload();
+            });
+
+            $('#exportar_pdf').on('click',function(){
+                console.log('hoa');
+                $('#extension').val('pdf');
             });
         });
     </script>

@@ -138,8 +138,8 @@
             });
             this.items.monto_total = monto_total;
             total_iva_10 = Math.round(monto_total / 11);
-            $('input[name=monto_total]').val(this.items.monto_total);
-            $('input[name=total_iva_10]').val(total_iva_10);
+            $('input[name=monto_total]').val(Intl.NumberFormat('de-DE').format(this.items.monto_total));
+            $('input[name=total_iva_10]').val(Intl.NumberFormat('de-DE').format(total_iva_10));
         },
         add: function (item) {
             this.items.telas.push(item);
@@ -320,14 +320,14 @@
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         orden_compras.items.telas[tr.row].metraje = metraje;
         orden_compras.calculate_invoice();
-        $('td:eq(4)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+        $('td:eq(4)', tblTelas.row(tr.row).node()).html(Intl.NumberFormat('de-DE').format(orden_compras.items.telas[tr.row].subtotal));
     })
     .on('change keyup', 'input[name="precio_unitario"]', function () {
         var precio_unitario = parseFloat($(this).val().replace('.',''));
         var tr = tblTelas.cell($(this).closest('td, li')).index();
         orden_compras.items.telas[tr.row].precio_unitario = precio_unitario;
         orden_compras.calculate_invoice();
-        $('td:eq(4)', tblTelas.row(tr.row).node()).html(orden_compras.items.telas[tr.row].subtotal);
+        $('td:eq(4)', tblTelas.row(tr.row).node()).html(Intl.NumberFormat('de-DE').format(orden_compras.items.telas[tr.row].subtotal));
     });
 
     $('.btnClearSearch').on('click', function () {

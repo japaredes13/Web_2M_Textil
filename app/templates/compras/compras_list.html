@@ -35,6 +35,9 @@
                                 <div class="col-md-2">
                                 </div>
                             </div>
+                        <form method="GET" role="form" id="pdf" action="{% url 'compras:compra_listado_pdf' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="extension" id="extension">
                             <div class="row">
                                 <!--<div class="col-md-4">
                                     <label for="proveedor"><strong>Proveedores:</strong></label>
@@ -49,6 +52,11 @@
                                         </select>
                                     </div>
                                 </div>-->
+                        
+                                <div class="col-md-4">
+                                    <label for="tela"><strong>Proveedor:</strong></label>
+                                    <input type="text" class="form-control" name="proveedor" id="proveedor" value="{{proveedor}}" placeholder="Buscar por Nombre del Proveedor">
+                                </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -78,6 +86,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                    <div class="col-md-2">
+                                        <button type="submit" id="exportar_pdf" class="btn btn-block btn-outline-danger">
+                                            <i class="fas fa-file-pdf"></i> Exportar en Pdf
+                                        </button>
+                                    </div>
+                                    <!--  <div class="col-md-2">
+                                       <button type="submit" id="exportar_excel" class="btn btn-block btn-outline-success">
+                                            <i class="fas fa-file-pdf"></i> Exportar a Excel
+                                        </button> 
+                                    </div> -->
+                                </div>
+                        </form>
                             <br>
                             <div class="row">
                                 <div class="col-md-12">
@@ -133,6 +154,7 @@
                     "data": function (d) {
                         d.action = 'searchdata',
                         d.compra = $('#compra').val(),
+                        d.proveedor = $('#proveedor').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
                         d.fecha_hasta = $('#fecha_hasta').val()
                     },
@@ -237,7 +259,10 @@
                         
             });
 
-
+            $('#proveedor').keyup(function(){
+                table.ajax.reload();
+            });
+            
             $('#compra').keyup(function(){
                 table.draw();
             });

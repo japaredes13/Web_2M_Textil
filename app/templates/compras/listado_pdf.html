@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-listado {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #listado thead tr th {
+        text-align: center;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #listado thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #listado tbody tr {
+        padding: 2px;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<!--<img src="{{ icon }}" class="img-invoice"> -->
+
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Nº Factura</th>
+        <th class="text-center">Proveedor</th>
+        <th class="text-center">Fecha Compra</th>
+        <th class="text-center">Monto Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for compra in compras %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ compra.nro_factura }}</td>
+            <td class="text-center">{{ compra.proveedor }}</td>
+            <td class="text-center">{{ compra.fecha_compra }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ compra.monto_total|intcomma }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</body>
+</html>

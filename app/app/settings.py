@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'compras',
     'ventas',
     'tipos',
+    'django.contrib.humanize',
 ]
 
 MESSAGE_TAGS = {

@@ -4,17 +4,24 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
 from datetime import datetime
 from django.db.models import Q
+from reportlab.lib.utils import prev_this_next
 from proveedores.models import Proveedor
 from .forms import OrdenCompraForm, CompraForm
 from telas.models import Tela
 from .models import *
+
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
 
 class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
     model = OrdenCompra
@@ -258,6 +265,9 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         fecha_hasta = str(self.request.POST['fecha_hasta'])
         fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
         compras = compras.filter(fecha_compra__range=(fecha_desde,fecha_hasta))
+        proveedor = self.request.POST['proveedor']
+        if proveedor:
+            compras = compras.filter(proveedor__nombre_empresa__icontains=proveedor)
         return compras
 
     def post(self, request, *args, **kwargs):
@@ -493,3 +503,62 @@ class CompraDeleteView(LoginRequiredMixin, generic.DeleteView):
         context['entity'] = 'Compras'
         context['list_url'] = self.success_url
         return context
+
+
+class OrdenCompraPdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+            orden_compras = OrdenCompra.objects.filter(fecha_eliminacion__isnull=True)
+
+            fecha_desde = str(self.request.GET['fecha_desde'])
+            fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+            fecha_hasta = str(self.request.GET['fecha_hasta'])
+            fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+            proveedor = request.GET['proveedor']
+            if proveedor:
+                orden_compras = orden_compras.filter(proveedor__nombre_empresa__icontains=proveedor,fecha_orden__range=(fecha_desde,fecha_hasta))
+            else:
+                orden_compras = orden_compras.filter(fecha_orden__range=(fecha_desde,fecha_hasta))
+
+            template = get_template('orden_compras/listado_pdf.html')
+            context = {
+                'orden_compras': orden_compras
+            }
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except:
+            pass
+        return HttpResponseRedirect(reverse_lazy('compras:orden_compras_list'))
+
+class CompraPdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+            compras = Compra.objects.filter(fecha_eliminacion__isnull=True)
+
+            fecha_desde = str(self.request.GET['fecha_desde'])
+            fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+            fecha_hasta = str(self.request.GET['fecha_hasta'])
+            fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+            proveedor = request.GET['proveedor']
+            if proveedor:
+                compras = compras.filter(proveedor__nombre_empresa__icontains=proveedor,fecha_compra__range=(fecha_desde,fecha_hasta))
+            else:
+                compras = compras.filter(fecha_compra__range=(fecha_desde,fecha_hasta))
+
+            template = get_template('compras/listado_pdf.html')
+            context = {
+                'compras': compras
+            }
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except Exception as e:
+            print(e)
+        return HttpResponseRedirect(reverse_lazy('compras:compras_list'))
