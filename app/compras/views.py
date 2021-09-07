@@ -89,11 +89,19 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
         data = {}
         try:
             action = request.POST['action']
+            filtro = request.POST['filtro']
+            print(filtro)
             if action == 'search_telas':
                 data = []
-                metraje_minimo = ConfiguracionUsuario.objects.filter(estado=False)
-                print(metraje_minimo)
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=100)
+                configuracion = ConfiguracionUsuario.objects.filter(estado=True).values('metraje_minimo').first()
+                #print(configuracion['metraje_minimo'])
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True)
+                
+                if filtro == 'metraje_minimo':
+                    telas = telas.filter(metraje__lt=int(configuracion['metraje_minimo']))
+                elif filtro == 'metraje_normal':
+                    telas = telas.filter(metraje__gte=int(configuracion['metraje_minimo']))
+                
                 for tela in telas:
                     item = tela.toJSON()
                     item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)

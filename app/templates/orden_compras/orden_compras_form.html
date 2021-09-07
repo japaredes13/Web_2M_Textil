@@ -42,6 +42,16 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input filtro" type="radio" id="metraje_minimo" name="filtro" value="metraje_minimo" checked="">
+                                        <label for="metraje_minimo" class="custom-control-label">Buscar telas por metraje crítico</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input filtro" type="radio" id="metraje_normal" name="filtro" value="metraje_normal" >
+                                        <label for="metraje_normal" class="custom-control-label">Buscar telas mayor al metraje crítico </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label>Buscador de Telas:</label>
                                     <div class="input-group">
                                         <!--<input type="text" class="form-control" name="search"
@@ -258,7 +268,8 @@
             data: function (params){
                 var queryParameters = {
                     term: params.term,
-                    action: 'search_telas'
+                    action: 'search_telas',
+                    filtro: $('.filtro:checked').val()
                 }
                 return queryParameters;
             },
