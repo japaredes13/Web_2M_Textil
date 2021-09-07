@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'compras',
     'ventas',
     'tipos',
+    'configuracion',
     'django.contrib.humanize',
 ]
 

@@ -1,0 +1,97 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear Metraje Minimo</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'configuracion:configuracion_usuario_list' %}">Metrajes</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos del Metraje</h3>
+                        </div>
+                    
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_usuario_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_usuario_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_metraje_minimo"><strong>{{form.metraje_minimo.label}}</strong></label>
+                                    {{form.metraje_minimo}}
+                                </div>
+                            </div>
+                            <br>
+                            <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'configuracion:configuracion_usuario_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+<script>
+ $(document).ready(function(){
+    $("#form").validate({
+		    rules: {
+		    	metraje_minimo: {required: true},
+            },
+            messages: {
+                metraje_minimo : {required: "* El campo es requerido"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                console.log(element);
+                if (element.name == 'metraje_minimo') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                console.log(element);
+
+                if (element.name == 'metraje_minimo') {
+                    $(element).addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            }
+        });
+
+        $.validator.addMethod("empresaRule", function (value, element) {
+            var pattern = /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+ });
+</script>
+{% endblock js_page %}

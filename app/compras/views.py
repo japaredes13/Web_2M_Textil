@@ -15,6 +15,7 @@ from reportlab.lib.utils import prev_this_next
 from proveedores.models import Proveedor
 from .forms import OrdenCompraForm, CompraForm
 from telas.models import Tela
+from configuracion.models import ConfiguracionUsuario
 from .models import *
 
 import os
@@ -90,11 +91,12 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
             action = request.POST['action']
             if action == 'search_telas':
                 data = []
+                metraje_minimo = ConfiguracionUsuario.objects.filter(estado=False)
+                print(metraje_minimo)
                 telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']),fecha_eliminacion__isnull=True,metraje__lt=100)
                 for tela in telas:
                     item = tela.toJSON()
                     item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
-                    print('text')
                     data.append(item)
             elif action == 'add':
                 with transaction.atomic():
