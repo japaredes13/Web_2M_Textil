@@ -110,7 +110,7 @@
                     rowCallback( row, data, displayNum, displayIndex, dataIndex ){
                         $(row).find('input[name="metraje_vendido"]').TouchSpin({
                             min: 1,
-                            max: 1000000000,
+                            max:  data.metraje,
                             step: 0.01,
                             decimals: 2
                         });

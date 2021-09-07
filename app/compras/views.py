@@ -89,9 +89,9 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
         data = {}
         try:
             action = request.POST['action']
-            filtro = request.POST['filtro']
-            print(filtro)
+
             if action == 'search_telas':
+                filtro = request.POST['filtro']
                 data = []
                 configuracion = ConfiguracionUsuario.objects.filter(estado=True).values('metraje_minimo').first()
                 #print(configuracion['metraje_minimo'])

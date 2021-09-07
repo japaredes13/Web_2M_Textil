@@ -9,3 +9,23 @@ class ConfiguracionUsuario(ClaseModelo):
 
     class Meta:
         verbose_name_plural ="Configuracion Usuario"
+
+class ConfiguracionProducto(ClaseModelo):
+    descripcion = models.CharField(max_length=200)
+    porcentaje = models.FloatField()
+
+    class Meta:
+        verbose_name_plural ="Configuracion de Producto"
+
+
+class ConfiguracionVenta(ClaseModelo):
+    rubro = models.IntegerField()
+    sucursal = models.IntegerField()
+    numero = models.IntegerField()
+    timbrado = models.IntegerField()
+    fecha_inicio_timbrado = models.DateField()
+    fecha_fin_timbrado = models.DateField()
+
+
+    class Meta:
+        verbose_name_plural ="Configuracion de Venta"

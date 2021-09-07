@@ -1,0 +1,128 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear configuracion Factura </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'configuracion:configuracion_venta_list' %}">Configuraciones</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos de la Configuracion de la Factura</h3>
+                        </div>
+                    
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_venta_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_venta_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_rubro"><strong>{{form.rubro.label}}</strong></label>
+                                    {{form.rubro}}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_sucursal"><strong>{{form.sucursal.label}}</strong></label>
+                                    {{form.sucursal}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_numero"><strong>{{form.numero.label}}</strong></label>
+                                    {{form.numero}}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_timbrado"><strong>{{form.timbrado.label}}</strong></label>
+                                    {{form.timbrado}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_fecha_inicio_timbrado"><strong>{{form.fecha_inicio_timbrado.label}}</strong></label>
+                                    {{form.fecha_inicio_timbrado}}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_fecha_fin_timbrado"><strong>{{form.fecha_fin_timbrado.label}}</strong></label>
+                                    {{form.fecha_fin_timbrado}}
+                                </div>
+                            </div>
+                            <br>
+                            <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'configuracion:configuracion_venta_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+<script>
+$(document).ready(function(){
+    $("#form").validate({
+        rules: {
+            rubro: {required: true, numRule:true},
+            sucursal: {required: true, numRule:true},
+            numero: {required: true, numRule:true},
+            timbrado: {required: true, numRule:true},
+        },
+        messages: {
+            rubro : {required: "* El campo es requerido"},
+            sucursal : {required: "* El campo es requerido"},
+            numero : {required: "* El campo es requerido"},
+            timbrado : {required: "* El campo es requerido"},
+        },
+        errorElement: 'span',
+        highlight: function(element){
+            console.log(element);
+            if (element.name == 'rubro' || element.name == 'sucursal' || element.name == 'numero' || element.name == 'timbrado') {
+                $(element).closest('.form-control').addClass('is-invalid');
+                $(element).closest('.form-control').removeClass('is-valid');
+            }
+        },
+        unhighlight: function(element){
+            console.log(element);
+
+            if (element.name == 'rubro' || element.name == 'sucursal' || element.name == 'numero' || element.name == 'timbrado') {
+                $(element).addClass('is-valid');
+                $(element).closest('.form-control').removeClass('is-invalid');
+            }
+        }
+    });
+
+    $.validator.addMethod("numRule", function (value, element) {
+        var pattern = /^[0-9]+$/;
+        return this.optional(element) || pattern.test(value);
+    }, "* El campo debe ser numerico");
+
+ });
+</script>
+{% endblock js_page %}

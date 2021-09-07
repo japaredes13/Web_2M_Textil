@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Crear Metraje Minimo</h1>
+                    <h1 class="m-0">Crear IVA</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'configuracion:configuracion_usuario_list' %}">Metrajes</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'configuracion:configuracion_producto_list' %}">IVA's</a></li>
                         <li class="breadcrumb-item active">Crear</li>
                     </ol>
                 </div>               
@@ -24,20 +24,24 @@
                 <div class="col-md-8">
                     <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Datos del Metraje</h3>
+                            <h3 class="card-title">Datos del Iva</h3>
                         </div>
                     
                         <div class="card-body">
                             {% if obj %}
-                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_usuario_edit' obj.pk %}">
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_producto_edit' obj.pk %}">
                             {% else %}
-                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_usuario_create' %}">
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_producto_create' %}">
                             {% endif %}
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label for="id_metraje_minimo"><strong>{{form.metraje_minimo.label}}</strong></label>
-                                    {{form.metraje_minimo}}
+                                    <label for="id_descripcion"><strong>{{form.descripcion.label}}</strong></label>
+                                    {{form.descripcion}}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_porcentaje"><strong>{{form.porcentaje.label}}</strong></label>
+                                    {{form.porcentaje}}
                                 </div>
                             </div>
                             <br>
@@ -47,7 +51,7 @@
                                         <div class="form-group">
                                             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
                                             
-                                            <a class="btn btn-danger float-right" href="{% url 'configuracion:configuracion_usuario_list' %}">Cancelar</a>
+                                            <a class="btn btn-danger float-right" href="{% url 'configuracion:configuracion_producto_list' %}">Cancelar</a>
                                         </div>
                                     </div>
                                 </div>
@@ -63,25 +67,26 @@
 {% block js_page %}
 <script>
  $(document).ready(function(){
-     var metraje_minimo = document.getElementById("id_metraje_minimo");
-    metraje_minimo.addEventListener('keyup', function(evt){
+     var porcentaje = document.getElementById("id_porcentaje");
+    porcentaje.addEventListener('keyup', function(evt){
         var n = this.value.replace(/\D/g, "") //Reemplaza los no digitos por espacio en cada ocurrencia
-                          .replace(/([0-9])([0-9]{2})$/, '$1,$2')  
-                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".")
-        metraje_minimo.value = n;
+                          .replace(/([0-9])([0-9]{2})$/, '$1.$2')  
+        porcentaje.value = n;
     }, false);
 
     $("#form").validate({
         rules: {
-            metraje_minimo: {required: true, metrajeRule:true},
+            descripcion: {required: true, nombreRule:true},
+            porcentaje: {required: true},
         },
         messages: {
-            metraje_minimo : {required: "* El campo es requerido"},
+            descripcion: {required: "* El campo es requerido"},
+            porcentaje: {required: "* El campo es requerido"},
         },
         errorElement: 'span',
         highlight: function(element){
             console.log(element);
-            if (element.name == 'metraje_minimo') {
+            if (element.name == 'porcentaje' || element.name == 'descripcion') {
                 $(element).closest('.form-control').addClass('is-invalid');
                 $(element).closest('.form-control').removeClass('is-valid');
             }
@@ -89,22 +94,23 @@
         unhighlight: function(element){
             console.log(element);
 
-            if (element.name == 'metraje_minimo') {
+            if (element.name == 'porcentaje' || element.name == 'descripcion') {
                 $(element).addClass('is-valid');
                 $(element).closest('.form-control').removeClass('is-invalid');
             }
         }
     });
 
-    $.validator.addMethod("metrajeRule", function (value, element) {
-        return parseInt(value) > 0
-    }, "* El campo debe ser mayor a 0");
+    $.validator.addMethod("nombreRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-%\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
 
      $(form).on('submit', function (e){
-        var metraje_minimo = String($('#id_metraje_minimo').val());
-        metraje_minimo = metraje_minimo.replace('.','')
+        var porcentaje = String($('#id_porcentaje').val());
+        porcentaje = porcentaje.replace('.','')
                          .replace(',','.');
-        $('#id_metraje_minimo').val(metraje_minimo);
+        $('#id_porcentaje').val(metraje_minimo);
 
     });
  });

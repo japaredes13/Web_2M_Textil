@@ -1,3 +1,4 @@
+from configuracion.models import ConfiguracionProducto, ConfiguracionVenta
 from django.http.response import JsonResponse
 from .models import Venta, DetalleVenta
 from .forms import VentaForm
