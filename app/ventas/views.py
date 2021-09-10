@@ -73,6 +73,16 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
     success_url=reverse_lazy("ventas:ventas_list")
     login_url="bases:login"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
+        numero = str(configuracion_venta.numero)
+        cantidad_digito = 7 - len(numero)
+        prefijo = '0' * cantidad_digito
+        context['numero_factura'] = '00'+str(configuracion_venta.rubro)+'-00'+str(configuracion_venta.sucursal)+'-'+prefijo+''+str(configuracion_venta.numero)
+        print(configuracion_venta.rubro)
+        return context
+
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -93,6 +103,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                 with transaction.atomic():
                     venta = Venta()
                     cliente = Cliente.objects.get(pk=request_venta['cliente'])
+                    venta.nro_factura = request_venta['numero_factura']
                     venta.cliente_id = request_venta['cliente']
                     venta.cliente_razon_social = cliente.razon_social
                     venta.fecha_venta = str(request_venta['fecha_venta'])

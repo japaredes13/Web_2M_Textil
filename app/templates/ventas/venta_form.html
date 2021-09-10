@@ -38,6 +38,7 @@
         var table_telas;
         var venta = {
             items: {
+                numero_factura:'',
                 cliente: '',
                 fecha_venta: '',
                 condicion_venta: '',
@@ -248,6 +249,7 @@
             venta.items.cliente = $('select[name="cliente"]').val();
             venta.items.condicion_venta = $('select[name="condicion_venta"]').val();
             venta.items.fecha_venta = $('input[name="fecha_venta"]').val();
+            venta.items.numero_factura = $('#numero_factura').val();
 
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
