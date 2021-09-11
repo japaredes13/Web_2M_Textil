@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-listado {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #listado thead tr th {
+        text-align: center;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #listado thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #listado tbody tr {
+        padding: 2px;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<!--<img src="{{ icon }}" class="img-invoice"> -->
+<p>
+    <b>FACTURA:</b> {{ ventas.nro_factura }}<br>
+    <b>CONDICION VENTA:</b> {{ ventas.condicion_venta }}<br>
+    <b>FECHA DE VENTA:</b> {{ ventas.fecha_venta }}<br>
+    <b>CLIENTE:</b> {{ ventas.cliente_razon_social|upper }}<br>
+    <b>CEDULA/RUC:</b> {{ ventas.cliente.ruc }}<br>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Tela</th>
+        <th class="text-center">Precio</th>
+        <th class="text-center">Metraje</th>
+        <th class="text-center">Sub Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for venta in ventas.detalleventa_set.all %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ venta.tela.nombre }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ venta.precio_unitario|intcomma  }}</td>
+            <td class="text-center">{{ venta.metraje_vendido }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ venta.sub_total|intcomma  }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>SUBTOTAL</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ ventas.monto_total|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>IVA 10%</b></td>
+        <td style="text-align">{% load humanize  %} {{ ventas.total_iva_10|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL A PAGAR</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ ventas.monto_total|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+<table style="margin-top: 250px;">
+    <thead>
+    <tr>
+        <th>****GRACIAS POR SU COMPRA****</th>
+    </tr>
+    </thead>
+</table>
+</body>
+</html>

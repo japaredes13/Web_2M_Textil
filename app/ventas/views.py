@@ -1,5 +1,5 @@
 from configuracion.models import ConfiguracionProducto, ConfiguracionVenta
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
 from .models import Venta, DetalleVenta
 from .forms import VentaForm
 from telas.models import Tela
@@ -14,6 +14,13 @@ from django.urls import reverse_lazy
 from datetime import datetime
 from django.db import transaction
 
+
+
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
 
 class VentaView(LoginRequiredMixin, generic.ListView):
     model = Venta 
@@ -93,7 +100,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
             action = request.POST['action']
             if action == 'search_tela':
                 data = []
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']))
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']), metraje__gt=0)
                 for tela in telas:
                     item = tela.toJSON()
                     item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
@@ -113,6 +120,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     venta.save()
                     
                     monto_total = 0
+                    #sub_total_sin_iva = 0
                     total_iva_10 = 0
                     for det in request_venta['telas']:
                         detalle =  DetalleVenta()
@@ -121,6 +129,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         detalle.metraje_vendido = float(det['metraje_vendido'])
                         detalle.precio_unitario = int(det['precio_venta'])
                         detalle.sub_total = float(det['metraje_vendido']) * int(det['precio_venta'])
+                        #sub_total_sin_iva += detalle.sub_total
                         detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
                         monto_total += detalle.sub_total
                         total_iva_10 += detalle.sub_total_iva_10
@@ -129,12 +138,35 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         tela.metraje -=  detalle.metraje_vendido
                         tela.save()
                         detalle.save()
-
+                    
+                    data = {'id': venta.id}
+                    #venta.sub_total_sin_iva = sub_total_sin_iva
                     venta.monto_total = monto_total
                     venta.total_iva_10 = total_iva_10
                     venta.save()
+                    configuracion = ConfiguracionVenta.objects.filter(estado=True).first()
+                    configuracion.numero += 1
+                    configuracion.save()
             else:
                 data['error'] = 'No ha ingresado una opción'
         except Exception as e:
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
+
+class VentaListadoPdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+
+            template = get_template('ventas/listado_pdf.html')
+            context = {
+                'ventas': Venta.objects.get(pk=self.kwargs['pk'])
+            }
+
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except:
+            pass
+        return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))

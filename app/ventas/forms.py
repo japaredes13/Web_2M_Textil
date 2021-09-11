@@ -22,6 +22,7 @@ class VentaForm(forms.ModelForm):
                 'value':datetime.now().strftime('%Y-%m-%d')
             }),
             'condicion_venta':forms.Select(attrs={'class':'form-control' }),
+            'sub_total_sin_iva': forms.NumberInput(attrs={'class':'form-control','readonly':True}),
 			'monto_total' : forms.NumberInput(attrs={'class':'form-control','readonly':True}),
 			'total_iva_10' : forms.NumberInput(attrs={'class':'form-control','readonly':True}),
         }

@@ -12,6 +12,7 @@ urlpatterns = [
 
     #rutas para Venta
     path('configuracion_venta/',ConfiguracionVentaView.as_view(), name='configuracion_venta_list'),
+    path('configuracion_venta/create',ConfiguracionVentaCreate.as_view(), name='configuracion_venta_create'),
     path('configuracion_venta/<int:pk>/edit', ConfiguracionVentaEdit.as_view(), name='configuracion_venta_edit'),
 
 ]

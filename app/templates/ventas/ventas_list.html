@@ -142,7 +142,8 @@
                     { "data": "monto_total" },
                     {
                         "render": function( data, type, row ) {
-                            return  '<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>';
+                            return  '<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
+                                    '<a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                         },
                         orderable: false
                     },

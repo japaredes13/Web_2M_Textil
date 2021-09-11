@@ -15,6 +15,7 @@ class Venta(ClaseModelo):
     condicion_venta = models.CharField(max_length=20, choices = condiciones, default = 'contado')
     plazo = models.IntegerField(null=True, blank=True)
     fecha_venta = models.DateField(default=datetime.now)
+    sub_total_sin_iva = models.IntegerField(default=0)
     monto_total = models.IntegerField(default=0)
     excentas = models.IntegerField(default=0,null=True, blank=True)
     total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
@@ -41,6 +42,6 @@ class DetalleVenta(ClaseModelo):
         item = model_to_dict(self, exclude=['Venta'])
         item['descripcion'] = self.tela.nombre + ' ' + self.tela.codigo
         item['metraje_vendido'] = self.metraje_vendido
-        item['precio_unitario'] = self.precio_unitario
-        item['sub_total'] = self.sub_total
+        item['precio_unitario'] = format(self.precio_unitario, '.2f')
+        item['sub_total'] = format(self.sub_total, '.2f')
         return item

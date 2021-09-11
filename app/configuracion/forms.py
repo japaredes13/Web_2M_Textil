@@ -1,4 +1,5 @@
 from django import forms
+from datetime import datetime
 from .models import ConfiguracionUsuario, ConfiguracionProducto, ConfiguracionVenta
 
 
@@ -51,10 +52,32 @@ class ConfiguracionVentaForm(forms.ModelForm):
             'fecha_fin_timbrado':"Fecha Fin Timbrado:"
         }
         widgets = {
-            'rubro':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
-            'sucursal':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
-            'numero':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
+            'rubro':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required','min':'1','max':'9'}),
+            'sucursal':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required','min':'1','max':'9'}),
+            'numero':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required', 'range':[1,9999999]}),
             'timbrado':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
-            'fecha_inicio_timbrado':forms.DateInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
-            'fecha_fin_timbrado':forms.DateInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'})
+            'fecha_inicio_timbrado': forms.DateInput(
+                format='%d-%m-%Y',
+                attrs={
+                    'value': datetime.now().strftime('%d/%m/%Y'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    'id': 'fecha_inicio_timbrado',
+                    'data-target': '#fecha_inicio_timbrado',
+                    'onkeydown':'return false',
+                    'data-toggle': 'datetimepicker'
+                }
+            ),
+            'fecha_fin_timbrado': forms.DateInput(
+                format='%d-%m-%Y',
+                attrs={
+                    'value': datetime.now().strftime('%d/%m/%Y'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    'id': 'fecha_fin_timbrado',
+                    'data-target': '#fecha_fin_timbrado',
+                    'onkeydown':'return false',
+                    'data-toggle': 'datetimepicker'
+                }
+            ),
         }

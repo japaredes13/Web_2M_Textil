@@ -280,7 +280,8 @@ $(document).ready(function(){
         precio_compra_anterior = precio_compra_anterior.replace('.','');
         precio_venta = precio_venta.replace('.','');
         metraje = metraje.replace('.','')
-                         .replace(',','.');
+                         .replace(',','.')
+                         .replace('.',',');
         $('#id_precio_compra').val(precio_compra);
         $('#id_precio_compra_anterior').val(precio_compra_anterior);
         $('#id_precio_venta').val(precio_venta);

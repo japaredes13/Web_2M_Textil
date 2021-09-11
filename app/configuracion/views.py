@@ -63,6 +63,20 @@ class ConfiguracionVentaView(LoginRequiredMixin, generic.ListView):
         queryset = ConfiguracionVenta.objects.filter(fecha_eliminacion__isnull=True)
         return queryset
 
+class ConfiguracionVentaCreate(LoginRequiredMixin, generic.CreateView):
+    model = ConfiguracionVenta
+    template_name="configuracion/configuracion_venta_form.html"
+    context_object_name = 'obj'
+    form_class=ConfiguracionVentaForm
+    success_url= reverse_lazy("configuracion:configuracion_venta_list")
+    login_url="bases:login"
+
+    def form_valid(self, form):
+        form.instance.user_created = self.request.user
+        form.instance.estado = True
+        messages.success(self.request, 'Registro actualizado correctamente')
+        return super().form_valid(form)
+
 class ConfiguracionVentaEdit(LoginRequiredMixin, generic.UpdateView):
     model=ConfiguracionVenta
     template_name="configuracion/configuracion_venta_form.html"

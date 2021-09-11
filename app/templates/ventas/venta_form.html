@@ -33,7 +33,7 @@
 
 {% block js_page %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    {% include 'base/partials/functions.html' %}
+    {% include 'base/functions.html' %}
     <script>
         var table_telas;
         var venta = {
@@ -42,20 +42,25 @@
                 cliente: '',
                 fecha_venta: '',
                 condicion_venta: '',
+                //sub_total_sin_iva: 0,
                 monto_total: 0,
                 total_iva_10: 0,
                 telas: []
             },
             calculate_invoice: function(){
                 var monto_total = 0;
+                //var sub_total_sin_iva = 0;
                 $.each(this.items.telas,function(pos,dict){
-                    dict.subtotal = Math.round(dict.metraje_vendido * parseInt(dict.precio_venta));
-                    monto_total += dict.subtotal; 
+                    dict.sub_total = Math.round(dict.metraje_vendido * parseInt(dict.precio_venta));
+                    //sub_total_sin_iva += dict.subtotal;
+                    monto_total += dict.sub_total; 
                 });
+                //this.items.sub_total_sin_iva = sub_total_sin_iva;
                 this.items.monto_total = monto_total;
                 total_iva_10 = Math.round(monto_total / 11);
-                $('input[name=monto_total]').val(this.items.monto_total);
-                $('input[name=total_iva_10]').val(total_iva_10);
+                //$('input[name=sub_total_sin_iva]').val(Intl.NumberFormat('de-DE').format(this.items.sub_total_sin_iva));
+                $('input[name=monto_total]').val(Intl.NumberFormat('de-DE').format(this.items.monto_total));
+                $('input[name=total_iva_10]').val(Intl.NumberFormat('de-DE').format(total_iva_10));
             },
             add: function (item){
                 this.items.telas.push(item);
@@ -78,12 +83,12 @@
                         { "data": "codigo"},
                         { "data": "precio_venta" },
                         { "data": "metraje_vendido" },
-                        { "data": "subtotal" },
+                        { "data": "sub_total" },
                         { "data": "id" },
                     ],
                     columnDefs: [
                         {
-                            targets: [2],
+                            targets: [2, 4],
                             "render": function( data, type, row ) {
                                 return 'Gs. '+parseInt(data);
                             },
@@ -92,12 +97,6 @@
                             targets: [3],
                             "render": function( data, type, row ) {
                                 return '<input type="text" required="required" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
-                            },
-                        },
-                        {
-                            targets: [4],
-                            "render": function( data, type, row ) {
-                                return parseInt(data);
                             },
                         },
                         {
@@ -192,7 +191,7 @@
         }).on('select2:select', function (e){
             var data = e.params.data;
             data.metraje_vendido = 1;
-            data.subtotal = 0;
+            data.sub_total = 0;
             if (venta.items.telas.find(tela => tela.id === data.id)){
                 Swal.fire({
                     icon: 'warning',
@@ -231,7 +230,7 @@
             var tr = table_telas.cell($(this).closest('td,li')).index();
             venta.items.telas[tr.row].metraje_vendido = metraje_vendido;
             venta.calculate_invoice();
-            $('td:eq(4)',table_telas.row(tr.row).node()).html(venta.items.telas[tr.row].subtotal);
+            $('td:eq(4)',table_telas.row(tr.row).node()).html(Intl.NumberFormat('de-DE').format(venta.items.telas[tr.row].sub_total));
         });
         
         venta.list();
@@ -254,9 +253,20 @@
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('venta', JSON.stringify(venta.items));
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estás seguro de registrar la venta?', parameters, function() {
-                location.href = "/ventas/ventas";
+            submit_with_ajax(window.location.pathname, 'Notificación',
+            '¿Estas seguro de que quiere registrar la venta?', parameters, function (response) {
+                alert_action('Notificación', '¿Desea imprimir la factura de venta?', function () {
+                    window.open('/ventas/ventas/listado/pdf/' + response.id + '/', '_blank');
+                    location.href = '/ventas/ventas/';
+                }, function () {
+                    location.href = '/ventas/ventas/';
+                });
             });
+
+
+            //submit_with_ajax(window.location.pathname, 'Notificación', '¿Estás seguro de registrar la venta?', parameters, function() {
+            //    location.href = "/ventas/ventas";
+            //});
         });
     </script>
 {% endblock js_page %}
