@@ -11,7 +11,8 @@ import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from django.db import transaction
 
 
@@ -155,7 +156,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                             deuda.venta_id = venta.id
                             deuda.numero_cuota = i+1
                             deuda.monto_cuota = monto
-                            deuda.fecha_vencimiento =  datetime.now() + timedelta(days=30)
+                            deuda.fecha_vencimiento =  datetime.now() + relativedelta(months=i+1)
                             deuda.user_created_id = self.request.user.id
                             deuda.estado = False
                             deuda.save()
