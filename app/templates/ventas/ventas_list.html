@@ -36,7 +36,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for="tela"><strong>Cliente:</strong></label>
-                                    <input type="text" class="form-control" id="cliente" placeholder="Buscar por Nombre del Cliente">
+                                    <input type="text" class="form-control" id="cliente" placeholder="Buscar por Nombre del Cliente, Nº Factura">
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -100,6 +100,7 @@
         </div>
     </div>
     {% include 'ventas/partials/modal_detalle_venta.html' %}
+    {% include 'ventas/partials/modal_detalle_credito.html' %}
 {% endblock content %}
 
 {% block js_page %}
@@ -142,7 +143,11 @@
                     { "data": "monto_total" },
                     {
                         "render": function( data, type, row ) {
-                            return  '<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
+                            var button = ''
+                            if (row.condicion_venta=='credito'){
+                                button = '<a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Credito</a>';
+                            }
+                            return  button+'<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
                                     '<a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                         },
                         orderable: false
@@ -204,13 +209,13 @@
                         {
                             targets: [-1, -3],
                             render: function (data, type, row) {
-                                return 'Gs. ' + data.toLocaleString();
+                                return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
                             }
                         },
                         {
                             targets: [-2],
                             render: function (data, type, row) {
-                                return data.toLocaleString();
+                                return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
                             }
                         },
                     ],
@@ -219,6 +224,49 @@
                     }
                 });
                 $('#myModelDet').modal('show');
+            });
+
+            $('.table tbody')
+            .on('click', 'a[rel="detalle_credito"]', function () {
+                var tr = table.cell($(this).closest('td, li')).index();
+                var data = table.row(tr.row).data();
+                console.log(data)
+                $('#tblDetalleCredito').DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    destroy: true,
+                    deferRender: true,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    data: data.detalle_credito,
+                    columns: [
+                        {"data": "numero_cuota"},
+                        {"data": "monto_cuota"},
+                        {"data": "estado"},
+                        {"data": "fecha_vencimiento"},
+                        {"data": "fecha_cancelacion"},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [-1, -3],
+                            render: function (data, type, row) {
+                                return data;
+                            }
+                        },
+                        {
+                            targets: [-2],
+                            render: function (data, type, row) {
+                                return data;
+                            }
+                        },
+                    ],
+                    initComplete: function (settings, json) {
+
+                    }
+                });
+                $('#detalle_credito').modal('show');
             });
 
             $('#cliente').keyup(function(){

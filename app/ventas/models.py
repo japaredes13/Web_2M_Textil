@@ -25,6 +25,7 @@ class Venta(ClaseModelo):
         item = model_to_dict(self)
         item['fecha_venta'] = self.fecha_venta.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
+        item['detalle_credito'] = [i.toJSON() for i in self.cuotaventa_set.all()]
         return item
 
 
@@ -44,4 +45,24 @@ class DetalleVenta(ClaseModelo):
         item['metraje_vendido'] = self.metraje_vendido
         item['precio_unitario'] = format(self.precio_unitario, '.2f')
         item['sub_total'] = format(self.sub_total, '.2f')
+        return item
+
+class CuotaVenta(ClaseModelo):
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
+    numero_cuota = models.IntegerField(default=0)
+    monto_cuota = models.IntegerField(default=0)
+    fecha_vencimiento = models.DateField(default=datetime.now)
+    fecha_cancelacion = models.DateField(null=True)
+    monto_cobrado =  models.IntegerField(default=0)
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['numero_cuota'] = self.numero_cuota
+        item['monto_cuota'] = self.monto_cuota
+        item['fecha_vencimiento'] = self.fecha_vencimiento.strftime('%d/%m/%Y')
+        item['fecha_cancelacion'] = self.fecha_cancelacion
+        if self.estado:
+            estado = 'Pagado'
+        else:
+            estado = 'Pendiente'
+        item['estado'] = estado
         return item

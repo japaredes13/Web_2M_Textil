@@ -1,6 +1,6 @@
 from configuracion.models import ConfiguracionProducto, ConfiguracionVenta
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
-from .models import Venta, DetalleVenta
+from .models import Venta, DetalleVenta, CuotaVenta
 from .forms import VentaForm
 from telas.models import Tela
 from clientes.models import Cliente
@@ -11,7 +11,7 @@ import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import transaction
 
 
@@ -37,7 +37,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
         cliente = self.request.POST['cliente']
         condicion_venta = self.request.POST['condicion_venta']
         if cliente:
-            ventas = ventas.filter(cliente_razon_social__icontains=cliente)
+            ventas = ventas.filter(Q(cliente_razon_social__icontains=cliente) |Q(nro_factura__icontains=cliente) )
        
         if condicion_venta:
             ventas = ventas.filter(condicion_venta=condicion_venta)
@@ -87,7 +87,6 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
         cantidad_digito = 7 - len(numero)
         prefijo = '0' * cantidad_digito
         context['numero_factura'] = '00'+str(configuracion_venta.rubro)+'-00'+str(configuracion_venta.sucursal)+'-'+prefijo+''+str(configuracion_venta.numero)
-        print(configuracion_venta.rubro)
         return context
 
     @method_decorator(csrf_exempt)
@@ -117,6 +116,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     venta.fecha_venta = datetime.strptime(venta.fecha_venta, "%d/%m/%Y").strftime("%Y-%m-%d")
                     venta.condicion_venta = request_venta['condicion_venta']
                     venta.user_created_id = self.request.user.id
+                    venta.plazo = request_venta['plazo']
                     venta.save()
                     
                     monto_total = 0
@@ -144,6 +144,22 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     venta.monto_total = monto_total
                     venta.total_iva_10 = total_iva_10
                     venta.save()
+
+                    if (venta.condicion_venta=='credito'):
+                        venta.plazo = request_venta['plazo']
+                        cantidad = int(int(venta.plazo)/30)
+                        monto = int(int(venta.monto_total)/cantidad)
+                        for i in range(cantidad):
+                            print(i)
+                            deuda = CuotaVenta()
+                            deuda.venta_id = venta.id
+                            deuda.numero_cuota = i+1
+                            deuda.monto_cuota = monto
+                            deuda.fecha_vencimiento =  datetime.now() + timedelta(days=30)
+                            deuda.user_created_id = self.request.user.id
+                            deuda.estado = False
+                            deuda.save()
+
                     configuracion = ConfiguracionVenta.objects.filter(estado=True).first()
                     configuracion.numero += 1
                     configuracion.save()

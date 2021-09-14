@@ -42,6 +42,7 @@
                 cliente: '',
                 fecha_venta: '',
                 condicion_venta: '',
+                plazo: '',
                 //sub_total_sin_iva: 0,
                 monto_total: 0,
                 total_iva_10: 0,
@@ -96,7 +97,7 @@
                         {
                             targets: [3],
                             "render": function( data, type, row ) {
-                                return '<input type="text" required="required" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplet="off" value="'+row.metraje_vendido+'">';
+                                return '<input type="text" required="required" name="metraje_vendido" class="form-control form-control-sm input-sm" autocomplete="off" value="'+row.metraje_vendido+'">';
                             },
                         },
                         {
@@ -247,6 +248,7 @@
             }
             venta.items.cliente = $('select[name="cliente"]').val();
             venta.items.condicion_venta = $('select[name="condicion_venta"]').val();
+            venta.items.plazo = $('select[name="plazo"]').val();
             venta.items.fecha_venta = $('input[name="fecha_venta"]').val();
             venta.items.numero_factura = $('#numero_factura').val();
 
@@ -268,5 +270,14 @@
             //    location.href = "/ventas/ventas";
             //});
         });
+
+        function condicionVentaSelect(select){
+            var form_plazo = document.getElementById('form_plazo');
+            if(select.value=='credito'){
+                form_plazo.style.display = "block";
+            } else {
+                form_plazo.style.display = "none";
+            }
+        }
     </script>
 {% endblock js_page %}
