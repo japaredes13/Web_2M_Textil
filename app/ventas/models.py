@@ -15,7 +15,6 @@ class Venta(ClaseModelo):
     condicion_venta = models.CharField(max_length=20, choices = condiciones, default = 'contado')
     plazo = models.IntegerField(null=True, blank=True)
     fecha_venta = models.DateField(default=datetime.now)
-    sub_total_sin_iva = models.IntegerField(default=0)
     monto_total = models.IntegerField(default=0)
     excentas = models.IntegerField(default=0,null=True, blank=True)
     total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
