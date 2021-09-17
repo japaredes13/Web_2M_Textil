@@ -11,12 +11,10 @@ import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
-from datetime import datetime
+from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from django.db import transaction
-
-
-
+from django.contrib import messages
 import os
 from django.conf import settings
 from django.template.loader import get_template
@@ -81,9 +79,21 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
     success_url=reverse_lazy("ventas:ventas_list")
     login_url="bases:login"
 
+    def render_to_response(self, context, **response_kwargs):
+        configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
+        if (configuracion_venta.fecha_inicio_timbrado <= date.today() and date.today()<=configuracion_venta.fecha_fin_timbrado): 
+            pass
+        else:
+            messages.info(self.request, 'La fecha del timbrado ha expirado. Por favor configure un nuevo timbrado.')
+            return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
+
+        return super().render_to_response(context, **response_kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
+        print ((date.today()>configuracion_venta.fecha_fin_timbrado))
+        print (date.today())
         numero = str(configuracion_venta.numero)
         cantidad_digito = 7 - len(numero)
         prefijo = '0' * cantidad_digito

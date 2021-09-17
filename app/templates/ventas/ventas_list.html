@@ -147,8 +147,8 @@
                             if (row.condicion_venta=='credito'){
                                 button = '<a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Credito</a>';
                             }
-                            return  button+'<a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
-                                    '<a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
+                            return  button+' <a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
+                                    ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                         },
                         orderable: false
                     },
@@ -215,7 +215,7 @@
                         {
                             targets: [-2],
                             render: function (data, type, row) {
-                                return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                                return Intl.NumberFormat('de-DE').format(data);
                             }
                         },
                     ],

@@ -52,7 +52,7 @@
                                         <tbody>
                                             {% if not obj %}
                                                 <tr>
-                                                    <td style="text-align:center;" colspan="3">Sin elementos que mostrar</td>
+                                                    <td style="text-align:center;" colspan="7">Sin elementos que mostrar</td>
                                                 </tr>
                                             {% else %}
                                                 {% for item in obj %}
@@ -64,10 +64,12 @@
                                                         <td>{{ item.fecha_inicio_timbrado }}</td>
                                                         <td>{{ item.fecha_fin_timbrado }}</td>
                                                         <td>
-                                                            <a class="btn btn-warning btn-circle btn-sm" title="Editar"
-                                                                href="{% url 'configuracion:configuracion_venta_edit' item.id %}">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
+                                                            {% if item.fecha_inicio_timbrado|date:"Y-m-d" <= fecha_hoy and fecha_hoy <= item.fecha_fin_timbrado|date:"Y-m-d" %}
+                                                                <a class="btn btn-warning btn-circle btn-sm" title="Editar"
+                                                                    href="{% url 'configuracion:configuracion_venta_edit' item.id %}">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            {% endif %}
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import  ConfiguracionUsuario, ConfiguracionProducto, ConfiguracionVenta
 from .forms import ConfiguracionUsuarioForm, ConfiguracionProductoForm, ConfiguracionVentaForm
+from datetime import datetime, date
 
 class ConfiguracionUsuarioView(LoginRequiredMixin, generic.ListView):
     paginate_by = 6
@@ -58,6 +59,12 @@ class ConfiguracionVentaView(LoginRequiredMixin, generic.ListView):
     template_name = "configuracion/configuracion_venta_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["fecha_hoy"] = datetime.now().strftime('%Y-%m-%d')
+        return context
+    
 
     def get_queryset(self):
         queryset = ConfiguracionVenta.objects.filter(fecha_eliminacion__isnull=True)
