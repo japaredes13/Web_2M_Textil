@@ -56,6 +56,9 @@ class CuotaVenta(ClaseModelo):
     monto_cobrado =  models.IntegerField(default=0)
     def toJSON(self):
         item = model_to_dict(self)
+        venta =  model_to_dict(self.venta)
+        venta['fecha_venta'] = venta['fecha_venta'].strftime('%d/%m/%Y')
+        item['venta'] = venta
         item['numero_cuota'] = self.numero_cuota
         item['monto_cuota'] = self.monto_cuota
         item['fecha_vencimiento'] = self.fecha_vencimiento.strftime('%d/%m/%Y')
