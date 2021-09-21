@@ -64,6 +64,67 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                 ventas = self.queryset()
                 for venta in ventas:
                     data.append(venta.toJSON())
+            elif request.POST['action'] == 'anular_factura':
+                id=request.POST['id']
+                detalles = DetalleVenta.objects.filter(venta_id=id)
+                for det in detalles:
+                    tela= Tela.objects.get(id=det.tela.id)
+                    tela.metraje += det.metraje_vendido
+                    tela.save()
+                venta = Venta.objects.get(id=id) 
+                venta.anulado = True
+                venta.save()
+            else:
+                data['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            data['error'] = str(e)
+        
+        return JsonResponse(data, safe=False)
+
+class VentaCobro(LoginRequiredMixin, generic.ListView):
+    model = CuotaVenta 
+    template_name = "ventas/ventas_cobro_list.html"
+    login_url = 'bases:login'
+
+    def queryset(self):
+
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+        deudas = CuotaVenta.objects.select_related('venta').filter(fecha_vencimiento__range=(fecha_desde,fecha_hasta))
+        print(deudas)
+        #cliente = self.request.POST['cliente']
+        #if cliente:
+        #    ventas = ventas.filter(Q(cliente_razon_social__icontains=cliente) |Q(nro_factura__icontains=cliente) )
+        
+        return deudas
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Listado de Cuotas a Vencer'
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().replace(month=10).strftime("%d/%m/%Y")
+        return context
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        data={}
+        try:
+            if request.POST['action'] == 'search':
+                data = []
+                deudas = self.queryset()
+                for deuda in deudas:
+                    print(deuda)
+                    data.append(deuda.toJSON())
+                    print(data)
+
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -174,6 +235,76 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     configuracion = ConfiguracionVenta.objects.filter(estado=True).first()
                     configuracion.numero += 1
                     configuracion.save()
+            else:
+                data['error'] = 'No ha ingresado una opción'
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data, safe=False)
+
+class VentaEdit(LoginRequiredMixin, generic.CreateView):
+    model=Venta
+    form_class=VentaForm
+    template_name="ventas/venta_form.html"
+    success_url=reverse_lazy("ventas:ventas_list")
+    login_url="bases:login"
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        data = {}
+        try:
+            action = request.POST['action']
+            if action == 'search_tela':
+                data = []
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']), metraje__gt=0)
+                for tela in telas:
+                    item = tela.toJSON()
+                    item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
+                    data.append(item)
+            elif action == 'edit':
+                request_venta = json.loads(request.POST['venta'])
+                with transaction.atomic():
+                    venta = Venta.objects.get(id=self.get_object().id)
+                    cliente = Cliente.objects.get(pk=request_venta['cliente'])
+                    venta.nro_factura = request_venta['numero_factura']
+                    venta.cliente_id = request_venta['cliente']
+                    venta.cliente_razon_social = cliente.razon_social
+                    venta.fecha_venta = str(request_venta['fecha_venta'])
+                    venta.fecha_venta = datetime.strptime(venta.fecha_venta, "%d/%m/%Y").strftime("%Y-%m-%d")
+                    venta.condicion_venta = request_venta['condicion_venta']
+                    venta.user_updated_id = self.request.user.id
+                    venta.anulado = True
+                    venta.plazo = request_venta['plazo']
+                    venta.save()
+                    
+                    monto_total = 0
+                    #sub_total_sin_iva = 0
+                    total_iva_10 = 0
+                    for det in request_venta['telas']:
+                        detalle =  DetalleVenta()
+                        detalle.venta_id = venta.id
+                        detalle.tela_id = det['id']
+                        detalle.metraje_vendido = float(det['metraje_vendido'])
+                        detalle.precio_unitario = int(det['precio_venta'])
+                        detalle.sub_total = float(det['metraje_vendido']) * int(det['precio_venta'])
+                        #sub_total_sin_iva += detalle.sub_total
+                        detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
+                        monto_total += detalle.sub_total
+                        total_iva_10 += detalle.sub_total_iva_10
+                        detalle.user_created_id = self.request.user.id
+                        tela = Tela.objects.get(pk=detalle.tela_id)
+                        tela.metraje +=  detalle.metraje_vendido
+                        tela.save()
+                        detalle.save()
+                    
+                    data = {'id': venta.id}
+                    #venta.sub_total_sin_iva = sub_total_sin_iva
+                    venta.monto_total = monto_total
+                    venta.total_iva_10 = total_iva_10
+                    venta.save()
+
             else:
                 data['error'] = 'No ha ingresado una opción'
         except Exception as e:

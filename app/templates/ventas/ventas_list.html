@@ -104,9 +104,13 @@
 {% endblock content %}
 
 {% block js_page %}
+    {% include 'base/functions.html' %}
     {% include 'base/partials/sweet_delete.html' %}
     <script>
-        $(document).ready(function() { 
+
+        $(document).ready(
+          
+            function() {
             $('#fecha_desde').datetimepicker({
                 format: 'DD/MM/YYYY',
                 locale: 'es',
@@ -145,10 +149,14 @@
                         "render": function( data, type, row ) {
                             var button = ''
                             if (row.condicion_venta=='credito'){
-                                button = '<a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Credito</a>';
+                                button += ' <a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Credito</a>';
                             }
-                            return  button+' <a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
-                                    ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
+                            if (row.anulado==false){
+                                button+= '<a rel= "anular" class="btn btn-danger btn-sm btn-flat btnRemoveAll" > <i class="fas fa-times"></i> Anular Venta</a>';
+                            }
+                            console.log(row)
+                            return  button+ ' <a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Venta</a>' +
+                                            ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                         },
                         orderable: false
                     },
@@ -268,6 +276,28 @@
                 });
                 $('#detalle_credito').modal('show');
             });
+            $('.table tbody')
+            .on('click', 'a[rel="anular"]', function () {
+                    var tr = table.cell($(this).closest('td, li')).index();
+                    var id =table.row(tr.row).data().id;
+                alert_action('Notificación', '¿Estas seguro que desea anular la venta?', function () {
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: 'POST',
+                        data: {
+                            'action': 'anular_factura',
+                            'id': id,
+                    },
+                        dataType: 'json',
+                    }).done(function (data) {
+                    $('#tblVentas').DataTable().ajax.reload();
+                    }).always(function (data) {
+
+                    });
+                }, function () {
+                    location.href = '/ventas/ventas/';
+                });
+            });
 
             $('#cliente').keyup(function(){
                 table.ajax.reload();
@@ -281,6 +311,7 @@
             $('input[name="fecha_hasta"]').on('change.datetimepicker', function() {
                 table.ajax.reload();
             });
+          
         });
     </script>
 {% endblock js_page %}

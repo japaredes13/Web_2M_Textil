@@ -303,6 +303,8 @@
         alert_action('Notificación', '¿Estas seguro de eliminar todos los items de tu detalle?', function () {
             orden_compras.items.telas = [];
             orden_compras.list();
+        }, function () {
+            orden_compras.list();
         });
     });
 
