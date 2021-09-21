@@ -94,18 +94,16 @@ class VentaCobro(LoginRequiredMixin, generic.ListView):
         fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
 
         deudas = CuotaVenta.objects.select_related('venta').filter(fecha_vencimiento__range=(fecha_desde,fecha_hasta))
-        #print(deudas)
-        #cliente = self.request.POST['cliente']
-        #if cliente:
-        #    ventas = ventas.filter(Q(cliente_razon_social__icontains=cliente) |Q(nro_factura__icontains=cliente) )
-        
+        cliente = self.request.POST['cliente']
+        if cliente:
+            deudas = deudas.filter(Q(venta__cliente_razon_social__icontains=cliente)| Q(venta__nro_factura__icontains=cliente))
         return deudas
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Listado de Cuotas a Vencer'
         context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
-        context['fecha_hasta'] = datetime.now().replace(month=10).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().replace(month=11).strftime("%d/%m/%Y")
         return context
 
 
