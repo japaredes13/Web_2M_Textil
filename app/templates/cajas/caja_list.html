@@ -54,7 +54,6 @@
                                 <div class="col-md-12">
                                     <table class="table table-striped table-hover">
                                         <thead>
-                                            <th>Cajero</th>
                                             <th>Monto</th>
                                             <th>Fecha Apertura</th>
                                             <th>Descripcion</th>
@@ -91,7 +90,6 @@
                     dataSrc: ""
                 },
                 columns: [
-                    { "data": "user_created" },
                     { "data": "monto_apertura" },
                     { "data": "fecha_apertura" },
                     { "data": "descripcion" },
@@ -104,21 +102,13 @@
                     },
                 ],
                 columnDefs: [
-                            {
-                                targets: [1],
-                                class: 'text-center',
-                                render: function (data, type, row) {
-                                    return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
-                                }
-                            },
-                            {
-                                targets: [0,2],
-                                class: 'text-center',
-                                render: function (data, type, row) {
-                                    return data;
-                                }
-                            },
-                        ],
+                    {
+                        targets: [0],
+                        render: function (data, type, row) {
+                            return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                        }
+                    }
+                ],
                 language:{
                     "decimal": "",
                     "emptyTable": "No hay información",

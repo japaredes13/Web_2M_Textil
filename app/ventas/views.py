@@ -94,6 +94,7 @@ class VentaCobro(LoginRequiredMixin, generic.ListView):
         fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
 
         deudas = CuotaVenta.objects.select_related('venta').filter(fecha_vencimiento__range=(fecha_desde,fecha_hasta))
+        deudas = deudas.filter(venta__anulado = False)
         cliente = self.request.POST['cliente']
         if cliente:
             deudas = deudas.filter(Q(venta__cliente_razon_social__icontains=cliente)| Q(venta__nro_factura__icontains=cliente))

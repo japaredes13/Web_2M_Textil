@@ -75,9 +75,7 @@ $(document).ready(function(){
         format: 'DD/MM/YYYY',
         locale: 'es'
     });
-    $.extend( $.validator.messages, {
-        min: $.validator.format("Por favor ingrese un valor mayor a 0")
-    });
+    
     var monto_apertura = document.getElementById("id_monto_apertura");
     monto_apertura.addEventListener('keyup', function(evt){
         var n = this.value.replace(/\D/g,"")//Reemplaza los no digitos, ej: A, ?, _
@@ -87,7 +85,7 @@ $(document).ready(function(){
 
     $("#form").validate({
         rules: {
-            monto_apertura: {required: true, min:true},
+            monto_apertura: {required: true, montoRule:true},
             descripcion: {required: false},
         },
         messages: {
@@ -109,15 +107,14 @@ $(document).ready(function(){
     });
 
     $.validator.addMethod("montoRule", function (value, element) {
+            value = value.split('.').join('');
             return parseInt(value) > 0
         }, "* El campo debe ser mayor a 0");
 
     $(form).on('submit', function (e){
         var monto_apertura = String($('#id_monto_apertura').val());
-        monto_apertura = monto_apertura.replace('.','');
+        monto_apertura = monto_apertura.split('.').join(''); 
         $('#id_monto_apertura').val(monto_apertura);
-        console.log($('#id_monto_apertura').val())
-
     });            
 });
 </script>

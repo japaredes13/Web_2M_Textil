@@ -17,7 +17,7 @@ class CajaForm(forms.ModelForm):
 
         }
         widgets = {
-            'monto_apertura':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required', 'min':'1000'}),
+            'monto_apertura':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
             'fecha_apertura': forms.DateInput(
                 format='%d-%m-%Y',
                 attrs={
