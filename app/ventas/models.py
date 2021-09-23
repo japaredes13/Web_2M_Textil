@@ -25,6 +25,7 @@ class Venta(ClaseModelo):
         item = model_to_dict(self)
         item['fecha_venta'] = self.fecha_venta.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
+        item['venta_anulada'] = '<span class="badge badge-danger">SI</span>' if (self.anulado) else '<span class="badge badge-success">NO</span>'
         item['detalle_credito'] = [i.toJSON() for i in self.cuotaventa_set.all()]
         return item
 

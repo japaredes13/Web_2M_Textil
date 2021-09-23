@@ -119,9 +119,7 @@ class VentaCobro(LoginRequiredMixin, generic.ListView):
                 data = []
                 deudas = self.queryset()
                 for deuda in deudas:
-                    print(deuda)
                     data.append(deuda.toJSON())
-                    print(data)
 
             else:
                 data['error'] = 'Ha ocurrido un error'
