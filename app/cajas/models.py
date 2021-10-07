@@ -6,11 +6,11 @@ from django.forms.models import model_to_dict
 
 class Caja(ClaseModelo):
     monto_apertura = models.IntegerField()
-    monto_cierre = models.IntegerField(null=True)
-    monto_efectivo = models.IntegerField(null=True)
-    monto_cheque = models.IntegerField(null=True)
-    monto_ingreso = models.IntegerField(null=True)
-    monto_egreso = models.IntegerField(null=True)
+    monto_cierre = models.IntegerField(default=0,null=True)
+    monto_efectivo = models.IntegerField(default=0,null=True)
+    monto_cheque = models.IntegerField(default=0,null=True)
+    monto_ingreso = models.IntegerField(default=0,null=True)
+    monto_egreso = models.IntegerField(default=0,null=True)
     fecha_apertura = models.DateField(default=datetime.now)
     fecha_cierre = models.DateField(null=True)
     descripcion = models.CharField(max_length=200)
@@ -58,3 +58,19 @@ class Cobro(ClaseModelo):
 
     class Meta:
         verbose_name_plural ="Cobro"
+
+class Movimiento(ClaseModelo):
+    caja = models.ForeignKey(Caja, models.PROTECT) 
+    movimientos = ( ('ingreso', 'Ingreso'),
+                    ('egreso',  'Egreso'))
+    tipo_movimiento = models.CharField(max_length=20, choices=movimientos, default='Ingreso')
+    fecha_movimiento = models.DateField(default=datetime.now)
+    monto = models.IntegerField()
+    descripcion = models.CharField(max_length=100,null=True, blank=True)
+    numero_comprobante = models.CharField (max_length=20,null=True, blank=True)
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['fecha_movimiento'] = self.fecha_movimiento.strftime('%d/%m/%Y')
+        item['tipo_movimiento'] = self.tipo_movimiento.upper()
+        return item

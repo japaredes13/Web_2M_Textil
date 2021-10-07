@@ -58,7 +58,7 @@ MESSAGE_TAGS = {
         messages.INFO: 'info',
         messages.SUCCESS: 'success',
         messages.WARNING: 'warning',
-        messages.ERROR: 'danger',
+        messages.ERROR: 'error',
 }
 
 MIDDLEWARE = [
@@ -104,7 +104,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bd_proyecto',
         'USER': 'postgres',
-        #'PASSWORD': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': 5432
     }

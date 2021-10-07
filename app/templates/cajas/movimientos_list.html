@@ -14,12 +14,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Cajas</h1>
+                    <h1 class="m-0">Telas</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></a></li>
-                        <li class="breadcrumb-item active">Cajas</li>
+                        <li class="breadcrumb-item active">Movimientos</li>
                     </ol>
                 </div>               
             </div>
@@ -32,18 +32,27 @@
                 <div class="col-md-12">
                     <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Listado de Cajas</h3>
+                            <h3 class="card-title">Movimientos de Cajas</h3>
                         </div>
                         <div class="card-body">
                             <div class="row justify-content-end">
-                                <div class="col-md-2">
-                                    <a href="{% url 'cajas:caja_create' %}" class="btn btn-primary btn-block">
-                                        <i class="fas fa-plus-square"></i> Abrir Nueva Caja
+                                <div class="col-md-3">
+                                    <a href="{% url 'cajas:movimiento_create' %}" class="btn btn-primary btn-block">
+                                        <i class="fas fa-plus-square"></i> Nuevo movimiento
                                     </a>
                                 </div>
                             </div>
-                                {% csrf_token %}
                                 <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="tipo_movimiento">Tipo movimiento:</label>
+                                            <select name="tipo_movimiento" id="tipo_movimiento" class="form-control" >
+                                                <option value="" selected>Todos</option>
+                                                <option value="ingreso">Ingreso</option>
+                                                <option value="egreso">Egreso</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="col-md-4">
                                         <label for="caja"><strong>Caja:</strong></label>
                                         <input type="text" class="form-control" name="caja" id="caja" placeholder="Buscar por Cajero" autocomplete="off">
@@ -55,7 +64,8 @@
                                     <table class="table table-striped table-hover">
                                         <thead>
                                             <th>Monto</th>
-                                            <th>Fecha Apertura</th>
+                                            <th>Tipo Movimiento</th>
+                                            <th>Fecha Movimiento</th>
                                             <th>Descripcion</th>
                                             <th>Acciones</th>
                                         </thead>
@@ -86,16 +96,19 @@
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'search',
-                        d.caja = $('#caja').val()                    },
+                        d.caja = $('#caja').val(),                    
+                        d.tipo_movimiento = $('#tipo_movimiento').val()
+                    },
                     dataSrc: ""
                 },
                 columns: [
-                    { "data": "monto_apertura" },
-                    { "data": "fecha_apertura" },
+                    { "data": "monto" },
+                    { "data": "tipo_movimiento" },
+                    { "data": "fecha_movimiento" },
                     { "data": "descripcion" },
                     {
                         "render": function( data, type, row ) {
-                            return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Caja" href="/cajas/cajas/'+row.id+'/edit"><i class="fas fa-edit"></i></a>';
+                            return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Tela" href="/cajas/movimientos/'+row.id+'/edit"><i class="fas fa-edit"></i></a>';
                         },
                         orderable: false
                     },
@@ -134,7 +147,9 @@
             $('#caja').keyup(function(){
                 table.ajax.reload();
             });
-
+            $('#tipo_movimiento').change(function(){
+                table.ajax.reload();
+            });
         });
     </script>
 {% endblock js_page %}

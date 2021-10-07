@@ -1,0 +1,135 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Caja Movimiento</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'cajas:caja_list' %}">Movimientos</a></li>
+                        <li class="breadcrumb-item active">Caja movimiento</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos del Movimiento</h3>
+                        </div>  
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'cajas:movimiento_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'cajas:movimiento_create' %}">
+                            {% endif %}
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label form="id_monto_apertura"><strong>{{form.tipo_movimiento.label}}</strong></label>
+                                                {{form.tipo_movimiento}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_monto"><strong>{{form.monto.label}}</strong></label>
+                                                {{form.monto}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="fecha_movimiento"><strong>{{form.fecha_movimiento.label}}</strong></label>
+                                                {{form.fecha_movimiento}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_descripcion"><strong>{{form.descripcion.label}}</strong></label>
+                                                {{form.descripcion}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="id_numero_comprobante"><strong>{{form.numero_comprobante.label}}</strong></label>
+                                                {{form.numero_comprobante}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary"><span class="fa fa-save"></span> Registrar</button>
+                                        <a class="btn btn-danger float-right" href="{% url 'cajas:movimientos_list' %}">Cancelar</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block js_page %}
+<script>
+$(document).ready(function(){
+    $('#fecha_movimiento').datetimepicker({
+        format: 'DD/MM/YYYY',
+        locale: 'es'
+    });
+    
+    var monto = document.getElementById("id_monto");
+    monto.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g,"")//Reemplaza los no digitos, ej: A, ?, _
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, "."); //
+        monto.value = n;
+    }, false);
+
+    $("#form").validate({
+        rules: {
+            monto: {required: true, montoRule:true},
+            descripcion: {required: false},
+        },
+        messages: {
+            monto: {required: "* El campo es requerido"},
+        },
+        errorElement: 'span',
+        highlight: function(element){
+            if (element.name == 'monto') {
+                $(element).closest('.form-control').addClass('is-invalid');
+                $(element).closest('.form-control').removeClass('is-valid');
+            }
+        },
+        unhighlight: function(element){
+            if (element.name == 'monto') {
+                $(element).closest('.form-control').addClass('is-valid');
+                $(element).closest('.form-control').removeClass('is-invalid');
+            }
+        }
+    });
+
+    $.validator.addMethod("montoRule", function (value, element) {
+            value = value.split('.').join('');
+            return parseInt(value) > 0
+        }, "* El campo debe ser mayor a 0");
+
+    $(form).on('submit', function (e){
+        var monto = String($('#id_monto').val());
+        monto = monto.split('.').join(''); 
+        $('#id_monto').val(monto);
+    });            
+});
+</script>
+{% endblock js_page %}

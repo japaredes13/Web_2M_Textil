@@ -10,4 +10,8 @@ urlpatterns = [
     path('cajas/bancos/create',BancoCreate.as_view(), name='banco_create'),
     path('cajas/bancos/<int:pk>/edit', BancoEdit.as_view(), name='banco_edit'),
     path('cajas/<int:id>/delete',banco_delete, name='banco_delete'),
+
+    path('movimientos/list', CajaMovimientoList.as_view(), name='movimientos_list'),
+    path('movimientos/create', CajaMovimientoCreate.as_view(), name='movimiento_create'),
+    path('movimientos/<int:pk>/edit', CajaMovimientoEdit.as_view(), name='movimiento_edit'),
 ]
