@@ -1,6 +1,7 @@
 from django.db import models
 from bases.models import ClaseModelo
 from datetime import datetime
+from ventas.models import Venta, DetalleVenta, CuotaVenta
 from django.forms.models import model_to_dict
 
 class Caja(ClaseModelo):
@@ -21,3 +22,39 @@ class Caja(ClaseModelo):
 
     class Meta:
         verbose_name_plural ="Caja"
+
+class Banco(ClaseModelo):
+    descripcion = models.CharField(max_length=200,
+                                unique=True,
+                                error_messages={
+                                    'unique': 'El campo Descripcion ya existe'
+                                })
+
+    def __str__(self):
+        return '{}'.format(self.descripcion)
+
+    def save(self):
+        self.descripcion = self.descripcion.upper()
+        super(Banco, self).save()
+
+    class Meta:
+        verbose_name_plural ="Banco"
+
+class Cobro(ClaseModelo):
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
+    cuota = models.ForeignKey(CuotaVenta,on_delete=models.CASCADE, null=True)
+    caja = models.ForeignKey(Caja,on_delete=models.CASCADE)
+    monto_cobrado = models.IntegerField(default=0)
+    tipos_cobro = ( ('efectivo', 'Efectivo'),
+                    ('cheque', 'Cheque'))
+    medio_cobro = models.CharField(max_length=20, choices = tipos_cobro, default = 'efectivo')
+    banco = models.ForeignKey(Banco, models.PROTECT, null=True)
+    fecha_cobro = models.DateField(default=datetime.now)
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['fecha_cobro'] = self.fecha_cobro.strftime('%d/%m/%Y')
+        return item
+
+    class Meta:
+        verbose_name_plural ="Cobro"

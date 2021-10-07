@@ -61,6 +61,27 @@
                                             {{ form.total_iva_10 }}
                                         </div>
                                     </div>
+                                    <div class="col-md-12" id="form_medio_cobro" style="display:none;" >
+                                        <div class="form-group">
+                                            <label for="medio_cobro">Medio de Cobro:</label>
+                                            <select name="medio_cobro" id="medio_cobro" class="form-control" >
+                                                <option value="Efectivo">Efectivo</option>
+                                                <option value="Cheque">Cheque</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="form_banco" style="display:none;">
+                                        <div class="form-group">
+
+                                            <label form="banco"><strong>Banco:</strong></label>
+                                            <select class="form-control"  name = "banco" id="banco">
+                                                {% for banco in bancos %}
+                                                    <option value="{{ banco.id }}">{{ banco.descripcion }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                   
                                 </div>
                             </div>
                         </div>

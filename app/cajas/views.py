@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
-from .models import  Caja
-from .forms import CajaForm
+from .models import  Caja, Banco, Cobro
+from .forms import CajaForm, BancoForm, CobroForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -61,3 +61,71 @@ class CajaCreate(LoginRequiredMixin, generic.CreateView):
     def get_context_data (self, **kwargs):
         context = super(CajaCreate,self).get_context_data(**kwargs)
         return context
+
+class CajaEdit(LoginRequiredMixin, generic.UpdateView):
+    model=Caja
+    template_name="cajas/caja_form.html"
+    context_object_name = 'obj'
+    form_class=CajaForm
+    success_url= reverse_lazy("cajas:caja_list")
+    login_url="bases:login"
+
+    def form_valid(self, form):
+        form.instance.user_updated_id = self.request.user.id 
+        messages.success(self.request, 'Registro actualizado correctamente')
+        return super().form_valid(form)
+
+class BancoView(LoginRequiredMixin, generic.ListView):
+    paginate_by = 5
+    template_name = "cajas/bancos/banco_list.html"
+    context_object_name = "obj"
+    login_url = 'bases:login'
+
+    def get_queryset(self):
+        queryset = Banco.objects.filter(fecha_eliminacion__isnull=True).order_by('descripcion')
+        return queryset
+
+
+class BancoCreate(LoginRequiredMixin, generic.CreateView):
+    model = Banco
+    template_name="cajas/bancos/banco_form.html"
+    context_object_name = 'obj'
+    form_class=BancoForm
+    success_url= reverse_lazy("cajas:banco_list")
+    login_url="bases:login"
+
+    def form_valid(self, form):
+        form.instance.user_created = self.request.user
+        form.instance.estado = True
+        messages.success(self.request, 'Registro actualizado correctamente')
+        return super().form_valid(form)
+    
+
+class BancoEdit(LoginRequiredMixin, generic.UpdateView):
+    model=Banco
+    template_name="cajas/bancos/banco_form.html"
+    context_object_name = 'obj'
+    form_class=BancoForm
+    success_url= reverse_lazy("cajas:banco_list")
+    login_url="bases:login"
+
+    def form_valid(self, form):
+        form.instance.user_updated_id = self.request.user.id 
+        messages.success(self.request, 'Registro actualizado correctamente')
+        return super().form_valid(form)
+
+def banco_delete(request,id):
+    try:
+        banco= Banco.objects.get(pk=id)
+        banco.fecha_eliminacion = datetime.now()
+        banco.save()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Banco.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)

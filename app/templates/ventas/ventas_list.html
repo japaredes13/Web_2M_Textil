@@ -102,13 +102,16 @@
     </div>
     {% include 'ventas/partials/modal_detalle_venta.html' %}
     {% include 'ventas/partials/modal_detalle_credito.html' %}
+    {% include 'ventas/partials/modal_detalle_cobro.html' %}
 {% endblock content %}
 
 {% block js_page %}
     {% include 'base/functions.html' %}
     {% include 'base/partials/sweet_delete.html' %}
     <script>
+        
 
+       
         $(document).ready(
           
             function() {
@@ -153,7 +156,10 @@
                             if (row.condicion_venta=='credito'){
                                 button += ' <a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Crédito</a>';
                             }
-                            if (row.anulado==false){
+                            if (row.condicion_venta=='credito' && row.pendiente_cobro >= 1){
+                                button += ' <a rel="detalle_cobro" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Registrar Cobro</a>';
+                            }
+                            if (row.anulado==false && row.pendiente_cobro <= 1){
                                 button += ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                                 button += ' <a rel= "anular" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Anular Venta</a>';
                             }
@@ -277,6 +283,121 @@
                 });
                 $('#detalle_credito').modal('show');
             });
+
+            $('.table tbody')
+            .on('click', 'a[rel="detalle_cobro"]', function () {
+                var tr = table.cell($(this).closest('td, li')).index();
+                var data = table.row(tr.row).data();
+                console.log(data)
+                $('#tblCobro').DataTable({
+                    responsive: true,
+                    autoWidth: true,
+                    destroy: true,
+                    deferRender: true,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    data: data.detalle_cobro,
+                    columns: [
+                        {"data": "numero_cuota"},
+                        {"data": "monto_cuota"},
+                        {"data": "estado"},
+                        {"data": "medio_cobro"},
+                        {"data": "banco"},
+                        {"data": "fecha_vencimiento"},
+                        {"data": "fecha_cancelacion"},
+                        {"data": "id"},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [2],
+                            render: function (data, type, row) {
+                                return (data);
+                            },
+                        },
+                        {
+                            targets: [3],
+                            render: function (data, type, row) {
+
+                                var $select = $("<select class='form-control' style='width:100px' name='medio_cobro' id='medio_cobro'><option value='Cheque'>Cheque</option><option value='Efectivo'>Efectivo</option></select>");
+                                $select.find('option[value="' + row.medio_cobro + '"]').attr('selected', 'selected');
+                                return $select[0].outerHTML
+
+                            },
+                        },
+                        {
+                            targets: [4],
+                                render: function (data, type, row) {
+                                    if (row.medio_cobro == 'Efectivo' && row.estado=='Pagado'){
+                                            return ""
+                                    }
+                                    else {
+                                    var $select = $("<select class='form-control' style='width:100px' name = 'banco' id='banco'>{% for banco in bancos %}<option value='{{ banco.id }}''>{{ banco.descripcion}}</option>{% endfor %}</select>");
+                                    $select.find('option[value="' + row.banco + '"]').attr('selected', 'selected');
+                                    return $select[0].outerHTML                                    }
+                                },
+                        },
+                        {
+                            targets: [7],
+                            render: function (data, type, row) {
+                                var buttons = ''; 
+                                if (row.estado=='Pendiente'){
+                                    buttons += '<button id="boton" name="botonCobro" title="Guardar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
+                                }
+                                return buttons;
+                            }
+                        },
+                    ],
+                    initComplete: function (settings, json) {
+
+                    }
+                });
+                $('#detalle_cobro').modal('show');
+
+            });
+            $('#tblCobro').on('change', 'select[name="medio_cobro"]', function () {
+                var tabla_cobro = $('#tblCobro').DataTable();
+                console.log(tabla_cobro)
+                var tr = tabla_cobro.cell($(this).closest('td, li')).index();
+                var data = tabla_cobro.row(tr.row).data();
+                var medio_cobro = $(this).val();
+                if (medio_cobro=='Efectivo') {
+                    $('td:eq(4)', tabla_cobro.row(tr.row).node()).css('visibility', 'hidden');
+                }
+                else {
+                    $('td:eq(4)', tabla_cobro.row(tr.row).node()).css('visibility', 'visible');
+                }
+
+            });
+            $('#tblCobro').on('click', 'button[name="botonCobro"]', function () {
+                var tabla_cobro = $('#tblCobro').DataTable();
+                console.log(tabla_cobro)
+                var tr = tabla_cobro.cell($(this).closest('td, li')).index();
+                var data = tabla_cobro.row(tr.row).data();
+                var medio_cobro = $('td:eq(3) select', tabla_cobro.row(tr.row).node()).val();
+                var banco=$('td:eq(4) select', tabla_cobro.row(tr.row).node()).val();
+                var estado=$('td:eq(2) select', tabla_cobro.row(tr.row).node()).val();
+                var id=$('td:eq(5)', tabla_cobro.row(tr.row).node()).text();
+
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: {
+                        'action': 'edit_cuota',
+                        'id': data.id,
+                        'estado': estado,
+                        'medio_cobro': medio_cobro,
+                        'banco': banco,
+                    },
+                    dataType: 'json',
+                }).done(function (data) {
+                    $('#tblVentas').DataTable().ajax.reload();
+                }).always(function (data) {
+
+                });
+            });
+
             $('.table tbody')
             .on('click', 'a[rel="anular"]', function () {
                     var tr = table.cell($(this).closest('td, li')).index();
@@ -290,15 +411,17 @@
                             'id': id,
                         },
                         dataType: 'json',
-                    }).done(function (data) {
+                    }).done(function () {
                     $('#tblVentas').DataTable().ajax.reload();
-                    }).always(function (data) {
+                    }).always(function () {
 
                     });
                 }, function () {
                     //location.href = '/ventas/ventas/';
                 });
             });
+
+  
 
             $('#cliente').keyup(function(){
                 table.ajax.reload();
@@ -314,5 +437,6 @@
             });
           
         });
+
     </script>
 {% endblock js_page %}

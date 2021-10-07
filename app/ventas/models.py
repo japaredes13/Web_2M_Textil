@@ -2,6 +2,7 @@ from django.db import models
 from bases.models import ClaseModelo
 from clientes.models import Cliente
 from telas.models import Tela
+
 from datetime import datetime
 from django.forms.models import model_to_dict
 
@@ -24,9 +25,14 @@ class Venta(ClaseModelo):
     def toJSON(self):
         item = model_to_dict(self)
         item['fecha_venta'] = self.fecha_venta.strftime('%d/%m/%Y')
+        #item['fecha_anular'] = self.fecha_venta + datetime.now.replace(day=2).strftime("%d/%m/%Y")
+        #print(self.fecha_venta + datetime.now.replace(day=2))
         item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
         item['venta_anulada'] = '<span class="badge badge-danger">SI</span>' if (self.anulado) else '<span class="badge badge-success">NO</span>'
         item['detalle_credito'] = [i.toJSON() for i in self.cuotaventa_set.all()]
+        item['detalle_cobro'] = [i.toJSON() for i in self.cuotaventa_set.all()]
+        cuota = CuotaVenta.objects.select_related('venta').filter(venta_id=self.id ,estado=False, venta__condicion_venta='credito')
+        item['pendiente_cobro'] = int(cuota.count())
         return item
 
 
@@ -56,8 +62,18 @@ class CuotaVenta(ClaseModelo):
     fecha_cancelacion = models.DateField(null=True)
     monto_cobrado =  models.IntegerField(default=0)
     def toJSON(self):
+        from cajas.models import Cobro
         item = model_to_dict(self)
         venta =  model_to_dict(self.venta)
+        cantidad= Cobro.objects.filter(cuota_id=self.id).count()
+        if cantidad > 0 :
+            cobro=Cobro.objects.get(cuota_id=self.id)
+            item['banco']=cobro.banco_id
+            item['medio_cobro']=cobro.medio_cobro
+        else:
+            item['banco']=''
+            item['medio_cobro']=''
+        
         venta['fecha_venta'] = venta['fecha_venta'].strftime('%d/%m/%Y')
         item['venta'] = venta
         item['numero_cuota'] = self.numero_cuota
