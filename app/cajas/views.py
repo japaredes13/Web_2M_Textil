@@ -7,6 +7,8 @@ from .forms import CajaForm, BancoForm, CobroForm
 from .forms import CajaForm, CajaMovimientoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
 from datetime import datetime
 
@@ -26,6 +28,10 @@ class CajaList(LoginRequiredMixin,generic.ListView):
         context = super().get_context_data(**kwargs)
         return context
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         data={}
         try:
@@ -34,6 +40,12 @@ class CajaList(LoginRequiredMixin,generic.ListView):
                 cajas = self.queryset()
                 for caja in cajas:
                     data.append(caja.toJSON())
+            elif request.POST['action'] == 'cerrar_caja':
+                id=request.POST['id']
+                caja = Caja.objects.get(id=id) 
+                caja.estado = False
+                caja.fecha_cierre = datetime.now()
+                caja.save()
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:

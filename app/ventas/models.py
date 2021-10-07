@@ -79,7 +79,7 @@ class CuotaVenta(ClaseModelo):
         item['numero_cuota'] = self.numero_cuota
         item['monto_cuota'] = self.monto_cuota
         item['fecha_vencimiento'] = self.fecha_vencimiento.strftime('%d/%m/%Y')
-        item['fecha_cancelacion'] = self.fecha_cancelacion
+        item['fecha_cancelacion'] = self.fecha_cancelacion.strftime('%d/%m/%Y') if (self.fecha_cancelacion) else ''
         if self.estado:
             estado = 'Pagado'
         else:

@@ -18,6 +18,9 @@ class Caja(ClaseModelo):
     def toJSON(self):
         item = model_to_dict(self)
         item['fecha_apertura'] = self.fecha_apertura.strftime('%d/%m/%Y')
+        item['fecha_cierre'] = self.fecha_cierre.strftime('%d/%m/%Y') if (self.fecha_cierre) else ''
+        item['caja_cerrada'] = '<span class="badge badge-success">NO</span>' if (self.estado) else '<span class="badge badge-danger">SI</span>'
+        print(self.estado)
         return item
 
     class Meta:
