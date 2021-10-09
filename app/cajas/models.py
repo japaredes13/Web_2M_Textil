@@ -1,7 +1,7 @@
 from django.db import models
 from bases.models import ClaseModelo
 from datetime import datetime
-from ventas.models import Venta, DetalleVenta, CuotaVenta
+from ventas.models import Venta, CuotaVenta
 from django.forms.models import model_to_dict
 
 class Caja(ClaseModelo):

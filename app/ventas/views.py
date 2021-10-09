@@ -192,7 +192,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
         configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
         caja = Caja.objects.filter(estado=True).first()
         user = caja.user_created_id
-        context ["bancos"] = Banco.objects.all()
+        context ["bancos"] = Banco.objects.filter(estado=True)
         numero = str(configuracion_venta.numero)
         cantidad_digito = 7 - len(numero)
         prefijo = '0' * cantidad_digito
