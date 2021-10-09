@@ -50,7 +50,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
         context['title'] = 'Listado de Ventas'
         context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
         context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
-        context ["bancos"] = Banco.objects.all()
+        context ["bancos"] = Banco.objects.filter(estado=True)
         return context
 
 
@@ -93,28 +93,27 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                 cuota_id=request.POST['id'] 
                 cuota=CuotaVenta.objects.get(id=cuota_id)
                 caja = Caja.objects.get(estado=True)
-                if (estado=='Pagado'):
-                    cuota.estado =  True
-                    cuota.fecha_cancelacion = datetime.now()
-                    cuota.save()
+                cuota.estado =  True
+                cuota.fecha_cancelacion = datetime.now()
+                cuota.save()
 
-                    cobro = Cobro()
-                    cobro.venta_id = cuota.venta_id
-                    cobro.cuota_id = cuota_id
-                    cobro.caja_id = caja.id
-                    cobro.fecha_cobro = cuota.fecha_cancelacion
-                    cobro.medio_cobro = medio_cobro
-                    cobro.user_created_id = self.request.user.id
-                    if (medio_cobro=='Cheque'):
-                        cobro.monto_cobrado = cuota.monto_cuota
-                        cobro.banco_id = banco
-                        caja.monto_cheque = cobro.monto_cobrado
+                cobro = Cobro()
+                cobro.venta_id = cuota.venta_id
+                cobro.cuota_id = cuota_id
+                cobro.caja_id = caja.id
+                cobro.fecha_cobro = cuota.fecha_cancelacion
+                cobro.medio_cobro = medio_cobro
+                cobro.user_created_id = self.request.user.id
+                if (medio_cobro=='Cheque'):
+                    cobro.monto_cobrado = cuota.monto_cuota
+                    cobro.banco_id = banco
+                    caja.monto_cheque = cobro.monto_cobrado
 
-                    else:
-                        cobro.monto_cobrado = cuota.monto_cuota
-                        caja.monto_efectivo = cobro.monto_cobrado
-                    caja.save()
-                    cobro.save()
+                else:
+                    cobro.monto_cobrado = cuota.monto_cuota
+                    caja.monto_efectivo = cobro.monto_cobrado
+                caja.save()
+                cobro.save()
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:

@@ -159,7 +159,7 @@
                             if (row.condicion_venta=='credito' && row.pendiente_cobro >= 1){
                                 button += ' <a rel="detalle_cobro" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Registrar Cobro</a>';
                             }
-                            if (row.anulado==false && row.pendiente_cobro <= 1){
+                            if (row.anulado==false && row.pendiente_cobro == 0){
                                 button += ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/ventas/ventas/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
                                 button += ' <a rel= "anular" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Anular Venta</a>';
                             }
@@ -311,6 +311,12 @@
                     ],
                     columnDefs: [
                         {
+                            targets: [1],
+                            render: function (data, type, row) {
+                                return Intl.NumberFormat('de-DE').format(data);
+                            },
+                        },
+                        {
                             targets: [2],
                             render: function (data, type, row) {
                                 return (data);
@@ -368,33 +374,35 @@
                 else {
                     $('td:eq(4)', tabla_cobro.row(tr.row).node()).css('visibility', 'visible');
                 }
-
+                console.log(medio_cobro)
             });
             $('#tblCobro').on('click', 'button[name="botonCobro"]', function () {
                 var tabla_cobro = $('#tblCobro').DataTable();
-                console.log(tabla_cobro)
                 var tr = tabla_cobro.cell($(this).closest('td, li')).index();
                 var data = tabla_cobro.row(tr.row).data();
                 var medio_cobro = $('td:eq(3) select', tabla_cobro.row(tr.row).node()).val();
                 var banco=$('td:eq(4) select', tabla_cobro.row(tr.row).node()).val();
-                var estado=$('td:eq(2) select', tabla_cobro.row(tr.row).node()).val();
+                var estado=$('td:eq(2)', tabla_cobro.row(tr.row).node()).text();
+                console.log(estado)
                 var id=$('td:eq(5)', tabla_cobro.row(tr.row).node()).text();
+                alert_action('Notificación', '¿Desea pagar la cuota?', function () {
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: 'POST',
+                        data: {
+                            'action': 'edit_cuota',
+                            'id': data.id,
+                            'estado': estado,
+                            'medio_cobro': medio_cobro,
+                            'banco': banco,
+                        },
+                        dataType: 'json',
+                    }).done(function (data) {
+                        $('#tblVentas').DataTable().ajax.reload();
+                    }).always(function (data) {
 
-                $.ajax({
-                    url: window.location.pathname,
-                    type: 'POST',
-                    data: {
-                        'action': 'edit_cuota',
-                        'id': data.id,
-                        'estado': estado,
-                        'medio_cobro': medio_cobro,
-                        'banco': banco,
-                    },
-                    dataType: 'json',
-                }).done(function (data) {
-                    $('#tblVentas').DataTable().ajax.reload();
-                }).always(function (data) {
-
+                    });
+                }, function () {
                 });
             });
 

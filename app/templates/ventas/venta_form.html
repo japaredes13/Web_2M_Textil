@@ -138,30 +138,31 @@
         {
             if (this.value=="Efectivo"){
             console.log(this.value);
-            $('#form_banco').hide();
+                $('#form_banco').hide();
 
             }
             else{
-            $('#form_banco').show();
+                $('#form_banco').show();
   
             }
         });
         $('#condicion_venta').on('change', function()
         {
-            if (this.value=="efectivo"){
+            if (this.value=="credito"){
             console.log(this.value);
-            $('#form_medio_cobro').hide();
+                $('#form_medio_cobro').hide();
 
             }
             else{
-            $('#form_medio_cobro').show();
+                $('#form_medio_cobro').show();
   
             }
         });
 
         $('#banco').val("{{ obj.banco.id }}").change();
         $('#banco').select2({
-            width: '100%'
+            width: '100%',
+            placeholder: 'Seleccione el banco'
         });
 
         $('#banco').on('change', function () {
