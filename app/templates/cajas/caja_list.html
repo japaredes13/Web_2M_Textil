@@ -73,6 +73,7 @@
             </div>
         </div>
     </div>
+    {% include 'cajas/partials/modal_detalle_caja.html' %}
 {% endblock content %}
 
 {% block js_page %}
@@ -102,7 +103,8 @@
                         "render": function( data, type, row ) {
                             var button = ''
                             if (row.estado){
-                                button += '<a rel= "cerrar" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Cerrar Caja</a>';
+                                button += '<a rel= "cerrar" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Cerrar Caja</a>' +
+                                          ' <a rel="detalle_caja" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Caja</a>';
                             }
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Caja" href="/cajas/cajas/'+row.id+'/edit"><i class="fas fa-edit"></i></a>' + button;
 
@@ -139,6 +141,43 @@
                         "previous": "Anterior",
                     }
                 }
+            });
+
+            $('.table tbody')
+            .on('click', 'a[rel="detalle_caja"]', function () {
+                var tr = table.cell($(this).closest('td, li')).index();
+                var data = table.row(tr.row).data();
+                console.log(data)
+                $('#tblDetalleCaja').DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    destroy: true,
+                    deferRender: true,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    data: data.detalle_caja,
+                    columns: [
+                        {"data": "monto_apertura"},
+                        {"data": "monto_ingreso"},
+                        {"data": "monto_egreso"},
+                        {"data": "monto_efectivo"},
+                        {"data": "monto_cheque"},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [0,1,2],
+                            render: function (data, type, row) {
+                                return Intl.NumberFormat('de-DE').format(data);
+                            }
+                        },
+                    ],
+                    initComplete: function (settings, json) {
+
+                    }
+                });
+                $('#detalle_caja').modal('show');
             });
 
             $('.table tbody')

@@ -216,6 +216,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     data.append(item)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
+                print(request_venta)
                 with transaction.atomic():
                     venta = Venta()
                     cliente = Cliente.objects.get(pk=request_venta['cliente'])
@@ -226,9 +227,11 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     venta.fecha_venta = datetime.strptime(venta.fecha_venta, "%d/%m/%Y").strftime("%Y-%m-%d")
                     venta.condicion_venta = request_venta['condicion_venta']
                     venta.medio_cobro = request_venta['medio_cobro']
-                    print(request_venta['banco'])
                     venta.user_created_id = self.request.user.id
                     venta.plazo = request_venta['plazo']
+                    venta.numero_cheque = request_venta['numero_cheque']
+                    print(request_venta['numero_cheque'])
+                    print(venta.numero_cheque)
                     venta.save()
                     
                     monto_total = 0
@@ -279,6 +282,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         if (venta.medio_cobro=='Cheque'):
                             nombre_banco = Banco.objects.get(pk=request_venta['banco'])                    
                             cobro.banco = nombre_banco
+                            #cobro.numero_cheque = venta.numero_cheque
                         cobro.save()
 
                     if (venta.condicion_venta=='credito'):

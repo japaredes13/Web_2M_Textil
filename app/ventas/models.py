@@ -16,6 +16,7 @@ class Venta(ClaseModelo):
     condicion_venta = models.CharField(max_length=20, choices = condiciones, default = 'contado')
     anulado = models.BooleanField(default=False)
     plazo = models.IntegerField(null=True, blank=True)
+    numero_cheque = models.IntegerField(default=0,null=True, blank=True)
     fecha_venta = models.DateField(default=datetime.now)
     monto_total = models.IntegerField(default=0)
     excentas = models.IntegerField(default=0,null=True, blank=True)

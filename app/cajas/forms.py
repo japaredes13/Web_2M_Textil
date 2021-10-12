@@ -61,7 +61,11 @@ class CobroForm(forms.ModelForm):
             'banco': forms.Select(attrs={
                 'class': 'form-control select2',
                 'style': 'width: 100%'
-            })
+            }),
+            'numero_cheque': forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete':'off',
+            }),
         }
 
 class BancoForm(forms.ModelForm):

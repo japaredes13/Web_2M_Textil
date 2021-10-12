@@ -30,7 +30,11 @@ class VentaForm(forms.ModelForm):
 			'total_iva_10' : forms.TextInput(attrs={
                 'readonly': True,
                 'class': 'form-control',
-            })
+            }),
+            'numero_cheque' : forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete':'off',
+            }),
         }
 
 class CuotaVentaForm(forms.ModelForm):

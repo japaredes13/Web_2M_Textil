@@ -17,9 +17,17 @@ class Caja(ClaseModelo):
 
     def toJSON(self):
         item = model_to_dict(self)
+        caja=Caja.objects.get(id=self.id)
         item['fecha_apertura'] = self.fecha_apertura.strftime('%d/%m/%Y')
         item['fecha_cierre'] = self.fecha_cierre.strftime('%d/%m/%Y') if (self.fecha_cierre) else ''
         item['caja_cerrada'] = '<span class="badge badge-success">NO</span>' if (self.estado) else '<span class="badge badge-danger">SI</span>'
+        item['detalle_caja']= [{
+            'monto_apertura' : self.monto_apertura,
+            'monto_ingreso' : self.monto_ingreso,
+            'monto_egreso' : self.monto_egreso,
+            'monto_efectivo' : self.monto_efectivo,
+            'monto_cheque' : self.monto_cheque,
+        }]
         print(self.estado)
         return item
 
@@ -52,6 +60,7 @@ class Cobro(ClaseModelo):
                     ('cheque', 'Cheque'))
     medio_cobro = models.CharField(max_length=20, choices = tipos_cobro, default = 'efectivo')
     banco = models.ForeignKey(Banco, models.PROTECT, null=True)
+    numero_cheque = models.IntegerField(default=0,null=True)
     fecha_cobro = models.DateField(default=datetime.now)
 
     def toJSON(self):

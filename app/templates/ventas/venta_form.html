@@ -43,6 +43,7 @@
                 fecha_venta: '',
                 condicion_venta: '',
                 plazo: '',
+                numero_cheque: 0,
                 //sub_total_sin_iva: 0,
                 monto_total: 0,
                 total_iva_10: 0,
@@ -124,6 +125,7 @@
                 });
             }
         };
+        console.log(venta.items)
         
         $('#fecha_venta').datetimepicker({
             format: 'DD/MM/YYYY',
@@ -139,11 +141,11 @@
             if (this.value=="Efectivo"){
             console.log(this.value);
                 $('#form_banco').hide();
-
+                $('#numero_cheque').hide();
             }
             else{
                 $('#form_banco').show();
-  
+                $('#numero_cheque').show();
             }
         });
         $('#condicion_venta').on('change', function()
@@ -277,11 +279,13 @@
         venta.list();
 
         var validNumber = new RegExp(/^\d*\.?\d*$/);
+        console.log($('#numero_cheque').val())
 
         //evento para enviar el formulario
         $(form).on('submit', function (e){
             e.preventDefault();
-
+            venta.items.numero_cheque = $('input[name="numero_cheque"]').val();;
+            console.log('jeje');
             if (venta.items.telas.length == 0){
                 message_error('Debe tener al menos un ítem en el detalle de la venta');
                 return false;
@@ -291,12 +295,15 @@
             venta.items.plazo = $('select[name="plazo"]').val();
             venta.items.fecha_venta = $('input[name="fecha_venta"]').val();
             venta.items.numero_factura = $('#numero_factura').val();
+            console.log(venta.items.numero_factura)
+        
             venta.items.medio_cobro = $('#medio_cobro').val();
             venta.items.banco = $('select[name="banco"]').val();
 
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('venta', JSON.stringify(venta.items));
+            console.log(venta.items)
             submit_with_ajax(window.location.pathname, 'Notificación',
             '¿Estas seguro de que quiere registrar la venta?', parameters, function (response) {
                 alert_action('Notificación', '¿Desea imprimir la factura de venta?', function () {
@@ -326,11 +333,16 @@
 
         function medioPagoSelect(select){
             var form_banco = document.getElementById('form_banco');
+            var numero_cheque = document.getElementById('numero_cheque');
             if(select.value=='Cheque'){
                 form_banco.style.display = "block";
+                numero_cheque.style.display = "block";
             } else {
                 form_banco.style.display = "none";
+                numero_cheque.style.display = "none";
             }
         }
+
+        
     </script>
 {% endblock js_page %}
