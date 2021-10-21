@@ -1,6 +1,6 @@
 from django import forms
 from datetime import datetime
-from .models import ConfiguracionUsuario, ConfiguracionProducto, ConfiguracionVenta
+from .models import ConfiguracionUsuario, ConfiguracionProducto, ConfiguracionVenta, ConfiguracionEgreso
 
 
 class ConfiguracionUsuarioForm(forms.ModelForm):
@@ -80,4 +80,17 @@ class ConfiguracionVentaForm(forms.ModelForm):
                     'data-toggle': 'datetimepicker'
                 }
             ),
+        }
+
+class ConfiguracionEgresoForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracionEgreso
+        fields = [
+            'monto_maximo'
+        ]
+        labels = {
+            'monto_maximo':"Monto Máximo:"
+        }
+        widgets = {
+            'monto_maximo':forms.TextInput(attrs={'class':'form-control','autocomplete':'off', 'required':'required'}),
         }

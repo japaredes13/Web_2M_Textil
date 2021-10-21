@@ -29,3 +29,12 @@ class ConfiguracionVenta(ClaseModelo):
 
     class Meta:
         verbose_name_plural ="Configuracion de Venta"
+
+class ConfiguracionEgreso(ClaseModelo):
+    monto_maximo = models.IntegerField(unique=True,
+                                        error_messages={
+                                            'unique': 'Monto Máximo ya existente'
+                                        })
+
+    class Meta:
+        verbose_name_plural ="Configuracion Egreso"

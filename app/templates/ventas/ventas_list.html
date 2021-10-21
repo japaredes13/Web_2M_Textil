@@ -75,6 +75,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label><strong>Deuda Crédito:</strong></label>
+                                        <select id='deuda_credito' class="form-control">
+                                            <option value="">No</option>
+                                            <option value="deuda">Si</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <br>
                             <div class="row">
                                 <div class="col-md-12">
@@ -138,6 +149,7 @@
                         d.action = 'search',
                         d.cliente = $('#cliente').val(),
                         d.condicion_venta = $('#condicion_venta').val(),
+                        d.deuda_credito = $('#deuda_credito').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
                         d.fecha_hasta = $('#fecha_hasta').val()
                     },
@@ -248,6 +260,16 @@
                 var tr = table.cell($(this).closest('td, li')).index();
                 var data = table.row(tr.row).data();
                 console.log(data)
+                console.log(data.monto_total)
+                console.log(data.detalle_credito)
+                $('#id_monto_total').text(data.monto_total)
+                if (data.saldo_actual.monto_cuota__sum==null){
+                    $('#id_saldo_actual').text(0);
+                }
+                else{
+                    $('#id_saldo_actual').text(data.saldo_actual.monto_cuota__sum);
+                }
+                console.log(data.saldo_actual.monto_cuota__sum)
                 $('#tblDetalleCredito').DataTable({
                     responsive: true,
                     autoWidth: false,
@@ -291,7 +313,6 @@
                 });
                 $('#detalle_credito').modal('show');
             });
-
             $('.table tbody')
             .on('click', 'a[rel="detalle_cobro"]', function () {
                 var tr = table.cell($(this).closest('td, li')).index();
@@ -444,6 +465,9 @@
                 table.ajax.reload();
             });
             $('#condicion_venta').change(function(){
+                table.ajax.reload();
+            });
+            $('#deuda_credito').change(function(){
                 table.ajax.reload();
             });
             $('input[name="fecha_desde"]').on('change.datetimepicker', function() {

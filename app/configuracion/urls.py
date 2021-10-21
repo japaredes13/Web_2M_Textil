@@ -15,4 +15,7 @@ urlpatterns = [
     path('configuracion_venta/create',ConfiguracionVentaCreate.as_view(), name='configuracion_venta_create'),
     path('configuracion_venta/<int:pk>/edit', ConfiguracionVentaEdit.as_view(), name='configuracion_venta_edit'),
 
+    #rutas para Egreso
+    path('configuracion_egreso/',ConfiguracionEgresoView.as_view(), name='configuracion_egreso_list'),
+    path('configuracion_egreso/<int:pk>/edit', ConfiguracionEgresoEdit.as_view(), name='configuracion_egreso_edit'),
 ]

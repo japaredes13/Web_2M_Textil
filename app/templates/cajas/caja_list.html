@@ -103,10 +103,12 @@
                         "render": function( data, type, row ) {
                             var button = ''
                             if (row.estado){
-                                button += '<a rel= "cerrar" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Cerrar Caja</a>' +
-                                          ' <a rel="detalle_caja" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Caja</a>';
+                                button += '<a class="btn btn-warning btn-circle btn-sm" title="Editar Caja" href="/cajas/cajas/'+row.id+'/edit"><i class="fas fa-edit"></i></a>' +
+                                          ' <a rel= "cerrar" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Cerrar Caja</a>';
+                                          
                             }
-                            return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Caja" href="/cajas/cajas/'+row.id+'/edit"><i class="fas fa-edit"></i></a>' + button;
+                            button += ' <a rel="detalle_caja" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Detalle Caja</a>';
+                            return button 
 
                         },
                         orderable: false
@@ -116,7 +118,7 @@
                     {
                         targets: [0],
                         render: function (data, type, row) {
-                            return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                            return 'Gs.' + Intl.NumberFormat('de-DE').format(data);
                         }
                     }
                 ],
@@ -164,10 +166,11 @@
                         {"data": "monto_egreso"},
                         {"data": "monto_efectivo"},
                         {"data": "monto_cheque"},
+                        {"data": "monto_actual"},
                     ],
                     columnDefs: [
                         {
-                            targets: [0,1,2],
+                            targets: [0,1,2,3,4,5],
                             render: function (data, type, row) {
                                 return Intl.NumberFormat('de-DE').format(data);
                             }

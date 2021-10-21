@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
 from .models import  Caja, Banco, Cobro, Movimiento
+from configuracion.models import ConfiguracionEgreso
 from .forms import CajaForm, BancoForm, CobroForm
 from .forms import CajaForm, CajaMovimientoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -69,6 +70,7 @@ class CajaCreate(LoginRequiredMixin, generic.CreateView):
         return super().render_to_response(context, **response_kwargs)
 
     def form_valid(self, form):
+        form.instance.monto_actual = self.request.POST['monto_apertura']
         form.instance.user_created = self.request.user
         form.instance.estado = True
         messages.success(self.request, "Apertura de caja éxitosamente." )
@@ -202,12 +204,21 @@ class CajaMovimientoCreate(LoginRequiredMixin, generic.CreateView):
             return redirect("cajas:movimientos_list")
         
         caja = Caja.objects.filter(estado=True).first()
+        
         if (self.request.POST['tipo_movimiento'] == 'ingreso'):
             caja.monto_ingreso += int(self.request.POST['monto'])
+            caja.monto_actual += int(self.request.POST['monto'])
 
         if (self.request.POST['tipo_movimiento'] == 'egreso'):
             caja.monto_egreso += int(self.request.POST['monto'])
+            caja.monto_actual -= int(self.request.POST['monto'])
         
+        configuracion = ConfiguracionEgreso.objects.filter(estado=True).values('monto_maximo').first()
+        monto_max = configuracion['monto_maximo']
+        if (int(self.request.POST['monto'])>monto_max):
+            messages.error(self.request, "EL monto debe ser menor a:." +str(monto_max))
+            return redirect("cajas:movimiento_create")
+
         caja.save()
         form.instance.user_created = self.request.user
         form.instance.estado = True
@@ -241,12 +252,20 @@ class CajaMovimientoEdit(LoginRequiredMixin, generic.UpdateView):
             return redirect("cajas:movimientos_list")
         
         caja = Caja.objects.filter(estado=True).first()
-        '''if (self.request.POST['tipo_movimiento'] == 'ingreso'):
+        movimiento = Movimiento.objects.get(id=self.get_object().id)
+        if (self.request.POST['tipo_movimiento'] == 'ingreso'):
+            caja.monto_ingreso -= movimiento.monto
             caja.monto_ingreso += int(self.request.POST['monto'])
+            caja.monto_actual -= movimiento.monto
+            caja.monto_actual += int(self.request.POST['monto'])
 
         if (self.request.POST['tipo_movimiento'] == 'egreso'):
+            caja.monto_egreso -= movimiento.monto
             caja.monto_egreso += int(self.request.POST['monto'])
-        '''
+            caja.monto_actual += movimiento.monto
+            caja.monto_actual -= int(self.request.POST['monto'])
+            
+        
         caja.save()
         form.instance.user_updated = self.request.user
         form.instance.caja_id = caja.id

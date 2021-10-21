@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from bases.models import ClaseModelo
 from clientes.models import Cliente
 from telas.models import Tela
@@ -31,11 +32,12 @@ class Venta(ClaseModelo):
         item['detalle'] = [i.toJSON() for i in self.detalleventa_set.all()]
         item['venta_anulada'] = '<span class="badge badge-danger">SI</span>' if (self.anulado) else '<span class="badge badge-success">NO</span>'
         item['detalle_credito'] = [i.toJSON() for i in self.cuotaventa_set.all()]
+        #item['detalle_credito']['monto_total']='200000'
         item['detalle_cobro'] = [i.toJSON() for i in self.cuotaventa_set.all()]
         cuota = CuotaVenta.objects.select_related('venta').filter(venta_id=self.id ,estado=False, venta__condicion_venta='credito')
-        print(cuota)
         item['pendiente_cobro'] = int(cuota.count())
-        print(cuota.count())
+        item['saldo_actual'] = cuota.aggregate(Sum('monto_cuota'))
+        print(cuota.aggregate(Sum('monto_cuota')))
         return item
 
 

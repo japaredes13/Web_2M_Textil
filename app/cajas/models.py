@@ -1,6 +1,7 @@
 from django.db import models
 from bases.models import ClaseModelo
 from datetime import datetime
+from configuracion.models import ConfiguracionEgreso
 from ventas.models import Venta, CuotaVenta
 from django.forms.models import model_to_dict
 
@@ -11,6 +12,7 @@ class Caja(ClaseModelo):
     monto_cheque = models.IntegerField(default=0,null=True)
     monto_ingreso = models.IntegerField(default=0,null=True)
     monto_egreso = models.IntegerField(default=0,null=True)
+    monto_actual = models.IntegerField(null=True)
     fecha_apertura = models.DateField(default=datetime.now)
     fecha_cierre = models.DateField(null=True)
     descripcion = models.CharField(max_length=200)
@@ -27,6 +29,7 @@ class Caja(ClaseModelo):
             'monto_egreso' : self.monto_egreso,
             'monto_efectivo' : self.monto_efectivo,
             'monto_cheque' : self.monto_cheque,
+            'monto_actual' : self.monto_actual,
         }]
         print(self.estado)
         return item
@@ -79,10 +82,17 @@ class Movimiento(ClaseModelo):
     fecha_movimiento = models.DateField(default=datetime.now)
     monto = models.IntegerField()
     descripcion = models.CharField(max_length=100,null=True, blank=True)
-    numero_comprobante = models.CharField (max_length=20,null=True, blank=True)
+    numero_comprobante = models.CharField (max_length=20,null=True, blank=True, unique=True,
+                                                                                error_messages={
+                                                                                    'unique': 'Número de Comprobante ya existente'
+                                                                                })
 
     def toJSON(self):
         item = model_to_dict(self)
+        #configuracion = ConfiguracionEgreso.objects.filter(estado=True)
+        #item['monto_maximo'] = configuracion.monto_maximo
+        configuracion = ConfiguracionEgreso.objects.filter(estado=True).values('monto_maximo').first()
+        print(configuracion['monto_maximo'])
         item['fecha_movimiento'] = self.fecha_movimiento.strftime('%d/%m/%Y')
         item['tipo_movimiento'] = self.tipo_movimiento.upper()
         return item

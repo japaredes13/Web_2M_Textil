@@ -1,0 +1,108 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Crear Cantidad Máxima Egreso</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'configuracion:configuracion_egreso_list' %}">Egreso Máximo</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos del Egreso Máximo</h3>
+                        </div>
+                    
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_egreso_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'configuracion:configuracion_egreso_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_monto_maximo"><strong>{{form.monto_maximo.label}}</strong></label>
+                                    {{form.monto_maximo}}
+                                </div>
+                            </div>
+                            <br>
+                            <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'configuracion:configuracion_egreso_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+<script>
+ $(document).ready(function(){
+    var monto_maximo = document.getElementById("id_monto_maximo");
+    monto_maximo.addEventListener('keyup', function(evt){
+        var n = this.value.replace(/\D/g,"")//Reemplaza los no digitos, ej: A, ?, _
+                          .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, "."); //
+        monto_maximo.value = n;
+    }, false);
+
+    $("#form").validate({
+        rules: {
+            monto_maximo: {required: true, montoRule:true},
+            descripcion: {required: false},
+        },
+        messages: {
+            monto_maximo: {required: "* El campo es requerido"},
+        },
+        errorElement: 'span',
+        highlight: function(element){
+            if (element.name == 'monto_maximo') {
+                $(element).closest('.form-control').addClass('is-invalid');
+                $(element).closest('.form-control').removeClass('is-valid');
+            }
+        },
+        unhighlight: function(element){
+            if (element.name == 'monto_maximo') {
+                $(element).closest('.form-control').addClass('is-valid');
+                $(element).closest('.form-control').removeClass('is-invalid');
+            }
+        }
+    });
+
+    $.validator.addMethod("montoRule", function (value, element) {
+            value = value.split('.').join('');
+            return parseInt(value) > 0
+        }, "* El campo debe ser mayor a 0");
+
+    $(form).on('submit', function (e){
+        var monto_maximo = String($('#id_monto_maximo').val());
+        monto_maximo = monto_maximo.split('.').join(''); 
+        $('#id_monto_maximo').val(monto_maximo);
+    });            
+ });
+</script>
+{% endblock js_page %}

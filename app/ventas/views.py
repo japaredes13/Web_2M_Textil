@@ -65,8 +65,14 @@ class VentaView(LoginRequiredMixin, generic.ListView):
             if request.POST['action'] == 'search':
                 data = []
                 ventas = self.queryset()
-                for venta in ventas:
-                    data.append(venta.toJSON())
+                if (request.POST['deuda_credito']=='deuda'):
+                    for venta in ventas:
+                        venta_auxiliar = venta.toJSON()
+                        if (venta_auxiliar['pendiente_cobro']>=1):
+                            data.append(venta_auxiliar)
+                else:
+                    for venta in ventas:
+                        data.append(venta.toJSON())
             elif request.POST['action'] == 'anular_factura':
                 id=request.POST['id']
                 detalles = DetalleVenta.objects.filter(venta_id=id)
@@ -191,7 +197,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
         context = super().get_context_data(**kwargs)
         configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
         caja = Caja.objects.filter(estado=True).first()
-        user = caja.user_created_id
+        #user = caja.user_created_id
         context ["bancos"] = Banco.objects.filter(estado=True)
         numero = str(configuracion_venta.numero)
         cantidad_digito = 7 - len(numero)
@@ -243,7 +249,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         detalle.tela_id = det['id']
                         detalle.metraje_vendido = float(det['metraje_vendido'])
                         detalle.precio_unitario = int(det['precio_venta'])
-                        detalle.sub_total = float(det['metraje_vendido']) * int(det['precio_venta'])
+                        detalle.sub_total = round(float(det['metraje_vendido']) * int(det['precio_venta']))
                         #sub_total_sin_iva += detalle.sub_total
                         detalle.sub_total_iva_10 =  round(detalle.sub_total / 11)
                         monto_total += detalle.sub_total
@@ -269,6 +275,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
 
                     if (venta.medio_cobro=='Efectivo'):
                         caja.monto_efectivo += venta.monto_total
+                        caja.monto_actual += caja.monto_efectivo
                         caja.save()
 
                     if (venta.condicion_venta=='contado'):

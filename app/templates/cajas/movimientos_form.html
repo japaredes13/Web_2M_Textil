@@ -36,7 +36,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label form="id_monto_apertura"><strong>{{form.tipo_movimiento.label}}</strong></label>
+                                            <label form="id_tipo_movimiento"><strong>{{form.tipo_movimiento.label}}</strong></label>
                                                 {{form.tipo_movimiento}}
                                         </div>
                                     </div>
@@ -60,7 +60,7 @@
                                                 {{form.descripcion}}
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="form_numero_comprobante" style="display:none;">
                                         <div class="form-group">
                                             <label for="id_numero_comprobante"><strong>{{form.numero_comprobante.label}}</strong></label>
                                                 {{form.numero_comprobante}}
@@ -100,25 +100,37 @@ $(document).ready(function(){
     $("#form").validate({
         rules: {
             monto: {required: true, montoRule:true},
-            descripcion: {required: false},
+            descripcion: {required: true, descRule:true },
+            numero_comprobante: {required: true, NumRule:true},
         },
         messages: {
             monto: {required: "* El campo es requerido"},
+            numero_comprobante: {required: "* El campo es requerido"},
+            descripcion: {required: "* El campo es requerido"},
         },
         errorElement: 'span',
         highlight: function(element){
-            if (element.name == 'monto') {
+            if (element.name == 'monto' || element.name == 'numero_comprobante' || element.name == 'descripcion') {
                 $(element).closest('.form-control').addClass('is-invalid');
                 $(element).closest('.form-control').removeClass('is-valid');
             }
         },
         unhighlight: function(element){
-            if (element.name == 'monto') {
+            if (element.name == 'monto' || element.name == 'numero_comprobante'  || element.name == 'descripcion') {
                 $(element).closest('.form-control').addClass('is-valid');
                 $(element).closest('.form-control').removeClass('is-invalid');
             }
         }
     });
+    $.validator.addMethod("descRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+
+    $.validator.addMethod("NumRule", function (value, element) {
+            var pattern = /^[0-9]+$/;
+            return this.optional(element) || pattern.test(value);
+        }, "* El formato del comprobante debe ser numérico");
 
     $.validator.addMethod("montoRule", function (value, element) {
             value = value.split('.').join('');
@@ -129,7 +141,29 @@ $(document).ready(function(){
         var monto = String($('#id_monto').val());
         monto = monto.split('.').join(''); 
         $('#id_monto').val(monto);
-    });            
+    }); 
+
+    $('#id_tipo_movimiento').on('change', function()
+    {
+        if (this.value=="ingreso"){
+        console.log(this.value);
+            $('#form_numero_comprobante').hide();
+
+        }
+        else{
+            $('#form_numero_comprobante').show();
+
+        }
+    });
+
+    function movimientoSelect(select){
+        var form_numero_comprobante = document.getElementById('form_numero_comprobante');
+        if(select.value=='egreso'){
+            form_numero_comprobante.style.display = "block";
+        } else {
+            form_numero_comprobante.style.display = "none";
+        }
+    }          
 });
 </script>
 {% endblock js_page %}

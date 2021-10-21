@@ -14,7 +14,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Telas</h1>
+                    <h1 class="m-0">Movimientos</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -67,6 +67,7 @@
                                             <th>Tipo Movimiento</th>
                                             <th>Fecha Movimiento</th>
                                             <th>Descripcion</th>
+                                            <th>Nº Comprobante</th>
                                             <th>Acciones</th>
                                         </thead>
                                         <tbody>
@@ -106,6 +107,7 @@
                     { "data": "tipo_movimiento" },
                     { "data": "fecha_movimiento" },
                     { "data": "descripcion" },
+                    { "data": "numero_comprobante" },
                     {
                         "render": function( data, type, row ) {
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar Tela" href="/cajas/movimientos/'+row.id+'/edit"><i class="fas fa-edit"></i></a>';

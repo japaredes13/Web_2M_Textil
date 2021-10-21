@@ -56,6 +56,7 @@
                 //var sub_total_sin_iva = 0;
                 $.each(this.items.telas,function(pos,dict){
                     dict.sub_total = Math.round(dict.metraje_vendido * parseInt(dict.precio_venta));
+                    console.log(dict.sub_total)
                     //sub_total_sin_iva += dict.subtotal;
                     monto_total += dict.sub_total; 
                 });
