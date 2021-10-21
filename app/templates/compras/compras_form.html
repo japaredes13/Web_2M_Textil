@@ -95,8 +95,17 @@
                                     <label>Condición de Compra:</label>
                                     {{ form.condicion_compra }}
                                 </div>
+                                <div class="form-group" id="form_plazo" style="display:none;">
+                                    <label for="plazo">Plazo:</label>
+                                    <select name="plazo" id="plazo" class="form-control" >
+                                        <option value="30">30 Días</option>
+                                        <option value="60">60 Días</option>
+                                        <option value="90">90 Días</option>
+                                        <option value="120">120 Días</option>
+                                    </select>
+                                </div>
                                 <div class="form-group">
-                                    <label>Subtotal:</label>
+                                    <label>Monto total:</label>
                                     {{ form.monto_total }}
                                 </div>
                                 <div class="form-group">
@@ -132,6 +141,8 @@
             inicio_timbrado: '',
             fin_timbrado: '',
             condicion_compra: '',
+            plazo: '',
+            numero_cheque: 0,
             monto_total: 0,
             total_iva_10: 0,
             telas: []
@@ -264,7 +275,16 @@
 
 
     });
-
+    function condicionCompraSelect(select){
+        var form_plazo = document.getElementById('form_plazo');
+        if(select.value=='credito'){
+            form_plazo.style.display = "block";
+            //form_medio_cobro.style.display = "none";
+        } else {
+            form_plazo.style.display = "none";
+            //form_medio_cobro.style.display = "block";
+        }
+    }
     // event submit
     $('form').on('submit', function (e) {
         e.preventDefault();
@@ -287,6 +307,7 @@
             compras.items.nro_factura = $('input[name="nro_factura"]').val();
             compras.items.timbrado = $('input[name="timbrado"]').val();
             compras.items.condicion_compra = $('select[name="condicion_compra"]').val();
+            compras.items.plazo = $('select[name="plazo"]').val();
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('compras', JSON.stringify(compras.items));  

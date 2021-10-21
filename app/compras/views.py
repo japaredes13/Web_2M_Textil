@@ -3,13 +3,16 @@ from django.db.models.fields.related import ForeignObject
 from django.shortcuts import render, redirect
 from django.db import transaction
 from django.views import generic
+from cajas.models import Caja, Pago, Banco
+from cajas.forms import PagoForm, BancoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
-from datetime import datetime
+from datetime import datetime,date
+from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from reportlab.lib.utils import prev_this_next
 from proveedores.models import Proveedor
@@ -307,6 +310,7 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         context['fecha_compra'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
         context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
         context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
+        context ["bancos"] = Banco.objects.filter(estado=True)
         return context
 
 
@@ -350,6 +354,7 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.fin_timbrado = str(request_compra['fin_timbrado'])
                     compra.fin_timbrado = datetime.strptime(compra.fin_timbrado, "%d/%m/%Y").strftime("%Y-%m-%d")
                     compra.condicion_compra = request_compra['condicion_compra']
+                    compra.plazo = request_compra['plazo']
                     compra.user_created_id = self.request.user.id
                     compra.save()
                     
@@ -376,6 +381,20 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.monto_total = monto_total
                     compra.total_iva_10 = total_iva_10
                     compra.save()
+
+                    if (compra.condicion_compra=='credito'):
+                        compra.plazo = request_compra['plazo']
+                        cantidad = int(int(compra.plazo)/30)
+                        monto = int(int(compra.monto_total)/cantidad)
+                        for i in range(cantidad):
+                            deuda = CuotaCompra()
+                            deuda.compra_id = compra.id
+                            deuda.numero_cuota = i+1
+                            deuda.monto_cuota = monto
+                            deuda.fecha_vencimiento =  datetime.now() + relativedelta(months=i+1)
+                            deuda.user_created_id = self.request.user.id
+                            deuda.estado = False
+                            deuda.save()
  
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'

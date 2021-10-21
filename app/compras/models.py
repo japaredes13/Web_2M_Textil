@@ -66,6 +66,8 @@ class Compra(ClaseModelo):
     condicion_compra = models.CharField(max_length=20, choices = condiciones, default = 'contado')
     fecha_compra = models.DateField(default=datetime.now)
     inicio_timbrado = models.DateField(default=datetime.now)
+    plazo = models.IntegerField(null=True, blank=True)
+    numero_cheque = models.IntegerField(default=0,null=True, blank=True)
     fin_timbrado = models.DateField(default=datetime.now)
     excentas = models.IntegerField(default=0,null=True, blank=True)
     total_iva_5 = models.IntegerField(default=0,null=True, blank=True)
@@ -83,6 +85,10 @@ class Compra(ClaseModelo):
         #item['inicio_timbrado'] = self.inicio_timbrado.strftime('%d/%m/%Y')
         #item['fin_timbrado'] = self.fin_timbrado.strftime('%d/%m/%Y')
         item['detalle'] = [i.toJSON() for i in self.detallecompra_set.all()]
+        item['detalle_credito'] = [i.toJSON() for i in self.cuotacompra_set.all()]
+        item['detalle_pago'] = [i.toJSON() for i in self.cuotacompra_set.all()]
+        cuota = CuotaCompra.objects.select_related('compra').filter(compra_id=self.id ,estado=False, compra__condicion_compra='credito')
+        item['pendiente_pago'] = int(cuota.count())
         return item
 
     class Meta:
@@ -114,3 +120,36 @@ class DetalleCompra(ClaseModelo):
     class Meta:
         verbose_name = 'Detalle  de Compra'
         verbose_name_plural = 'Detalle de Compras'
+
+class CuotaCompra(ClaseModelo):
+    compra = models.ForeignKey(Compra, on_delete=models.CASCADE)
+    numero_cuota = models.IntegerField(default=0)
+    monto_cuota = models.IntegerField(default=0)
+    fecha_vencimiento = models.DateField(default=datetime.now)
+    fecha_cancelacion = models.DateField(null=True)
+    monto_cobrado =  models.IntegerField(default=0)
+    def toJSON(self):
+        from cajas.models import Pago
+        item = model_to_dict(self)
+        compra =  model_to_dict(self.compra)
+        cantidad= Pago.objects.filter(cuota_id=self.id).count()
+        if cantidad > 0 :
+            pago=Pago.objects.get(cuota_id=self.id)
+            item['banco']=Pago.banco_id
+            item['medio_cobro']=Pago.medio_pago
+        else:
+            item['banco']=''
+            item['medio_pago']=''
+        
+        compra['fecha_compra'] = compra['fecha_compra'].strftime('%d/%m/%Y')
+        item['compra'] = compra
+        item['numero_cuota'] = self.numero_cuota
+        item['monto_cuota'] = self.monto_cuota
+        item['fecha_vencimiento'] = self.fecha_vencimiento.strftime('%d/%m/%Y')
+        item['fecha_cancelacion'] = self.fecha_cancelacion.strftime('%d/%m/%Y') if (self.fecha_cancelacion) else ''
+        if self.estado:
+            estado = 'Pagado'
+        else:
+            estado = 'Pendiente'
+        item['estado'] = estado
+        return item

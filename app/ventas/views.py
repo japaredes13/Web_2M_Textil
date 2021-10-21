@@ -118,6 +118,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                 else:
                     cobro.monto_cobrado = cuota.monto_cuota
                     caja.monto_efectivo = cobro.monto_cobrado
+                    caja.monto_actual += caja.monto_efectivo
                 caja.save()
                 cobro.save()
             else:

@@ -3,6 +3,7 @@ from bases.models import ClaseModelo
 from datetime import datetime
 from configuracion.models import ConfiguracionEgreso
 from ventas.models import Venta, CuotaVenta
+from compras.models import Compra, CuotaCompra
 from django.forms.models import model_to_dict
 
 class Caja(ClaseModelo):
@@ -73,6 +74,26 @@ class Cobro(ClaseModelo):
 
     class Meta:
         verbose_name_plural ="Cobro"
+
+class Pago(ClaseModelo):
+    compra = models.ForeignKey(Compra, on_delete=models.CASCADE)
+    cuota = models.ForeignKey(CuotaCompra,on_delete=models.CASCADE, null=True)
+    caja = models.ForeignKey(Caja,on_delete=models.CASCADE)
+    monto_pagado = models.IntegerField(default=0)
+    tipos_pago = ( ('efectivo', 'Efectivo'),
+                    ('cheque', 'Cheque'))
+    medio_pago = models.CharField(max_length=20, choices = tipos_pago, default = 'efectivo')
+    banco = models.ForeignKey(Banco, models.PROTECT, null=True)
+    numero_cheque = models.IntegerField(default=0,null=True)
+    fecha_pago = models.DateField(default=datetime.now)
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['fecha_pago'] = self.fecha_pago.strftime('%d/%m/%Y')
+        return item
+
+    class Meta:
+        verbose_name_plural ="Pago"
 
 class Movimiento(ClaseModelo):
     caja = models.ForeignKey(Caja, models.PROTECT) 

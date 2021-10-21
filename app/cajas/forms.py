@@ -1,7 +1,7 @@
 from django import forms
 from datetime import datetime
 from django.db.models import fields
-from .models import Caja, Banco, Cobro, Movimiento
+from .models import Caja, Banco, Cobro, Movimiento, Pago
 
 class CajaForm(forms.ModelForm):
     class Meta:
@@ -56,6 +56,40 @@ class CobroForm(forms.ModelForm):
                 'class': 'form-control',
             }),
             'medio_cobro':forms.Select(attrs={
+                'class': 'form-control' 
+            }),
+            'banco': forms.Select(attrs={
+                'class': 'form-control select2',
+                'style': 'width: 100%'
+            }),
+            'numero_cheque': forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete':'off',
+            }),
+        }
+
+class PagoForm(forms.ModelForm):
+    class Meta:
+        model: Pago
+        fields = '__all__'
+        widgets = {
+            'fecha_pago': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'value': datetime.now().strftime('%Y-%m-%d'),
+                    'autocomplete': 'off',
+                    'class': 'form-control datetimepicker-input',
+                    'id': 'fecha_pago',
+                    'data-target': '#fecha_pago',
+                    'onkeydown':'return false',
+                    'data-toggle': 'datetimepicker'
+                }
+            ),
+            'monto_pagado': forms.TextInput(attrs={
+                'readonly': True,
+                'class': 'form-control',
+            }),
+            'medio_pago':forms.Select(attrs={
                 'class': 'form-control' 
             }),
             'banco': forms.Select(attrs={

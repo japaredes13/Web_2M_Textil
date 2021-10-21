@@ -210,13 +210,17 @@ class CajaMovimientoCreate(LoginRequiredMixin, generic.CreateView):
             caja.monto_actual += int(self.request.POST['monto'])
 
         if (self.request.POST['tipo_movimiento'] == 'egreso'):
-            caja.monto_egreso += int(self.request.POST['monto'])
-            caja.monto_actual -= int(self.request.POST['monto'])
+            if (caja.monto_actual<int(self.request.POST['monto'])):
+                messages.error(self.request, "EL monto debe ser menor a:" +str(caja.monto_actual))
+                return redirect("cajas:movimiento_create")
+            else:
+                caja.monto_egreso += int(self.request.POST['monto'])
+                caja.monto_actual -= int(self.request.POST['monto'])
         
         configuracion = ConfiguracionEgreso.objects.filter(estado=True).values('monto_maximo').first()
         monto_max = configuracion['monto_maximo']
         if (int(self.request.POST['monto'])>monto_max):
-            messages.error(self.request, "EL monto debe ser menor a:." +str(monto_max))
+            messages.error(self.request, "EL monto debe ser menor a:" +str(monto_max))
             return redirect("cajas:movimiento_create")
 
         caja.save()

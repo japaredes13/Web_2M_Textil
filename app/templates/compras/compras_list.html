@@ -124,6 +124,8 @@
         </div>
     </div>
     {% include 'compras/partials/modal_detalle.html' %}
+    {% include 'compras/partials/modal_detalle_credito.html' %}
+    {% include 'compras/partials/modal_detalle_pago.html' %}
 {% endblock content %}
 
 {% block js_page %}
@@ -169,7 +171,14 @@
                     { "data": "monto_total"},
                     { 
                         "render": function( data, type, full ) {
-                            return  '<a rel="details" class="btn btn-secondary btn-block btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>';
+                            var button = ''
+                            if (full.condicion_compra=='credito'){
+                                button += ' <a rel="detalle_credito" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Crédito</a>';
+                            }
+                            if (full.condicion_compra=='credito' && full.pendiente_pago >= 1){
+                                button += ' <a rel="detalle_pago" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Registrar Pago</a>';
+                            }
+                            return  ' <a rel="details" class="btn btn-secondary btn-block btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>' + button;
                         },
                         "orderable":false
                     }
@@ -257,6 +266,189 @@
                    
                     $('#myModelDet').modal('show');
                         
+            });
+
+            $('.table tbody')
+            .on('click', 'a[rel="detalle_credito"]', function () {
+                var tr = table.cell($(this).closest('td, li')).index();
+                var data = table.row(tr.row).data();
+                console.log(data)
+                /*
+                $('#id_monto_total').text(data.monto_total)
+                if (data.saldo_actual.monto_cuota__sum==null){
+                    $('#id_saldo_actual').text(0);
+                }
+                else{
+                    $('#id_saldo_actual').text(data.saldo_actual.monto_cuota__sum);
+                }
+                console.log(data.saldo_actual.monto_cuota__sum)
+                */
+                $('#tblDetalleCredito').DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    destroy: true,
+                    deferRender: true,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    data: data.detalle_credito,
+                    columns: [
+                        {"data": "numero_cuota"},
+                        {"data": "monto_cuota"},
+                        {"data": "estado"},
+                        {"data": "fecha_vencimiento"},
+                        {"data": "fecha_cancelacion"},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [1],
+                            render: function (data, type, row) {
+                                return Intl.NumberFormat('de-DE').format(data);
+                            }
+                        },
+                        {
+                            targets: [-1, -3],
+                            render: function (data, type, row) {
+                                return data;
+                            }
+                        },
+                        {
+                            targets: [-2],
+                            render: function (data, type, row) {
+                                return data;
+                            }
+                        },
+                    ],
+                    initComplete: function (settings, json) {
+
+                    }
+                });
+                $('#detalle_credito').modal('show');
+            });
+
+            $('.table tbody')
+            .on('click', 'a[rel="detalle_pago"]', function () {
+                var tr = table.cell($(this).closest('td, li')).index();
+                var data = table.row(tr.row).data();
+                console.log(data)
+                $('#tblPago').DataTable({
+                    responsive: true,
+                    autoWidth: true,
+                    destroy: true,
+                    deferRender: true,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    data: data.detalle_pago,
+                    columns: [
+                        {"data": "numero_cuota"},
+                        {"data": "monto_cuota"},
+                        {"data": "estado"},
+                        {"data": "medio_cobro"},
+                        {"data": "banco"},
+                        {"data": "fecha_vencimiento"},
+                        {"data": "fecha_cancelacion"},
+                        {"data": "id"},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [1],
+                            render: function (data, type, row) {
+                                return Intl.NumberFormat('de-DE').format(data);
+                            },
+                        },
+                        {
+                            targets: [2],
+                            render: function (data, type, row) {
+                                return (data);
+                            },
+                        },
+                        {
+                            targets: [3],
+                            render: function (data, type, row) {
+
+                                var $select = $("<select class='form-control' style='width:100px' name='medio_pago' id='medio_pago'><option value='Cheque'>Cheque</option><option value='Efectivo'>Efectivo</option></select>");
+                                $select.find('option[value="' + row.medio_pago + '"]').attr('selected', 'selected');
+                                return $select[0].outerHTML
+
+                            },
+                        },
+                        {
+                            targets: [4],
+                                render: function (data, type, row) {
+                                    if (row.medio_pago == 'Efectivo' && row.estado=='Pagado'){
+                                            return ""
+                                    }
+                                    else {
+                                    var $select = $("<select class='form-control' style='width:100px' name = 'banco' id='banco'>{% for banco in bancos %}<option value='{{ banco.id }}''>{{ banco.descripcion}}</option>{% endfor %}</select>");
+                                    $select.find('option[value="' + row.banco + '"]').attr('selected', 'selected');
+                                    return $select[0].outerHTML                                    }
+                                },
+                        },
+                        {
+                            targets: [7],
+                            render: function (data, type, row) {
+                                var buttons = ''; 
+                                if (row.estado=='Pendiente'){
+                                    buttons += '<button id="boton" name="botonCobro" title="Guardar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
+                                }
+                                return buttons;
+                            }
+                        },
+                    ],
+                    initComplete: function (settings, json) {
+
+                    }
+                });
+                $('#detalle_pago').modal('show');
+            });
+
+            $('#tblPago').on('change', 'select[name="medio_pago]', function () {
+                var tabla_pago = $('#tblPago').DataTable();
+                console.log(tabla_pago)
+                var tr = tabla_pago.cell($(this).closest('td, li')).index();
+                var data = tabla_pago.row(tr.row).data();
+                var medio_pago = $(this).val();
+                if (medio_pago=='Efectivo') {
+                    $('td:eq(4)', tabla_pago.row(tr.row).node()).css('visibility', 'hidden');
+                }
+                else {
+                    $('td:eq(4)', tabla_pago.row(tr.row).node()).css('visibility', 'visible');
+                }
+                console.log(medio_pago)
+            });
+
+            $('#tblPago').on('click', 'button[name="botonPago"]', function () {
+                var tabla_pago = $('#tblPago').DataTable();
+                var tr = tabla_pago.cell($(this).closest('td, li')).index();
+                var data = tabla_pago.row(tr.row).data();
+                var medio_pago = $('td:eq(3) select', tabla_pago.row(tr.row).node()).val();
+                var banco=$('td:eq(4) select', tabla_pago.row(tr.row).node()).val();
+                var estado=$('td:eq(2)', tabla_pago.row(tr.row).node()).text();
+                console.log(estado)
+                var id=$('td:eq(5)', tabla_pago.row(tr.row).node()).text();
+                alert_action('Notificación', '¿Desea pagar la cuota?', function () {
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: 'POST',
+                        data: {
+                            'action': 'edit_cuota',
+                            'id': data.id,
+                            'estado': estado,
+                            'medio_pago': medio_pago,
+                            'banco': banco,
+                        },
+                        dataType: 'json',
+                    }).done(function (data) {
+                        $('#tblCompras').DataTable().ajax.reload();
+                    }).always(function (data) {
+
+                    });
+                }, function () {
+                    location.href = '/compras/compras/';
+                });
             });
 
             $('#proveedor').keyup(function(){

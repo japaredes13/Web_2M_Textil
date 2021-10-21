@@ -1,6 +1,6 @@
 from datetime import datetime
 from django import forms
-from .models import OrdenCompra, Compra
+from .models import OrdenCompra, Compra, CuotaCompra
 
 class CompraForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -24,7 +24,8 @@ class CompraForm(forms.ModelForm):
                 'class': 'form-control',
             }),
             'condicion_compra':forms.Select(attrs={
-                'class': 'form-control' 
+                'class': 'form-control',
+                'onchange':'condicionCompraSelect(this)'
             }),
             'fecha_compra': forms.DateInput(
                 format='%d-%m-%Y',
@@ -38,6 +39,10 @@ class CompraForm(forms.ModelForm):
                     'data-toggle': 'datetimepicker'
                 }
             ),
+            'numero_cheque' : forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete':'off',
+            }),
             'inicio_timbrado': forms.DateInput(
                 format='%d-%m-%Y',
                 attrs={
@@ -64,6 +69,32 @@ class CompraForm(forms.ModelForm):
                 'class': 'form-control',
             }),
             'monto_total': forms.TextInput(attrs={
+                'readonly': True,
+                'class': 'form-control',
+            })
+        }
+
+class CuotaCompraForm(forms.ModelForm):
+    class Meta:
+        model = CuotaCompra
+        fields = '__all__'
+        labels = {
+            'fecha_vencimiento':"Fecha Vencimiento:",
+        }
+        widgets = {
+            'fecha_vencimiento': forms.DateInput(format='%Y-%m-%d',attrs={
+                'class':'form-control datetimepicker-input',
+                'id':'fecha_vencimiento',
+                'data-target':'#fecha_vencimiento',
+                'data-toggle':'datetimepicker',
+                'onkeydown':'return false',
+                'value':datetime.now().strftime('%Y-%m-%d')
+            }),
+			'monto_cuota' : forms.TextInput(attrs={
+                'readonly': True,
+                'class': 'form-control',
+            }),
+            'numero_cuota' : forms.TextInput(attrs={
                 'readonly': True,
                 'class': 'form-control',
             })
