@@ -129,6 +129,7 @@
 {% endblock content %}
 
 {% block js_page %}
+    {% include 'base/functions.html' %}
     {% include 'base/partials/sweet_delete.html' %}
     <script src="{% static 'base/plugins/datepicker-1.0.10/datepicker.min.js' %}"></script>
     <script src="{% static 'base/plugins/datepicker-1.0.10/datepicker.es-ES.js' %}"></script>
@@ -273,7 +274,6 @@
                 var tr = table.cell($(this).closest('td, li')).index();
                 var data = table.row(tr.row).data();
                 console.log(data)
-                /*
                 $('#id_monto_total').text(data.monto_total)
                 if (data.saldo_actual.monto_cuota__sum==null){
                     $('#id_saldo_actual').text(0);
@@ -282,7 +282,6 @@
                     $('#id_saldo_actual').text(data.saldo_actual.monto_cuota__sum);
                 }
                 console.log(data.saldo_actual.monto_cuota__sum)
-                */
                 $('#tblDetalleCredito').DataTable({
                     responsive: true,
                     autoWidth: false,
@@ -346,7 +345,7 @@
                         {"data": "numero_cuota"},
                         {"data": "monto_cuota"},
                         {"data": "estado"},
-                        {"data": "medio_cobro"},
+                        {"data": "medio_pago"},
                         {"data": "banco"},
                         {"data": "fecha_vencimiento"},
                         {"data": "fecha_cancelacion"},
@@ -392,7 +391,7 @@
                             render: function (data, type, row) {
                                 var buttons = ''; 
                                 if (row.estado=='Pendiente'){
-                                    buttons += '<button id="boton" name="botonCobro" title="Guardar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
+                                    buttons += '<button id="boton" name="botonPago" title="Guardar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
                                 }
                                 return buttons;
                             }
@@ -405,7 +404,7 @@
                 $('#detalle_pago').modal('show');
             });
 
-            $('#tblPago').on('change', 'select[name="medio_pago]', function () {
+            $('#tblPago').on('change', 'select[name="medio_pago"]', function () {
                 var tabla_pago = $('#tblPago').DataTable();
                 console.log(tabla_pago)
                 var tr = tabla_pago.cell($(this).closest('td, li')).index();
@@ -447,7 +446,7 @@
 
                     });
                 }, function () {
-                    location.href = '/compras/compras/';
+                    location.href = '/compras/compra/list';
                 });
             });
 

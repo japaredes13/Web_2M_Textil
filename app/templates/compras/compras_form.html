@@ -112,6 +112,25 @@
                                     <label>IVA:</label>
                                     {{ form.total_iva_10 }}
                                 </div>
+                                <div class="form-group" id="form_medio_pago" style="display:visibility;" >
+                                    <label for="medio_pago">Medio de Pago:</label>
+                                    <select name="medio_pago" id="medio_pago" class="form-control" >
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Cheque">Cheque</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="form_banco" style="display:none;">
+                                    <label form="banco"><strong>Banco:</strong></label>
+                                    <select class="form-control"  name = "banco" id="banco" >
+                                        {% for banco in bancos %}
+                                            <option value="{{ banco.id }}">{{ banco.descripcion }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group" id="numero_cheque" style="display:none;">
+                                    <label>Número de Cheque:</label>
+                                    {{ form.numero_cheque }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -142,6 +161,7 @@
             fin_timbrado: '',
             condicion_compra: '',
             plazo: '',
+            medio_pago: '',
             numero_cheque: 0,
             monto_total: 0,
             total_iva_10: 0,
@@ -238,6 +258,40 @@
         //minDate: moment().format("YYYY-MM-DD")
     });
 
+    $('#medio_pago').on('change', function()
+        {
+            if (this.value=="Efectivo"){
+            console.log(this.value);
+                $('#form_banco').hide();
+                $('#numero_cheque').hide();
+            }
+            else{
+                $('#form_banco').show();
+                $('#numero_cheque').show();
+            }
+        });
+        $('#condicion_compra').on('change', function()
+        {
+            if (this.value=="credito"){
+            console.log(this.value);
+                $('#form_medio_pago').hide();
+
+            }
+            else{
+                $('#form_medio_pago').show();
+  
+            }
+        });
+
+        $('#banco').val("{{ obj.banco.id }}").change();
+        $('#banco').select2({
+            width: '100%',
+            placeholder: 'Seleccione el banco'
+        });
+
+        $('#banco').on('change', function () {
+            $(this).valid();
+        });
     /*$("input[name='iva']").TouchSpin({
         min: 0,
         max: 100,
@@ -279,12 +333,23 @@
         var form_plazo = document.getElementById('form_plazo');
         if(select.value=='credito'){
             form_plazo.style.display = "block";
-            //form_medio_cobro.style.display = "none";
+            form_medio_pago.style.display = "none";
         } else {
             form_plazo.style.display = "none";
-            //form_medio_cobro.style.display = "block";
+            form_medio_pago.style.display = "block";
         }
     }
+    function medioPagoSelect(select){
+            var form_banco = document.getElementById('form_banco');
+            var numero_cheque = document.getElementById('numero_cheque');
+            if(select.value=='Cheque'){
+                form_banco.style.display = "block";
+                numero_cheque.style.display = "block";
+            } else {
+                form_banco.style.display = "none";
+                numero_cheque.style.display = "none";
+            }
+        }
     // event submit
     $('form').on('submit', function (e) {
         e.preventDefault();
@@ -308,6 +373,8 @@
             compras.items.timbrado = $('input[name="timbrado"]').val();
             compras.items.condicion_compra = $('select[name="condicion_compra"]').val();
             compras.items.plazo = $('select[name="plazo"]').val();
+            compras.items.medio_pago = $('#medio_pago').val();
+            compras.items.banco = $('select[name="banco"]').val();
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('compras', JSON.stringify(compras.items));  

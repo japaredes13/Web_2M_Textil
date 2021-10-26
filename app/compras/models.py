@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.forms import model_to_dict
+from django.db.models import Sum
 from bases.models import ClaseModelo
 from proveedores.models import Proveedor
 from telas.models import Tela
@@ -89,6 +90,7 @@ class Compra(ClaseModelo):
         item['detalle_pago'] = [i.toJSON() for i in self.cuotacompra_set.all()]
         cuota = CuotaCompra.objects.select_related('compra').filter(compra_id=self.id ,estado=False, compra__condicion_compra='credito')
         item['pendiente_pago'] = int(cuota.count())
+        item['saldo_actual'] = cuota.aggregate(Sum('monto_cuota'))
         return item
 
     class Meta:
@@ -135,8 +137,8 @@ class CuotaCompra(ClaseModelo):
         cantidad= Pago.objects.filter(cuota_id=self.id).count()
         if cantidad > 0 :
             pago=Pago.objects.get(cuota_id=self.id)
-            item['banco']=Pago.banco_id
-            item['medio_cobro']=Pago.medio_pago
+            item['banco']=pago.banco_id
+            item['medio_pago']=pago.medio_pago
         else:
             item['banco']=''
             item['medio_pago']=''

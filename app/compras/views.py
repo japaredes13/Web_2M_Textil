@@ -52,6 +52,7 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
         data = {}
         try:
             action = request.POST['action']
+            print(action)
             if action == 'searchdata':
                 data = []
                 orden_compras = self.queryset()
@@ -61,6 +62,7 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
                 data = []
                 for i in DetalleOrdenCompra.objects.filter(orden_compra_id=request.POST['id']):
                     data.append(i.toJSON())
+            
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -296,6 +298,38 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
                 data = []
                 for i in DetalleCompra.objects.filter(compra_id=request.POST['id']):
                     data.append(i.toJSON())
+            elif action == 'edit_cuota':
+                #print("HOLASA MAMASA")
+                estado=request.POST['estado'] 
+                medio_pago = (request.POST['medio_pago'] )
+                banco = (request.POST['banco'] )
+                cuota_id=request.POST['id'] 
+                cuota=CuotaCompra.objects.get(id=cuota_id)
+                caja = Caja.objects.get(estado=True)
+                cuota.estado =  True
+                cuota.fecha_cancelacion = datetime.now()
+                cuota.save()
+
+                pago = Pago()
+                pago.compra_id = cuota.compra_id
+                pago.cuota_id = cuota_id
+                pago.caja_id = caja.id
+                pago.fecha_pago = cuota.fecha_cancelacion
+                pago.medio_pago = medio_pago
+                pago.user_created_id = self.request.user.id
+                if (medio_pago=='Cheque'):
+                    pago.monto_pagado = cuota.monto_cuota
+                    pago.banco_id = banco
+                    caja.monto_cheque -= cuota.monto_cuota
+                    print(caja.monto_cheque)
+                    print(cuota.monto_cuota)
+
+                else:
+                    pago.monto_pagado = cuota.monto_cuota
+                    caja.monto_efectivo -= cuota.monto_cuota
+                    caja.monto_actual -= cuota.monto_cuota
+                caja.save()
+                pago.save()
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -354,7 +388,9 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.fin_timbrado = str(request_compra['fin_timbrado'])
                     compra.fin_timbrado = datetime.strptime(compra.fin_timbrado, "%d/%m/%Y").strftime("%Y-%m-%d")
                     compra.condicion_compra = request_compra['condicion_compra']
+                    compra.medio_pago = request_compra['medio_pago']
                     compra.plazo = request_compra['plazo']
+                    compra.numero_cheque = request_compra['numero_cheque']
                     compra.user_created_id = self.request.user.id
                     compra.save()
                     
@@ -381,6 +417,35 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     compra.monto_total = monto_total
                     compra.total_iva_10 = total_iva_10
                     compra.save()
+
+                    caja = Caja.objects.get(estado=True)
+                    #if (compra.medio_pago=='Cheque'):
+                    #    caja.monto_cheque -= compra.monto_total
+                    #    caja.save()
+
+                    #if (compra.medio_pago=='Efectivo'):
+                    #    caja.monto_efectivo -= compra.monto_total
+                    #    caja.monto_actual -= compra.monto_total
+                    #    caja.save()
+
+                    if (compra.condicion_compra=='contado'):
+                        pago = Pago()
+                        pago.compra_id = compra.id
+                        pago.caja_id = caja.id
+                        pago.monto_pagado = compra.monto_total
+                        pago.medio_pago = compra.medio_pago
+                        pago.user_created_id = self.request.user.id
+                        pago.fecha_pago = compra.fecha_compra
+                        if (pago.medio_pago=='Efectivo'):
+                            caja.monto_efectivo -= compra.monto_total
+                            caja.monto_actual -= compra.monto_total
+                        if (pago.medio_pago=='Cheque'):
+                            nombre_banco = Banco.objects.get(pk=request_compra['banco'])                    
+                            pago.banco = nombre_banco
+                            caja.monto_cheque -= compra.monto_total
+                            pago.numero_cheque = compra.numero_cheque
+                        pago.save()
+                        caja.save()
 
                     if (compra.condicion_compra=='credito'):
                         compra.plazo = request_compra['plazo']
@@ -422,6 +487,7 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
         context['list_url'] = self.success_url
         context['action'] = 'add'
         context['proveedor'] = self.get_object().proveedor_id
+        context ["bancos"] = Banco.objects.filter(estado=True)
         context['detalles'] = json.dumps(self.get_details_product())
         return context
 
