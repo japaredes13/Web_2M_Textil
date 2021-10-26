@@ -270,14 +270,14 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
 
 
                     caja = Caja.objects.get(estado=True)
-                    if (venta.medio_cobro=='Cheque'):
-                        caja.monto_cheque += venta.monto_total
-                        caja.save()
+                    #if (venta.medio_cobro=='Cheque'):
+                    #    caja.monto_cheque += venta.monto_total
+                    #    caja.save()
 
-                    if (venta.medio_cobro=='Efectivo'):
-                        caja.monto_efectivo += venta.monto_total
-                        caja.monto_actual += caja.monto_efectivo
-                        caja.save()
+                    #if (venta.medio_cobro=='Efectivo'):
+                    #    caja.monto_efectivo += venta.monto_total
+                    #    caja.monto_actual += caja.monto_efectivo
+                    #    caja.save()
 
                     if (venta.condicion_venta=='contado'):
                         cobro = Cobro()
@@ -287,11 +287,16 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         cobro.medio_cobro = venta.medio_cobro
                         cobro.user_created_id = self.request.user.id
                         cobro.fecha_cobro = venta.fecha_venta
-                        if (venta.medio_cobro=='Cheque'):
+                        if (cobro.medio_cobro=='Efectivo'):
+                            caja.monto_efectivo += venta.monto_total
+                            caja.monto_actual += venta.monto_total
+                        if (cobro.medio_cobro=='Cheque'):
                             nombre_banco = Banco.objects.get(pk=request_venta['banco'])                    
                             cobro.banco = nombre_banco
-                            #cobro.numero_cheque = venta.numero_cheque
+                            caja.monto_cheque += venta.monto_total
+                            cobro.numero_cheque = venta.numero_cheque
                         cobro.save()
+                        caja.save()
 
                     if (venta.condicion_venta=='credito'):
                         venta.plazo = request_venta['plazo']

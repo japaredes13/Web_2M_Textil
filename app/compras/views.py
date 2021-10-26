@@ -657,3 +657,69 @@ class CompraPdfView(generic.View):
         except Exception as e:
             print(e)
         return HttpResponseRedirect(reverse_lazy('compras:compras_list'))
+
+class CompraListadoDetallePdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+
+            template = get_template('compras/listado_detalles_pdf.html')
+            context = {
+                'compras': Compra.objects.get(pk=self.kwargs['pk'])
+            }
+
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except:
+            pass
+        return HttpResponseRedirect(reverse_lazy('compras:compra_list'))
+
+class CompraPago(LoginRequiredMixin, generic.ListView):
+    model = CuotaCompra
+    template_name = "compras/compras_pago_list.html"
+    login_url = 'bases:login'
+
+    def queryset(self):
+
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+        deudas = CuotaCompra.objects.select_related('compra').filter(fecha_vencimiento__range=(fecha_desde,fecha_hasta))
+        deudas = deudas.filter(estado=False)
+        proveedor = self.request.POST['proveedor']
+        if proveedor:
+            deudas = deudas.filter(Q(compra__proveedor_nombre__icontains=proveedor)| Q(compra__nro_factura__icontains=proveedor))
+        return deudas
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Listado de Cuotas a Vencer'
+        context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().replace(month=11).strftime("%d/%m/%Y")
+        return context
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        data={}
+        try:
+            if request.POST['action'] == 'search':
+                data = []
+                deudas = self.queryset()
+                for deuda in deudas:
+                    data.append(deuda.toJSON())
+
+            else:
+                data['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            data['error'] = str(e)
+        
+        return JsonResponse(data, safe=False)

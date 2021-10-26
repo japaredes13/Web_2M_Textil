@@ -179,7 +179,10 @@
                             if (full.condicion_compra=='credito' && full.pendiente_pago >= 1){
                                 button += ' <a rel="detalle_pago" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Registrar Pago</a>';
                             }
-                            return  ' <a rel="details" class="btn btn-secondary btn-block btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>' + button;
+                            if (full.condicion_compra=='credito' || full.condicion_compra=='contado' ){
+                                button += ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/compras/compras/listado/pdf/'+ full.id+'/" > <i class="fas fa-file-pdf"></i> </a>';
+                            }
+                            return  ' <a rel="details" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> Ver Compra</a>' + button;
                         },
                         "orderable":false
                     }

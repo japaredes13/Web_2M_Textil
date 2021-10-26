@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-listado {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #listado thead tr th {
+        text-align: center;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #listado thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #listado tbody tr {
+        padding: 2px;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<!--<img src="{{ icon }}" class="img-invoice"> -->
+<p>
+    <b>FACTURA:</b> {{ compras.nro_factura }}<br>
+    <b>CONDICION COMPRA:</b> {{ compras.condicion_compra|upper }}<br>
+    <b>MEDIO DE PAGO:</b> {{ pagos.medio_pago|upper }}<br>
+    <!--<b>PLAZO:</b> {{ ventas.plazo }} <b>DIAS</b><br>-->
+    <b>FECHA DE COMPRA:</b> {{ compras.fecha_compra }}<br>
+    <b>PROVEEDOR:</b> {{ compras.proveedor.nombre_empresa|upper }}<br>
+    <b>RUC:</b> {{ compras.proveedor.ruc }}<br>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Tela</th>
+        <th class="text-center">Codigo</th>
+        <th class="text-center">Precio</th>
+        <th class="text-center">Metraje</th>
+        <th class="text-center">Sub Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for compra in compras.detallecompra_set.all %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ compra.tela.nombre }}</td>
+            <td class="text-center">{{ compra.tela.codigo }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ venta.precio_costo|intcomma  }}</td>
+            <td class="text-center">{{ compra.metraje_comprado }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ compra.sub_total|intcomma  }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>SUBTOTAL</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ compras.monto_total|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>IVA 10%</b></td>
+        <td style="text-align">{% load humanize  %} {{ compras.total_iva_10|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL A PAGAR</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ compras.monto_total|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+<table style="margin-top: 250px;">
+    <thead>
+    <tr>
+        <th>****GRACIAS****</th>
+    </tr>
+    </thead>
+</table>
+</body>
+</html>

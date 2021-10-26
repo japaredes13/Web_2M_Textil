@@ -11,6 +11,8 @@ urlpatterns = [
 
     path('compra/list/', CompraListView.as_view(), name='compras_list'),
     path('compras/<int:pk>/add/', CompraCreateView.as_view(), name='compra_create'),
+    path('pago_deuda/',CompraPago.as_view(), name='compras_pago_list'),
+    path('compras/listado/pdf/<int:pk>/', CompraListadoDetallePdfView.as_view(), name='compras_listado_detalles_pdf'),
     path('compra/delete/<int:pk>/', CompraDeleteView.as_view(), name='compra_delete'),
     path('compra/listado/pdf', CompraPdfView.as_view(), name='compra_listado_pdf'),
     path('compra/<int:pk>/update/', CompraUpdateView.as_view(), name='compra_update'),
