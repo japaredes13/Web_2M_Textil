@@ -370,9 +370,22 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     item['text'] = tela.nombre
                     data.append(item)
             elif action == 'add':
+                caja = Caja.objects.filter(estado=True).values('monto_actual').first()
+                monto_total = int(request.POST['monto_total'])
+                request_compra = json.loads(request.POST['compras'])
+                medio_pago = request_compra['medio_pago']
+                data = []
+                item = {}
+                print (int(caja['monto_actual']) < monto_total)
+                if( int(caja['monto_actual']) < monto_total and medio_pago=='Efectivo'):
+                    item['error'] = True
+                    item['message'] = 'El monto a pagar supera al de la caja'
+                    data.append(item)
+                    return JsonResponse(data, safe=False)
+
                 with transaction.atomic():
                     
-                    request_compra = json.loads(request.POST['compras'])
+                    
                     orden_compra = OrdenCompra.objects.get(id=self.get_object().id)
                     orden_compra.estado = True
                     orden_compra.save()

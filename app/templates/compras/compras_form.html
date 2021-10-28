@@ -377,6 +377,9 @@
             compras.items.banco = $('select[name="banco"]').val();
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
+            var monto_total = $('input[name="monto_total"]').val().split('.').join(''); 
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('monto_total', monto_total);
             parameters.append('compras', JSON.stringify(compras.items));  
             submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
                 location.href = '/compras/compra/list/';
