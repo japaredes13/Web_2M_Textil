@@ -391,7 +391,9 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                     orden_compra.save()
 
                     compra = Compra()
+                    proveedor = Proveedor.objects.get(pk=request_compra['proveedor'])
                     compra.proveedor_id = request_compra['proveedor']
+                    compra.proveedor_nombre = proveedor.nombre_empresa
                     compra.nro_factura = request_compra['nro_factura']
                     compra.timbrado = request_compra['timbrado']
                     compra.fecha_compra = str(request_compra['fecha_compra'])

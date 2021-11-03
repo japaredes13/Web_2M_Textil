@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     path('cajas/',CajaList.as_view(), name='caja_list'),
     path('cajas/create', CajaCreate.as_view(), name='caja_create'),
+    path('cajas/listado/pdf/<int:pk>/', CajaListadoPdfView.as_view(), name='cajas_listado_pdf'),
     path('cajas/<int:pk>/edit', CajaEdit.as_view(), name='caja_edit'),
 
     path('cajas/bancos',BancoView.as_view(), name='banco_list'),

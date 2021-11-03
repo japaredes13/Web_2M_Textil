@@ -87,10 +87,12 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                 cobro = Cobro.objects.get(caja_id=id)
                 if (venta.medio_cobro=='Cheque'):
                     caja.monto_cheque -= venta.monto_total
+                    caja.monto_actual -= venta.monto_total
                     caja.save()
 
                 if (venta.medio_cobro=='Efectivo'):
                     caja.monto_efectivo -= venta.monto_total
+                    caja.monto_actual -= venta.monto_total
                     caja.save()
             elif request.POST['action'] == 'edit_cuota':
                 estado=request.POST['estado'] 
@@ -114,11 +116,12 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                     cobro.monto_cobrado = cuota.monto_cuota
                     cobro.banco_id = banco
                     caja.monto_cheque = cobro.monto_cobrado
+                    caja.monto_actual += cobro.monto_cobrado
 
                 else:
                     cobro.monto_cobrado = cuota.monto_cuota
-                    caja.monto_efectivo = cobro.monto_cobrado
-                    caja.monto_actual += caja.monto_efectivo
+                    caja.monto_efectivo += cobro.monto_cobrado
+                    caja.monto_actual += cobro.monto_cobrado
                 caja.save()
                 cobro.save()
             else:
@@ -294,6 +297,7 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                             nombre_banco = Banco.objects.get(pk=request_venta['banco'])                    
                             cobro.banco = nombre_banco
                             caja.monto_cheque += venta.monto_total
+                            caja.monto_actual += venta.monto_total
                             cobro.numero_cheque = venta.numero_cheque
                         cobro.save()
                         caja.save()
@@ -419,11 +423,13 @@ class VentaEdit(LoginRequiredMixin, generic.CreateView):
 class VentaListadoPdfView(generic.View):
     def get(self,request, *args, **kwargs):
         try:
-
             template = get_template('ventas/listado_pdf.html')
             context = {
-                'ventas': Venta.objects.get(pk=self.kwargs['pk'])
+                'ventas': Venta.objects.get(pk=self.kwargs['pk']),
+                #'cobros': Cobro.objects.select_related('venta').filter(venta_id=self.kwargs['pk'])
             }
+            print(context)
+            print(self.kwargs['pk'])
 
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')
@@ -433,3 +439,5 @@ class VentaListadoPdfView(generic.View):
         except:
             pass
         return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
+
+        

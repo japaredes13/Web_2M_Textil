@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-listado {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #listado thead tr th {
+        text-align: center;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #listado thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #listado tbody tr {
+        padding: 2px;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<!--<img src="{{ icon }}" class="img-invoice"> -->
+<p class="head">
+    <b>RESUMEN DE VENTAS</b>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Nro Factura</th>
+        <th class="text-center">Condicion Venta</th>
+        <th class="text-center">Medio de Cobro</th>
+        <th class="text-center">Monto Total</th>
+        <th class="text-center">Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cobro in cobros %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ cobro.venta.nro_factura }}</td>
+            <td class="text-center">{{ cobro.venta.condicion_venta }}</td>
+            <td class="text-center">{{ cobro.medio_cobro }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ cobro.monto_cobrado|intcomma  }}</td>
+            <td class="text-center">{{ cobro.venta.fecha_venta }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;"></tr>
+    <!--<tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>TOTAL EFECTIVO:</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ monto_efectivo.monto_cobrado__sum|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL CHEQUE:</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ monto_cheque.monto_cobrado__sum|intcomma  }}</td>
+    </tr>-->
+    <tr style="padding-top: 0px;">
+        <td colspan="4"><b>TOTAL:</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ monto_total.monto_cobrado__sum|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><hr width=550></p>
+<p class="head">
+    <b>RESUMEN DE COMPRAS</b>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Nro Factura</th>
+        <th class="text-center">Condicion Compra</th>
+        <th class="text-center">Medio de Pago</th>
+        <th class="text-center">Monto Total</th>
+        <th class="text-center">Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for pago in pagos %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ pago.compra.nro_factura }}</td>
+            <td class="text-center">{{ pago.compra.condicion_compra }}</td>
+            <td class="text-center">{{ pago.medio_pago }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ pago.monto_pagado|intcomma  }}</td>
+            <td class="text-center">{{ pago.compra.fecha_compra }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;"></tr>
+    <!--<tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>TOTAL EFECTIVO</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL CHEQUE</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>-->
+    <tr style="padding-top: 0px;">
+        <td colspan="4"><b>TOTAL</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ monto_total_compra.monto_pagado__sum|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+
+
+<p><hr width=550></p>
+<p class="head">
+    <b>RESUMEN DE INGRESOS</b>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Monto</th>
+        <th class="text-center">Descripcion</th>
+        <th class="text-center">Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for ingreso in ingresos %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">Gs. {% load humanize  %} {{ ingreso.monto|intcomma  }}</td>
+            <td class="text-center">{{ ingreso.descripcion }}</td>
+            <td class="text-center">{{ ingreso.fecha_movimiento }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;"></tr>
+    <!--<tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>TOTAL EFECTIVO</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL CHEQUE</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>-->
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{  monto_ingreso.monto__sum|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><hr width=550></p>
+<p class="head">
+    <b>RESUMEN DE EGRESOS</b>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Monto</th>
+        <th class="text-center">Descripcion</th>
+        <th class="text-center">Nº de Comprobante</th>
+        <th class="text-center">Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for egreso in egresos %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">Gs. {% load humanize  %} {{ egreso.monto|intcomma  }}</td>
+            <td class="text-center">{{ egreso.descripcion }}</td>
+            <td class="text-center">{{ egreso.numero_comprobante }}</td>
+            <td class="text-center">{{ egreso.fecha_movimiento }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;"></tr>
+    <!--<tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="3"><b>TOTAL EFECTIVO</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL CHEQUE</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ cobro.venta.monto_total|intcomma  }}</td>
+    </tr>-->
+    <tr style="padding-top: 0px;">
+        <td colspan="3"><b>TOTAL</b></td>
+        <td style="text-align">Gs. {% load humanize  %} {{ monto_egreso.monto__sum|intcomma  }}</td>
+    </tr>
+    </tbody>
+</table>
+<p><hr width=550></p>
+<table>
+    <thead>
+        <tr>
+            <th class="text-center">Descripcion</th>
+            <th class="text-center">Monto Operación</th>
+        </tr>
+        <tbody>
+            <tr style="padding-top: 0px;">
+                <td><b>VENTAS:</b></td>
+                <td style="text-center">Gs. {% load humanize  %} {{ monto_total.monto_cobrado__sum|intcomma  }}</td>
+            </tr>
+            <tr style="padding-top: 0px;">
+                <td><b>COMPRAS:</b></td>
+                <td style="text-center">Gs. {% load humanize  %} {{ monto_total_compra.monto_pagado__sum|intcomma  }}</td>
+            </tr>
+            <tr style="padding-top: 0px;">
+                <td><b>INGRESOS</b></td>
+                <td style="text-align">Gs. {% load humanize  %} {{  monto_ingreso.monto__sum|intcomma  }}</td>
+            </tr>
+            <tr style="padding-top: 0px;">
+                <td><b>EGRESOS</b></td>
+                <td style="text-align">Gs. {% load humanize  %} {{  monto_egreso.monto__sum|intcomma  }}</td>
+            </tr>
+            <tr style="padding-top: 0px;">
+                <td><b>SALDO ACTUAL EN CAJA</b></td>
+                <td style="text-align">Gs. {% load humanize  %} {{  saldo_actual|intcomma  }}</td>
+            </tr>
+        </tbody>
+    </thead>
+</table>
+</body>
+</html>

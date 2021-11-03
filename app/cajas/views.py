@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
-from .models import  Caja, Banco, Cobro, Movimiento
+from .models import  Caja, Banco, Cobro, Movimiento, Pago
 from configuracion.models import ConfiguracionEgreso
 from .forms import CajaForm, BancoForm, CobroForm
+from ventas.models import Venta
 from .forms import CajaForm, CajaMovimientoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -12,6 +13,13 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
 from datetime import datetime
+from django.db.models import Sum
+
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
 
 class CajaList(LoginRequiredMixin,generic.ListView):
     model = Caja 
@@ -283,3 +291,43 @@ class CajaMovimientoEdit(LoginRequiredMixin, generic.UpdateView):
         context = super(CajaMovimientoEdit,self).get_context_data(**kwargs)
         context ["obj"] = Movimiento.objects.filter(pk=pk).first()
         return context
+
+class CajaListadoPdfView(generic.View):
+    def get(self,request, *args, **kwargs):
+        try:
+            cobros = Cobro.objects.select_related('venta').filter(caja_id=self.kwargs['pk'], venta__anulado=False)
+            print(cobros)
+            caja = Caja.objects.filter(id=self.kwargs['pk']).values('monto_actual').first()
+            pagos = Pago.objects.select_related('compra').filter(caja_id=self.kwargs['pk'])
+            ingresos = Movimiento.objects.filter(caja_id=self.kwargs['pk'],tipo_movimiento='ingreso')
+            egresos = Movimiento.objects.filter(caja_id=self.kwargs['pk'],tipo_movimiento='egreso')
+            #cobros_efectivo = Cobro.objects.select_related('venta').filter(caja_id=self.kwargs['pk'],medio_cobro='Efectivo', venta__anulado=False)
+            #cobros_cheque = Cobro.objects.select_related('venta').filter(caja_id=self.kwargs['pk'],medio_cobro='Cheque', venta__anulado=False)
+            #monto_efectivo = cobros_efectivo.aggregate(Sum('monto_cobrado'))
+            #monto_cheque = cobros_cheque.aggregate(Sum('monto_cobrado'))
+            monto_total = cobros.aggregate(Sum('monto_cobrado'))
+            monto_total_compra = pagos.aggregate(Sum('monto_pagado'))
+            monto_ingreso = ingresos.aggregate(Sum('monto'))
+            monto_egreso = egresos.aggregate(Sum('monto'))
+            template = get_template('cajas/listado_pdf.html')
+            context = {
+                'cobros' : cobros,
+                'pagos' : pagos,
+                'ingresos' : ingresos,
+                'egresos' : egresos,
+                'monto_total' : monto_total,
+                'monto_total_compra' : monto_total_compra,
+                'monto_ingreso' : monto_ingreso,
+                'monto_egreso' : monto_egreso,
+                'saldo_actual' : caja['monto_actual']
+            }
+
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            pisa_status = pisa.CreatePDF(
+                html, dest=response)
+            return response
+        except Exception as e:
+            print('hubo un error'+str(e))
+            pass
+        return HttpResponseRedirect(reverse_lazy('cajas:caja_list'))
