@@ -115,7 +115,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
                 if (medio_cobro=='Cheque'):
                     cobro.monto_cobrado = cuota.monto_cuota
                     cobro.banco_id = banco
-                    caja.monto_cheque = cobro.monto_cobrado
+                    caja.monto_cheque += cobro.monto_cobrado
                     caja.monto_actual += cobro.monto_cobrado
 
                 else:

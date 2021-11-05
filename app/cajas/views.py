@@ -79,6 +79,7 @@ class CajaCreate(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         form.instance.monto_actual = self.request.POST['monto_apertura']
+        form.instance.monto_efectivo = self.request.POST['monto_apertura']
         form.instance.user_created = self.request.user
         form.instance.estado = True
         messages.success(self.request, "Apertura de caja éxitosamente." )
@@ -297,7 +298,7 @@ class CajaListadoPdfView(generic.View):
         try:
             cobros = Cobro.objects.select_related('venta').filter(caja_id=self.kwargs['pk'], venta__anulado=False)
             print(cobros)
-            caja = Caja.objects.filter(id=self.kwargs['pk']).values('monto_actual').first()
+            caja = Caja.objects.filter(id=self.kwargs['pk']).values('monto_actual','monto_apertura','fecha_cierre').first()
             pagos = Pago.objects.select_related('compra').filter(caja_id=self.kwargs['pk'])
             ingresos = Movimiento.objects.filter(caja_id=self.kwargs['pk'],tipo_movimiento='ingreso')
             egresos = Movimiento.objects.filter(caja_id=self.kwargs['pk'],tipo_movimiento='egreso')
@@ -309,6 +310,14 @@ class CajaListadoPdfView(generic.View):
             monto_total_compra = pagos.aggregate(Sum('monto_pagado'))
             monto_ingreso = ingresos.aggregate(Sum('monto'))
             monto_egreso = egresos.aggregate(Sum('monto'))
+            if ( monto_total['monto_cobrado__sum']==None): 
+                monto_total['monto_cobrado__sum']=0
+            if (monto_total_compra['monto_pagado__sum']==None):
+                monto_total_compra['monto_pagado__sum']=0
+            if (monto_ingreso['monto__sum']==None):
+                monto_ingreso['monto__sum']=0
+            if (monto_egreso['monto__sum']==None):
+                monto_egreso['monto__sum']=0
             template = get_template('cajas/listado_pdf.html')
             context = {
                 'cobros' : cobros,
@@ -319,7 +328,9 @@ class CajaListadoPdfView(generic.View):
                 'monto_total_compra' : monto_total_compra,
                 'monto_ingreso' : monto_ingreso,
                 'monto_egreso' : monto_egreso,
-                'saldo_actual' : caja['monto_actual']
+                'saldo_actual' : caja['monto_actual'],
+                'monto_apertura' : caja['monto_apertura'],
+                'fecha_cierre' : caja['fecha_cierre']
             }
 
             html = template.render(context)

@@ -35,6 +35,15 @@
 </style>
 <body>
 <!--<img src="{{ icon }}" class="img-invoice"> -->
+<h4 align="right"> Fecha:
+<tr>
+    <td style="text-align"> {{ fecha_cierre }} </td>
+</tr>
+</h4>
+<p><hr width=550></p>
+<h2 class="head" style = "font-family:courier,arial,helvética;">RESUMEN CIERRE DE CAJA</h2>
+<p><hr width=550></p>
+<br></br>
 <p class="head">
     <b>RESUMEN DE VENTAS</b>
 </p>
@@ -75,6 +84,9 @@
 </table>
 
 <p><hr width=550></p>
+<br></br>
+<br></br>
+
 <p class="head">
     <b>RESUMEN DE COMPRAS</b>
 </p>
@@ -114,17 +126,19 @@
     </tbody>
 </table>
 
-
 <p><hr width=550></p>
+<br></br>
+<br></br>
 <p class="head">
     <b>RESUMEN DE INGRESOS</b>
 </p>
-<table id="listado">
-    <thead>
+<table style="width:100%" id="listado">
+    <thead >
     <tr>
         <th class="text-center">Monto</th>
         <th class="text-center">Descripcion</th>
         <th class="text-center">Fecha</th>
+        <th class="text-center"></th>
     </tr>
     </thead>
     <tbody>
@@ -152,6 +166,9 @@
 </table>
 
 <p><hr width=550></p>
+<br></br>
+<br></br>
+
 <p class="head">
     <b>RESUMEN DE EGRESOS</b>
 </p>
@@ -189,13 +206,20 @@
     </tbody>
 </table>
 <p><hr width=550></p>
-<table>
+<br></br>
+<br></br>
+
+<table width="100%" border = "1" cellspacing="0" cellpadding="5">
     <thead>
         <tr>
             <th class="text-center">Descripcion</th>
             <th class="text-center">Monto Operación</th>
         </tr>
         <tbody>
+        <tr style="padding-top: 0px;">
+                <td><b>MONTO APERTURA:</b></td>
+                <td style="text-center">Gs. {% load humanize  %} {{ monto_apertura|intcomma  }}</td>
+            </tr>
             <tr style="padding-top: 0px;">
                 <td><b>VENTAS:</b></td>
                 <td style="text-center">Gs. {% load humanize  %} {{ monto_total.monto_cobrado__sum|intcomma  }}</td>
