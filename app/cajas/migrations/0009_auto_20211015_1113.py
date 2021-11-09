@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='caja',
             name='monto_actual',
-            field=models.IntegerField(default=models.IntegerField(), null=True),
+            field=models.IntegerField(null=True),
         ),
     ]

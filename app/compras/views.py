@@ -475,10 +475,12 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
                             deuda.user_created_id = self.request.user.id
                             deuda.estado = False
                             deuda.save()
- 
+
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:
+            
+            #CAMBIAR EL MENSAJE DE ERROR
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
 

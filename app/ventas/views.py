@@ -194,6 +194,13 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
         else:
             messages.info(self.request, 'La fecha del timbrado ha expirado. Por favor configure un nuevo timbrado.')
             return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
+        
+        caja = Caja.objects.filter(estado=True).first()
+        if (caja): 
+            pass
+        else:
+            messages.error(self.request, 'No existe una caja para operar. Por favor abra la caja para vender.')
+            return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
 
         return super().render_to_response(context, **response_kwargs)
 

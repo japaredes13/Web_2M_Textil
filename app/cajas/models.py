@@ -113,7 +113,7 @@ class Movimiento(ClaseModelo):
         #configuracion = ConfiguracionEgreso.objects.filter(estado=True)
         #item['monto_maximo'] = configuracion.monto_maximo
         configuracion = ConfiguracionEgreso.objects.filter(estado=True).values('monto_maximo').first()
-        print(configuracion['monto_maximo'])
+        #print(configuracion['monto_maximo'])
         item['fecha_movimiento'] = self.fecha_movimiento.strftime('%d/%m/%Y')
         item['tipo_movimiento'] = self.tipo_movimiento.upper()
         return item

@@ -330,7 +330,8 @@ class CajaListadoPdfView(generic.View):
                 'monto_egreso' : monto_egreso,
                 'saldo_actual' : caja['monto_actual'],
                 'monto_apertura' : caja['monto_apertura'],
-                'fecha_cierre' : caja['fecha_cierre']
+                'fecha_cierre' : datetime.now().strftime("%d/%m/%Y")
+
             }
 
             html = template.render(context)

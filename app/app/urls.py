@@ -28,5 +28,6 @@ urlpatterns = [
     path('tipos/',include(('tipos.urls','tipos'), namespace='tipos')),
     path('configuracion/',include(('configuracion.urls','configuracion'), namespace='configuracion')),
     path('cajas/',include(('cajas.urls','cajas'), namespace='cajas')),
+    path('dashboard',include(('dashboard.urls','dashboard'), namespace='dashboard')),
 
 ]
