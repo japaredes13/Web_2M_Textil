@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'tipos',
     'configuracion',
     'django.contrib.humanize',
-    'cajas'
+    'cajas',
+    'inventario',
 ]
 
 MESSAGE_TAGS = {

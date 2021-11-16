@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
 from datetime import datetime,date
+from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 from reportlab.lib.utils import prev_this_next
@@ -357,6 +358,16 @@ class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        caja = Caja.objects.filter(estado=True).first()
+        if (caja): 
+            pass
+        else:
+            messages.error(self.request, 'No existe una caja para operar. Por favor abra la caja para comprar.')
+            return HttpResponseRedirect(reverse_lazy('compras:compras_list'))
+
+        return super().render_to_response(context, **response_kwargs)
 
     def post(self, request, *args, **kwargs):
         data = {}

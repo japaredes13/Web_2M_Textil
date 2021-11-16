@@ -1,0 +1,186 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Inventario</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></a></li>
+                        <li class="breadcrumb-item active">Inventario</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Listado del Inventario</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row justify-content-end">
+                                <div class="col-md-2">
+                                    <a href="{% url 'inventario:inventario_create' %}" class="btn btn-primary btn-block">
+                                        <i class="fas fa-plus-square"></i> Nuevo Inventario
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Fecha Desde:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Fecha Hasta:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped table-hover" id="tblInventario">
+                                        <thead>
+                                            <th>Fecha Inventario</th>
+                                            <th>Acciones</th>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+    {% include 'base/functions.html' %}
+    {% include 'base/partials/sweet_delete.html' %}
+    <script>
+       
+        $(document).ready(
+          
+            function() {
+            $('#fecha_desde').datetimepicker({
+                format: 'DD/MM/YYYY',
+                locale: 'es',
+                ignoreReadonly: true
+            });
+            $('#fecha_hasta').datetimepicker({
+                format: 'DD/MM/YYYY',
+                locale: 'es',
+                ignoreReadonly: true
+            });
+
+            var table = $('#tblInventario').DataTable({
+                responsive: true,
+                autoWidth: false,
+                filter: false,
+                ajax: {
+                    url: window.location.pathname,
+                    type: 'POST',
+                    "data": function (d) {
+                        d.action = 'search',
+                        d.fecha_desde = $('#fecha_desde').val(),
+                        d.fecha_hasta = $('#fecha_hasta').val()
+                    },
+                    dataSrc: ""
+                },
+                columns: [
+                    { "data": "fecha_inventario" },
+                    {
+                        "render": function( data, type, row ) {
+                            return ' <a target="_blank" class="btn btn-success btn-sm" href="/inventario/inventario/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Físico </a>' +
+                                    ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/inventario/inventario/listado_completo/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Actual </a>'+
+                                    ' <a rel= "ajuste" class="btn btn-warning btn-sm"><i class="fas fa-times"></i> Ajuste Inventario</a>';
+                        },
+                        orderable: false
+                    },
+                ],
+                language:{
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encotrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior",
+                    }
+                }
+            });
+
+            $('.table tbody')
+            .on('click', 'a[rel="ajuste"]', function () {
+                    var tr = table.cell($(this).closest('td, li')).index();
+                    var id =table.row(tr.row).data().id;
+                alert_action('Notificación', '¿Estas seguro que desea ajustar el metraje?', function () {
+                    $.ajax({
+                        url: window.location.pathname,
+                        type: 'POST',
+                        data: {
+                            'action': 'ajuste_inventario',
+                            'id': id,
+                        },
+                        dataType: 'json',
+                    }).done(function () {
+                    $('#tblInventario').DataTable().ajax.reload();
+                    }).always(function () {
+
+                    });
+                }, function () {
+                    //location.href = '/ventas/ventas/';
+                });
+            });
+  
+            $('input[name="fecha_desde"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
+            $('input[name="fecha_hasta"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
+          
+        });
+
+    </script>
+{% endblock js_page %}

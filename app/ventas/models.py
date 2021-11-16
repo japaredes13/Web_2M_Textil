@@ -36,7 +36,7 @@ class Venta(ClaseModelo):
         item['detalle_cobro'] = [i.toJSON() for i in self.cuotaventa_set.all()]
         cuota = CuotaVenta.objects.select_related('venta').filter(venta_id=self.id ,estado=False, venta__condicion_venta='credito')
         item['pendiente_cobro'] = int(cuota.count())
-        print(int(cuota.count()))
+        #print(int(cuota.count()))
         item['saldo_actual'] = cuota.aggregate(Sum('monto_cuota'))
         #print(cuota.aggregate(Sum('monto_cuota')))
         return item

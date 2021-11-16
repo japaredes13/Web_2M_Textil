@@ -300,7 +300,7 @@
         
             venta.items.medio_cobro = $('#medio_cobro').val();
             venta.items.banco = $('select[name="banco"]').val();
-
+            console.log(venta.items)
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('venta', JSON.stringify(venta.items));

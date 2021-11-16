@@ -1,0 +1,198 @@
+{% extends 'base/base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.css" integrity="sha512-0GlDFjxPsBIRh0ZGa2IMkNT54XGNaGqeJQLtMAw6EMEDQJ0WqpnU6COVA91cUS0CeVA5HtfBfzS9rlJR3bPMyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock css %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h4 class="m-0">Inventario</h4>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'inventario:inventario_list' %}">Inventario</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <form method="POST" role="form" id="form" action="{% url 'inventario:inventario_create' %}">
+                {% include 'inventario/partials/form_content.html' %}
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% include 'base/functions.html' %}
+    <script>
+        var table_telas;
+        var inventario = {
+            items: {
+                fecha_inventario: '',
+                telas: []
+            },
+            
+            add: function (item){
+                this.items.telas.push(item);
+                this.list();
+            },
+            
+            list: function() {
+                table_telas = $('#table_telas').DataTable({
+                    destroy: true,
+                    ordering: false,
+                    info: false,
+                    responsive: true,
+                    autoWidth: false,
+                    filter: false,
+                    paging: false,
+                    searching: false,
+                    data: this.items.telas,
+                    columns: [
+                        { "data": "nombre"},
+                        { "data": "codigo"},
+                        { "data": "metraje_deposito" },
+                        { "data": "id" },
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [2],
+                            "render": function( data, type, row ) {
+                                return '<input type="text" required="required" name="metraje_deposito" class="form-control form-control-sm input-sm" autocomplete="off" value="'+row.metraje_deposito+'">';
+                            },
+                        },
+                        {
+                            targets: [3],
+                            class: 'text-center',
+                            "render": function( data, type, row ) {
+                                return '<a rel="remove" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
+                            },
+                        },
+                    ],
+                    rowCallback( row, data, displayNum, displayIndex, dataIndex ){
+                        $(row).find('input[name="metraje_deposito"]').TouchSpin({
+                            min: 1,
+                            max:  999999999,
+                            step: 0.01,
+                            decimals: 2
+                        });
+                    },
+                    language:{
+                        "emptyTable": "Ninguna información en el detalle.",
+                    }
+                });
+            }
+        };
+        console.log(inventario.items);
+        $('#fecha_inventario').datetimepicker({
+            format: 'DD/MM/YYYY',
+            locale: 'es',
+            maxDate: Date()
+        });
+
+        $('select[name="search"]').select2({
+            placeholder: 'Ingrese la descripción de la tela',
+            language:'es',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                type: 'POST',
+                url: window.location.pathname,
+                data: function (params){
+                    var queryParameters = {
+                        term: params.term,
+                        action: 'search_tela'
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data){
+                    return {
+                        results: data
+                    };
+                }
+            },
+            minimumInputLength:1,
+        }).on('select2:select', function (e){
+            var data = e.params.data;
+            data.metraje_deposito = 1;
+            if (inventario.items.telas.find(tela => tela.id === data.id)){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención!',
+                    text: 'Por favor, debe seleccionar otra tela.',
+                    confirmButtonColor:"#007bff",
+                });
+            } else {
+                inventario.add(data);
+            }
+            $(this).val('').trigger('change.select2');
+        });
+        //evento para eliminar un detalle dentro del listado
+        //y evento para actualizar la cantidad
+        $('#table_telas tbody')
+        .on('click', 'a[rel="remove"]',function(){
+            Swal.fire({
+                title: '¿Estás seguro de eliminar el producto del detalle?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#dc3545',
+                cancelButtonText:"Cancelar",
+                confirmButtonText: 'Si, Eliminar',
+                reverseButtons:true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var tr = table_telas.cell($(this).closest('td,li')).index();
+                    inventario.items.telas.splice(tr.row, 1);
+                    inventario.list();
+                }
+            })
+        })
+        .on('change keyup','input[name="metraje_deposito"]', function () {
+            var metraje_deposito = parseFloat($(this).val());
+            var tr = table_telas.cell($(this).closest('td,li')).index();
+            inventario.items.telas[tr.row].metraje_deposito = metraje_deposito;
+
+        });
+        inventario.list();
+        console.log(inventario.list());
+
+        var validNumber = new RegExp(/^\d*\.?\d*$/);
+
+        //evento para enviar el formulario
+        $(form).on('submit', function (e){
+            e.preventDefault();
+            if (inventario.items.telas.length == 0){
+                message_error('Debe tener al menos un ítem en el detalle el inventario');
+                return false;
+            }
+            inventario.items.fecha_inventario = $('input[name="fecha_inventario"]').val();
+            console.log(inventario.items.fecha_inventario)
+            console.log(inventario.items)
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('inventario', JSON.stringify(inventario.items));
+            submit_with_ajax(window.location.pathname, 'Notificación',
+            '¿Estas seguro de que quiere registrar el inventario?', parameters, function (response) {
+                alert_action('Notificación', '¿Desea imprimir el reporte?', function () {
+                    window.open('/inventario/inventario/listado/pdf/' + response.id + '/', '_blank');
+                    location.href = '/inventario/inventario/';
+                }, function () {
+                    location.href = '/inventario/inventario/';
+                });
+            });
+
+        });
+
+    </script>
+{% endblock js_page %}

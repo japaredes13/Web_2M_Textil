@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-listado {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #listado thead tr th {
+        text-align: center;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #listado thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #listado tbody tr {
+        padding: 2px;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<!--<img src="{{ icon }}" class="img-invoice"> -->
+<p>
+    <b>FECHA DE INVENTARIO:</b> {{ inventarios.fecha_inventario }}<br>
+</p>
+<table id="listado">
+    <thead>
+    <tr>
+        <th class="text-center">Tela</th>
+        <th class="text-center">Codigo</th>
+        <th class="text-center">Metraje Depósito</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for inventario in inventarios.detalleinventario_set.all %}
+        <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
+            <td class="text-center">{{ inventario.tela.nombre }}</td>
+            <td class="text-center">{{ inventario.tela.codigo }}</td>
+            <td class="text-center">{{ inventario.metraje_deposito }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

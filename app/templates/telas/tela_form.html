@@ -273,15 +273,16 @@ $(document).ready(function(){
         var error = validatePrecioVenta();
         if (error) return false;
         var precio_compra = String($('#id_precio_compra').val());
+        console.log(precio_compra)
         var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
         var precio_venta = String($('#id_precio_venta').val());
         var metraje = String($('#id_metraje').val());
         precio_compra = precio_compra.replace('.','');
+        console.log(precio_compra)
         precio_compra_anterior = precio_compra_anterior.replace('.','');
         precio_venta = precio_venta.replace('.','');
         metraje = metraje.replace('.','')
-                         .replace(',','.')
-                         .replace('.',',');
+                         .replace(',','.');
         $('#id_precio_compra').val(precio_compra);
         $('#id_precio_compra_anterior').val(precio_compra_anterior);
         $('#id_precio_venta').val(precio_venta);

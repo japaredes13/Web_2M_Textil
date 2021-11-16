@@ -30,6 +30,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
 
     def queryset(self):
         ventas = Venta.objects.filter(fecha_eliminacion__isnull=True)
+        print(ventas)
         fecha_desde = str(self.request.POST['fecha_desde'])
         fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
         fecha_hasta = str(self.request.POST['fecha_hasta'])
@@ -65,6 +66,7 @@ class VentaView(LoginRequiredMixin, generic.ListView):
             if request.POST['action'] == 'search':
                 data = []
                 ventas = self.queryset()
+                print(ventas)
                 if (request.POST['deuda_credito']=='deuda'):
                     for venta in ventas:
                         venta_auxiliar = venta.toJSON()

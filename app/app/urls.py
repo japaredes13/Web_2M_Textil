@@ -29,5 +29,7 @@ urlpatterns = [
     path('configuracion/',include(('configuracion.urls','configuracion'), namespace='configuracion')),
     path('cajas/',include(('cajas.urls','cajas'), namespace='cajas')),
     path('dashboard',include(('dashboard.urls','dashboard'), namespace='dashboard')),
+    path('inventario/',include(('inventario.urls','inventario'), namespace='inventario')),
+
 
 ]
