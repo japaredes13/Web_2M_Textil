@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="content-header">
@@ -16,11 +17,34 @@
             </div>
         </div>
     </div>
+    
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-12">
-                    <div id="dashboard"></div>
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="datepicker">Seleccionar año:</label>
+                                    <input type="text" class="form-control" name="datepicker" id="datepicker" autocomplete="off"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="dashboard"></div>
+                                </div>
+                            </div>
+                            <br><br><br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="dashboard-pie"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,66 +53,165 @@
 {% endblock content%}
 
 {% block js_page %} 
+    {% include 'base/functions.html' %}
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="{% static 'base/plugins/year-select/year-select.js' %}"></script>
 
     <script type="application/javascript">
-        Highcharts.chart('dashboard', {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Reporte de ventas del año 2021'
-            },
-            subtitle: {
-                text: 'Reportes de columnas'
-            },
-            xAxis: {
-                categories: [
-                    'Enero',
-                    'Febrero',
-                    'Marzo',
-                    'Abril',
-                    'Mayo',
-                    'Junio',
-                    'Julio',
-                    'Agosto',
-                    'Septiembre',
-                    'Octubre',
-                    'Noviembre',
-                    'Deciembre'
-                ],
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Monto Gs.'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} Gs.</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: [{
-                name: 'Venta',
-                showInLegend: false,
-                colorByPoint: true,
-                data: {{ reportes_ventas | safe }}
+        /*$("#datepicker").datepicker({
+            format: "yyyy",
+            viewMode: "years", 
+            minViewMode: "years",
+            autoclose:true
+        });*/
+        $('#datepicker').yearselect({
+            order:'desc',
+            start: 2016,
+            end: 2021,
+        });    
 
-            }]
+        function obtener_ventas_por_mes (){       
+            var year = $('#datepicker').val();
+            $.ajax({
+                url: window.location.pathname,
+                type: 'POST',
+                data: {
+                    'action': 'dash_ventas_mes',
+                    'year' : year
+                },
+                dataType: 'json',
+            }).done(function (data) {
+                if(!data.hasOwnProperty('error')){
+                    /*console.log(grafico_ventas);
+                    grafico_ventas.addSeries({
+                        name: 'Venta',
+                        showInLegend: false,
+                        colorByPoint: true,
+                        data: data
+                    });*/
+                    Highcharts.chart('dashboard', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Reporte de ventas del año ' + $('#datepicker').val()
+                        },
+                        subtitle: {
+                            text: 'Reporte por mes'
+                        },
+                        xAxis: {
+                            categories: [
+                                'Enero',
+                                'Febrero',
+                                'Marzo',
+                                'Abril',
+                                'Mayo',
+                                'Junio',
+                                'Julio',
+                                'Agosto',
+                                'Septiembre',
+                                'Octubre',
+                                'Noviembre',
+                                'Deciembre'
+                            ],
+                            crosshair: true
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Monto Gs.'
+                            }
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                                '<td style="padding:0"><b>{point.y:.1f} Gs.</b></td></tr>',
+                            footerFormat: '</table>',
+                            shared: true,
+                            useHTML: true
+                        },
+                        plotOptions: {
+                            column: {
+                                pointPadding: 0.2,
+                                borderWidth: 0
+                            }
+                        },
+                        series: [{
+                            name: 'Venta',
+                            showInLegend: false,
+                            colorByPoint: true,
+                            data: data
+                        }],
+                        exporting: { enabled: false }
+                    });
+                    return false;
+                }
+            });
+        }
+
+        function obtener_ventas_productos_por_anho_mes (){       
+            //var year = $('#datepicker').val();
+            $.ajax({
+                url: window.location.pathname,
+                type: 'POST',
+                data: {
+                    'action': 'dash_ventas_productos_anho_mes',
+                },
+                dataType: 'json',
+            }).done(function (data) {
+                if(!data.hasOwnProperty('error')){
+                    console.log(data)
+                    Highcharts.chart('dashboard-pie', {
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            type: 'pie'
+                        },
+                        title: {
+                            text: 'Porcentaje de venta de las telas por el mes de: "Septiembre"'
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        accessibility: {
+                            point: {
+                                valueSuffix: '%'
+                            }
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                }
+                            }
+                        },
+                        series: [{
+                            name: data.name,
+                            colorByPoint: data.colorByPoint,
+                            data: data.data
+                        }],
+                        exporting: { enabled: false }
+                    });
+                    return false;
+                }
+            });
+        }
+
+        $(function() {
+            obtener_ventas_por_mes();
+            obtener_ventas_productos_por_anho_mes();
+        });
+
+        $('#datepicker').change(function(){
+            obtener_ventas_por_mes();
         });
     </script>
 {% endblock js_page %}

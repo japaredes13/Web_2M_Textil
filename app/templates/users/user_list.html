@@ -1,0 +1,124 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Usuarios</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active">Usuarios</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Listado de Usuarios</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row justify-content-end">
+                                <div class="col-md-2">
+                                    <a href="{% url 'user:user_create' %}" class="btn btn-primary btn-block">
+                                        <i class="fas fa-plus-square"></i> Nuevo Usuario
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="usuario"><strong>Usuario:</strong></label>
+                                    <input type="text" class="form-control" id="usuario" placeholder="Buscar por Nombre del Usuario">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <th>Usuario</th>
+                                            <th>Username</th>
+                                            <th>Fecha Registro</th>
+                                            <th>Activo</th>
+                                            <th class="all">Acciones</th>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js_page %}
+    {% include 'base/partials/sweet_delete.html' %}
+    <script>
+        $(document).ready(function() {           
+            var table = $('.table').DataTable({
+                responsive: true,
+                autoWidth: false,
+                filter: false,
+                ajax: {
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    url: window.location.pathname,
+                    type: 'POST',
+                    "data": function (d) {
+                        d.action = 'search',
+                        d.proveedor = $('#usuario').val()
+                    },
+                    dataSrc: ""
+                },
+                columns: [
+                    { "data": "usuario"},
+                    { "data": "username"},
+                    { "data": "date_joined"},
+                    { "data": "active"},
+                    { 
+                        "render": function( data, type, row ) {
+                            return '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/users/users/'+ row.id + '/edit"> <i class="fas fa-edit"></i> </a>' + 
+                                    ' <button class="btn btn-danger btn-circle btn-sm"><i class="fa fa-trash"></i></button>';
+                        },
+                        "orderable":false
+                    }
+                ],
+                language:{
+                    "decimal": "",
+                    "emptyTable": "No hay información",
+                    "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "{Filtrando de _MAX_ total de entradas}",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "Sin resultados encotrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior",
+                    }
+                }
+            });
+            $('#proveedor').keyup(function(){
+                table.ajax.reload();
+            });
+        });
+    </script>
+{% endblock js_page %}

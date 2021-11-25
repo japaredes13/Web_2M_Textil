@@ -13,6 +13,7 @@ function message_error(obj) {
     Swal.fire({
         title: 'Error!',
         html: html,
+        confirmButtonColor: '#007bff',
         icon: 'error'
     });
 }
@@ -40,16 +41,7 @@ function submit_with_ajax(url, title, content, parameters, callback) {
                         dataType: 'json',
                         processData: false,
                         contentType: false,
-                    }).done(function (data) {
-                        console.log(data);
-                        if(typeof data[0] !== 'undefined' && data[0].error){
-                            Swal.fire({
-                                title: 'Error!',
-                                html: data[0].message,
-                                icon: 'error'
-                            });
-                            return false;
-                        }
+                    }).done(function (data) {                        
                         if (!data.hasOwnProperty('error')) {
                             callback(data);
                             return false;
