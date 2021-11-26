@@ -1,7 +1,7 @@
 <script>
 function message_error(obj) {
     var html = '';
-    if (typeof (obj) === 'Object') {
+    if (typeof (obj) === 'object' || typeof (obj) === 'Object') {
         html = '<ul style="text-align: left;">';
         $.each(obj, function (key, value) {
             html += '<li>' + key + ': ' + value + '</li>';
