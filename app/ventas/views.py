@@ -191,6 +191,10 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
 
     def render_to_response(self, context, **response_kwargs):
         configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
+        if (not configuracion_venta): 
+            messages.info(self.request, 'No existe configuración del Timbrado. Por favor configurelo')
+            return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
+        
         if (configuracion_venta.fecha_inicio_timbrado <= date.today() and date.today()<=configuracion_venta.fecha_fin_timbrado): 
             pass
         else:
@@ -209,6 +213,9 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         configuracion_venta = ConfiguracionVenta.objects.filter(estado=True).first()
+        if (not configuracion_venta): 
+            messages.info(self.request, 'No existe configuración del Timbrado. Por favor configurelo')
+            return HttpResponseRedirect(reverse_lazy('ventas:ventas_list'))
         caja = Caja.objects.filter(estado=True).first()
         #user = caja.user_created_id
         context ["bancos"] = Banco.objects.filter(estado=True)
