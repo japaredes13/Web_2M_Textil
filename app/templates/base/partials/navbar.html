@@ -77,34 +77,52 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href=" {% url 'compras:orden_compras_list' %}" class="nav-link">
-                        <i class="nav-icon fas fa-store-alt"></i>
-                            <p>Orden de Compras</p>
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-shopping-bag"></i>
+                        <p> Compras <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href=" {% url 'compras:orden_compras_list' %}" class="nav-link">
+                                <i class="fas fa-store-alt"></i>
+                                <p>Orden de Compras</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'compras:compras_list' %}" class="nav-link">
+                                <i class="fas fa-shopping-basket"></i>
+                                <p>Compras</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'compras:compras_pago_list' %}" class="nav-link">
+                                <i class="fab fa-cc-amazon-pay"></i>
+                                <p>Deudas a Pagar</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'compras:compras_list' %}" class="nav-link">
-                        <i class="nav-icon fas fa-store-alt"></i>
-                            <p>Compras</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'ventas:ventas_list' %}" class="nav-link">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-shopping-cart"></i>
-                        <p>Ventas</p>
+                        <p> Ventas <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'ventas:ventas_cobro_list' %}" class="nav-link">
-                        <i class="nav-icon fas fa-shopping-cart"></i>
-                        <p>Deudas a Cobrar</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'compras:compras_pago_list' %}" class="nav-link">
-                        <i class="nav-icon fas fa-shopping-cart"></i>
-                        <p>Deudas a Pagar</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'ventas:ventas_list' %}" class="nav-link">
+                                <i class="fas fa-shopping-cart"></i>
+                                <p>Ventas</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'ventas:ventas_cobro_list' %}" class="nav-link">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <p>Deudas a Cobrar</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -140,88 +158,25 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
-                        <p> Caja <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{% url 'cajas:caja_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Apertura Caja</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <!--<ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Registrar Cobro</p>
-                            </a>
-                        </li>
-                    </ul>-->
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{% url 'cajas:banco_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Registrar Banco</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{% url 'cajas:movimientos_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Registrar Movimiento</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
-                        <p> Inventario <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{% url 'inventario:inventario_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Realizar Inventario</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                        <i class="nav-icon fas fa-cash-register"></i>
                         <p> Caja <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{% url 'cajas:caja_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fas fa-cash-register"></i>
                                 <p>Apertura Caja</p>
                             </a>
                         </li>
                     </ul>
-                    <!--<ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Registrar Cobro</p>
-                            </a>
-                        </li>
-                    </ul>-->
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{% url 'cajas:banco_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fas fa-landmark"></i>
                                 <p>Registrar Banco</p>
                             </a>
                         </li>
@@ -229,7 +184,7 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{% url 'cajas:movimientos_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fas fa-hand-holding-usd"></i>
                                 <p>Registrar Movimiento</p>
                             </a>
                         </li>
@@ -238,14 +193,14 @@
                 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                        <i class="nav-icon fas fa-clipboard-list"></i>
                         <p> Inventario <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{% url 'inventario:inventario_list' %}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                                <i class="fas fa-clipboard-list"></i>
                                 <p>Realizar Inventario</p>
                             </a>
                         </li>
@@ -253,7 +208,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                        <i class="nav-icon fas fa-users"></i>
                         <p> Usuarios <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -268,7 +223,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                        <i class="nav-icon fas fa-box"></i>
                         <p> Configuraciones <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>

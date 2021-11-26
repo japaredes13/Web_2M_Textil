@@ -53,7 +53,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         try:
             telas = Tela.objects.all()
             for tela in telas:
-                total = DetalleVenta.objects.filter(venta__fecha_venta__year=year, venta__fecha_venta__month = 9, tela_id = tela.id).aggregate(
+                total = DetalleVenta.objects.filter(venta__fecha_venta__year=year, venta__fecha_venta__month = month, tela_id = tela.id).aggregate(
                     r=Coalesce(Sum('sub_total'), 0)).get('r')
                 if (total > 0):
                     data.append({
