@@ -57,10 +57,14 @@ class InventarioView(LoginRequiredMixin, generic.ListView):
             elif request.POST['action'] == 'ajuste_inventario':
                 id=request.POST['id']
                 detalles = DetalleInventario.objects.filter(inventario_id=id)
+                inventario = Inventario.objects.filter(id=id).first()
+                inventario.fecha_ajuste = datetime.now()
                 for det in detalles:
                     tela= Tela.objects.get(id=det.tela.id)
-                    tela.metraje -= det.metraje_ajustado
+                    tela.metraje = det.metraje_deposito
                     tela.save()
+                inventario.save()
+                print(inventario)
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -113,7 +117,9 @@ class InventarioCreate(LoginRequiredMixin, generic.CreateView):
                         tela= Tela.objects.get(id=detalle.tela.id)
                         print(tela.metraje)
                         if (tela.metraje > detalle.metraje_deposito):
+                            detalle.ultimo_metraje = tela.metraje
                             detalle.metraje_ajustado = tela.metraje - detalle.metraje_deposito
+                            detalle.monto_perdida = (tela.metraje - detalle.metraje_deposito) * tela.precio_venta
                         detalle.user_created_id = self.request.user.id
                         #tela = Tela.objects.get(pk=detalle.tela_id)
                         #tela.metraje -=  detalle.metraje_vendido

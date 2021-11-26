@@ -35,26 +35,25 @@
 </style>
 <body>
 <!--<img src="{{ icon }}" class="img-invoice"> -->
-<p>
-    <b>FECHA DE INVENTARIO:</b> {{ inventarios.fecha_inventario }}<br>
-</p>
+
 <table id="listado">
     <thead>
     <tr>
-        <th class="text-center">Tela</th>
+        <th class="text-center">Nombre</th>
         <th class="text-center">Codigo</th>
-        <th class="text-center">Metraje Depósito</th>
+        <th class="text-center">Color</th>
+        <th class="text-center">Metraje Oferta</th>
     </tr>
     </thead>
     <tbody>
-    {% for inventario in inventarios.detalleinventario_set.all %}
+    {% for tela_oferta in telas_ofertas %}
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
-            <td class="text-center">{{ inventario.tela.nombre }}</td>
-            <td class="text-center">{{ inventario.tela.codigo }}</td>
-            <td class="text-center">{% load humanize  %}{{ inventario.metraje_deposito|intcomma }}</td>
+            <td class="text-center">{{ tela_oferta.tela.nombre }}</td>
+            <td class="text-center">{{ tela_oferta.tela.codigo }}</td>
+            <td class="text-center" width="25%" style="background-color: '{{ tela_oferta.tela.color }}';"></td>
+            <td class="text-center">{{ tela_oferta.metraje_oferta }}</td>
         </tr>
     {% endfor %}
     </tbody>
-</table>
 </body>
 </html>

@@ -69,6 +69,7 @@
             },
             add: function (item){
                 this.items.telas.push(item);
+                console.log(item)
                 this.list();
             },
             list: function() {
@@ -93,7 +94,7 @@
                     ],
                     columnDefs: [
                         {
-                            targets: [2, 4],
+                            targets: [2],
                             "render": function( data, type, row ) {
                                 return 'Gs. '+parseInt(data);
                             },
@@ -234,14 +235,16 @@
             var data = e.params.data;
             data.metraje_vendido = 1;
             data.sub_total = 0;
-            if (venta.items.telas.find(tela => tela.id === data.id)){
+            if (venta.items.telas.find(tela => tela.id === data.id && tela.oferta===data.oferta)){
                 Swal.fire({
                     icon: 'warning',
                     title: 'Atención!',
                     text: 'Por favor, debe seleccionar otra tela.',
                     confirmButtonColor:"#007bff",
                 });
+
             } else {
+                console.log(data.id)
                 venta.add(data);
             }
             $(this).val('').trigger('change.select2');
@@ -286,7 +289,6 @@
         $(form).on('submit', function (e){
             e.preventDefault();
             venta.items.numero_cheque = $('input[name="numero_cheque"]').val();;
-            console.log('jeje');
             if (venta.items.telas.length == 0){
                 message_error('Debe tener al menos un ítem en el detalle de la venta');
                 return false;

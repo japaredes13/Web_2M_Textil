@@ -1,0 +1,273 @@
+{% extends 'base/base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.css" integrity="sha512-0GlDFjxPsBIRh0ZGa2IMkNT54XGNaGqeJQLtMAw6EMEDQJ0WqpnU6COVA91cUS0CeVA5HtfBfzS9rlJR3bPMyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock css %}
+
+{% block content %}
+<div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Editar Tela</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'telas:tela_oferta_list' %}">Telas</a></li>
+                        <li class="breadcrumb-item active">Crear</li>
+                    </ol>
+                </div>               
+            </div>
+        </div>
+    </div>
+
+    <div class="content-center">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos de la Tela</h3>
+                        </div>
+                        <input type="hidden" name="action" value="edit">
+                        <div class="card-body">
+                            {% if obj %}
+                                <form method="POST" role="form" id="form" action="{% url 'telas:tela_oferta_edit' obj.pk %}">
+                            {% else %}
+                                <form method="POST" role="form" id="form" action="{% url 'telas:tela_oferta_create' %}">
+                            {% endif %}
+                            {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Tipo de tela</label>
+                                           <input disabled="true" type="text" class="form-control" id="tela_oferta" name="tela_oferta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Precio Oferta:</label>
+                                            <input type="text" class="form-control" id="precio_oferta" name="precio_oferta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Metraje Oferta:</label>
+                                            <input type="text" class="form-control" id="metraje_oferta" name="metraje_oferta">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <button type="submit" id="button" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                                            
+                                            <a class="btn btn-danger float-right" href="{% url 'telas:tela_oferta_list' %}">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block js_page %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% include 'base/functions.html' %}
+    <script>
+        var tela_oferta = {
+            items: {
+                precio_oferta: 0,
+                metraje_oferta: 0,
+                tela_id: 0,
+
+            },
+            
+        };
+        var tela_oferta_edit = {
+            items: {
+                precio_oferta: 0,
+                metraje_oferta: 0,
+                id_tela: 0,
+
+            },
+            
+        };
+       
+
+        var precio_oferta = document.getElementById("precio_oferta");
+        precio_oferta.addEventListener('keyup', function(evt){
+            var n = this.value.replace(/\D/g,"")
+                            .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".");
+            precio_oferta.value = n;
+        }, false);
+
+        var metraje_oferta = document.getElementById("metraje_oferta");
+        var valor =String($('#metraje_oferta').val());
+        console.log(valor);
+        console.log(valor.length);
+        console.log(valor.indexOf('.'));
+        if (metraje_oferta.value >=1000 && (valor.length -valor.indexOf('.'))!=2){
+            var n = metraje_oferta.value.replace(/\D/g, "") //Reemplaza los no digitos por espacio en cada ocurrencia
+                            .replace(/([0-9])([0-9]{2})$/, '$1,$2')  
+                            .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".")
+            metraje_oferta.value = n;
+        }
+        else{
+            var n = metraje_oferta.value.replace('.',',');
+            metraje_oferta.value = n;
+
+        }
+
+        var metraje_oferta = document.getElementById("metraje_oferta");
+        metraje_oferta.addEventListener('keyup', function(evt){
+            var n = this.value.replace(/\D/g, "") //Reemplaza los no digitos por espacio en cada ocurrencia
+                            .replace(/([0-9])([0-9]{2})$/, '$1,$2')  
+                            .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ".")
+            metraje_oferta.value = n;
+        }, false);
+     
+        $.extend( $.validator.messages, {
+            min: $.validator.format("Por favor ingrese un valor mayor a 0")
+        });
+
+        $("#form").validate({
+		    rules: {
+                precio_oferta: {required: true, min:true},
+                metraje_oferta: {required: true, metrajeRule:true},
+            },
+            messages: {
+                precio_oferta: {required: "* El campo es requerido"},
+                metraje_oferta : {required: "* El campo es requerido"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                if (element.name == 'precio_oferta' || element.name=='metraje_oferta') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                if (element.name == 'precio_oferta' || element.name=='metraje_oferta') {
+                    $(element).closest('.form-control').addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            }
+        });
+        $.validator.addMethod("metrajeRule", function (value, element) {
+            return parseInt(value) > 0
+        }, "* El campo debe ser mayor a 0");
+        
+      
+        //evento para eliminar un detalle dentro del listado
+        //y evento para actualizar la cantidad
+        function validatePrecioOferta(){
+            var precio_oferta = $('#precio_oferta').val();
+            var metraje_oferta = String($('#metraje_oferta').val());
+            p_oferta = precio_oferta.replace('.','');
+            p_metraje = metraje_oferta.replace('.','')
+                             .replace(',','.');
+        
+            if (parseInt(p_oferta) == 0){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El precio de la oferta debe ser mayor a 0",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            
+            return false;
+        }
+
+        function validateMetrajeOferta(){
+            var precio_oferta = $('#precio_oferta').val();
+            var metraje_oferta = String($('#metraje_oferta').val());
+            p_oferta = precio_oferta.replace('.','');
+            p_metraje = metraje_oferta.replace('.','')
+                             .replace(',','.');
+        
+            if (parseInt(p_metraje) == 0){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El metraje de la oferta debe ser mayor a 0",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            if ( (p_oferta == '') || (p_metraje == '')){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "Completa todos campos",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            return false;
+        }
+
+        $('input[name="precio_oferta"]').on('change', function(){
+            var validate = validatePrecioOferta();
+        })
+        $('input[name="metraje_oferta"]').on('change', function(){
+            var validate = validateMetrajeOferta();
+        })
+        //evento para enviar el formulario
+        $(form).on('submit', function (e){
+            e.preventDefault();
+            var error = validatePrecioOferta();
+            var error = validateMetrajeOferta();
+            if (error) return false;
+            var precio_oferta = String($('input[name="precio_oferta"]').val());
+            var metraje_oferta = String($('input[name="metraje_oferta"]').val());
+            tela_oferta.items.tela_id=tela_oferta_edit.items[0].id_tela;
+            precio_oferta = precio_oferta.replace('.','');
+            metraje_oferta = metraje_oferta.replace('.','')
+                             .replace(',','.');
+            console.log(precio_oferta)
+            tela_oferta.items.precio_oferta = precio_oferta
+            console.log(tela_oferta.items.precio_oferta)
+            tela_oferta.items.metraje_oferta = metraje_oferta
+
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('tela_oferta', JSON.stringify(tela_oferta.items));
+            submit_with_ajax(window.location.pathname, 'Notificación',
+            '¿Estas seguro de que quiere registrar la oferta?', parameters, function (response) {
+                alert_action('Notificación', '¿Desea imprimir el reporte?', function () {
+                    //window.open('/telas/telas/listado/pdf/' + response.id + '/', '_blank');
+                    location.href = '/telas/telas/oferta/';
+                }, function () {
+                    location.href = '/telas/telas/oferta/';
+                });
+            });
+
+        });
+
+    </script>
+    <script>
+        tela_oferta_edit.items= {{ oferta|safe }};
+
+        console.log(tela_oferta_edit.items);
+        console.log(tela_oferta_edit.items[0].precio_oferta);
+        $('#precio_oferta').val(tela_oferta_edit.items[0].precio_oferta);
+        $('#metraje_oferta').val(tela_oferta_edit.items[0].metraje_oferta);
+        $('#tela_oferta').val(tela_oferta_edit.items[0].text);
+
+        /*
+        tela_oferta.items.precio_oferta=
+        tela_oferta.items.metraje_oferta=
+        tela_oferta.items.id_tela=
+*/
+    </script>
+{% endblock js_page %}

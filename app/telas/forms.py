@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Tela
+from .models import Tela, TelaOferta
 from tipos.models import Categoria, Disenho
 
 class TelaForm(forms.ModelForm):
@@ -55,3 +55,16 @@ class TelaForm(forms.ModelForm):
         self.fields['categoria'].empty_label = "Seleccione la Categoria"
         self.fields['disenho'].empty_label = "Seleccione el Diseño"
 
+
+class TelaOfertaForm(forms.ModelForm):
+    class Meta:
+        model = TelaOferta
+        fields = '__all__'
+        labels = {
+            'metraje_oferta':"Metraje Oferta:",
+            'precio_oferta':"Precio Oferta:",
+        }
+        widgets = {
+            'metraje_oferta' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+			'precio_oferta' : forms.TextInput(attrs={'class':'form-control','autocomplete':'off','min':'1'}),
+        }

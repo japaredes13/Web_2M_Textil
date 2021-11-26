@@ -35,6 +35,11 @@
 </style>
 <body>
 <!--<img src="{{ icon }}" class="img-invoice"> -->
+<h4 align="right"> FECHA DE AJUSTE DE INVENTARIO:
+<tr>
+    <td style="text-align"> {{ inventarios.fecha_ajuste }} </td>
+</tr>
+</h4>
 <p>
     <b>FECHA DE INVENTARIO:</b> {{ inventarios.fecha_inventario }}<br>
 </p>
@@ -45,7 +50,8 @@
         <th class="text-center">Codigo</th>
         <th class="text-center">Metraje Sistema</th>
         <th class="text-center">Metraje Depósito</th>
-        <th class="text-center">Metraje Ajustado</th>
+        <th class="text-center">Diferencia</th>
+        <th class="text-center">Monto Pérdida</th>
     </tr>
     </thead>
     <tbody>
@@ -53,9 +59,10 @@
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
             <td class="text-center">{{ inventario.tela.nombre }}</td>
             <td class="text-center">{{ inventario.tela.codigo }}</td>
-            <td class="text-center">{{ inventario.tela.metraje }}</td>
-            <td class="text-center">{{ inventario.metraje_deposito }}</td>
-            <td class="text-center">{{ inventario.metraje_ajustado }}</td>
+            <td class="text-center">{% load humanize  %}{{ inventario.ultimo_metraje|intcomma }}</td>
+            <td class="text-center">{% load humanize  %}{{ inventario.metraje_deposito|intcomma }}</td>
+            <td class="text-center">{% load humanize  %}{{ inventario.metraje_ajustado|intcomma }}</td>
+            <td class="text-center">Gs {% load humanize  %}{{ inventario.monto_perdida|intcomma }}</td>
         </tr>
     {% endfor %}
     </tbody>

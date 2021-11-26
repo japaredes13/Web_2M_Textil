@@ -2,7 +2,7 @@ from configuracion.models import ConfiguracionProducto, ConfiguracionVenta
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
 from .models import Venta, DetalleVenta, CuotaVenta
 from .forms import VentaForm
-from telas.models import Tela
+from telas.models import Tela, TelaOferta
 from cajas.models import Caja, Cobro, Banco
 from cajas.forms import CobroForm, BancoForm
 from clientes.models import Cliente
@@ -228,11 +228,17 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
             action = request.POST['action']
             if action == 'search_tela':
                 data = []
-                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']), metraje__gt=0)
+                telas  = Tela.objects.filter(Q(codigo__icontains=request.POST['term']) | Q(nombre__icontains=request.POST['term']), metraje__gt=0, estado=True)
+                telas_oferta = TelaOferta.objects.select_related('tela').filter(Q(tela__codigo__icontains=request.POST['term']) | Q(tela__nombre__icontains=request.POST['term']), metraje_oferta__gt=0, estado=True)
                 for tela in telas:
                     item = tela.toJSON()
                     item['text'] = 'TELA: '+ tela.nombre + ' COD: ' + tela.codigo + ' MET: ' + str(tela.metraje)
                     data.append(item)
+
+                for tela_oferta in telas_oferta:
+                    aux = tela_oferta.toJSON()
+                    aux['text'] = 'TELA: '+ tela_oferta.tela.nombre + ' '+ tela_oferta.descripcion + ' COD: ' + tela_oferta.tela.codigo + ' MET: ' + str(tela_oferta.metraje_oferta)
+                    data.append(aux)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
                 print(request_venta)
@@ -259,6 +265,10 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     for det in request_venta['telas']:
                         detalle =  DetalleVenta()
                         detalle.venta_id = venta.id
+                        if (det['oferta'] == 1):
+                            detalle.descripcion = det['nombre'] + ' ' +det['descripcion']
+                        else:
+                            detalle.descripcion = det['nombre']
                         detalle.tela_id = det['id']
                         detalle.metraje_vendido = float(det['metraje_vendido'])
                         detalle.precio_unitario = int(det['precio_venta'])
@@ -272,7 +282,13 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         tela.metraje -=  detalle.metraje_vendido
                         tela.save()
                         detalle.save()
-                    
+
+                        if (det['oferta'] == 1):
+                            tela_oferta = TelaOferta.objects.get(estado=True, tela_id = detalle.tela_id )
+                            tela_oferta.metraje_oferta -= detalle.metraje_vendido
+                            if (tela_oferta.metraje_oferta == 0):
+                                tela_oferta.estado = False
+                            tela_oferta.save()
                     data = {'id': venta.id}
                     #venta.sub_total_sin_iva = sub_total_sin_iva
                     venta.monto_total = monto_total
