@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'bases',
     'ubicaciones',
     'clientes',
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'cajas',
     'inventario',
+    'user',
 ]
 
 MESSAGE_TAGS = {
@@ -103,9 +105,9 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bd_proyecto',
+        'NAME': '2m_textil',
         'USER': 'postgres',
-        #'PASSWORD': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': 5432
     }
@@ -151,6 +153,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
+
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'static/')
+
+#MEDIA_URL = '/static/'
+
+AUTH_USER_MODEL = 'user.User'
 
 
 # Default primary key field type
