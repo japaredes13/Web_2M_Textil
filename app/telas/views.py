@@ -286,7 +286,6 @@ class TelaOfertaUpdate(LoginRequiredMixin, generic.UpdateView):
         try:
             action = request.POST['action']
             if action == 'search_tela':
-                print("HOLAAAAAAAAAAAA")
                 data = []
                 telas_oferta = TelaOferta.objects.filter(estado=True).values_list('tela_id')
                 print

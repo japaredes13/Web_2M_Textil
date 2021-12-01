@@ -170,7 +170,9 @@
         //y evento para actualizar la cantidad
         function validatePrecioOferta(){
             var precio_compra = $('#precio_compra').val();
+            console.log(precio_compra)
             var precio_venta = $('#precio_venta').val();
+            console.log(precio_venta)
             var precio_oferta = $('#precio_oferta').val();
             var metraje_oferta = String($('#metraje_oferta').val());
             p_oferta = precio_oferta.replace('.','');
@@ -247,6 +249,7 @@
         $(form).on('submit', function (e){
             e.preventDefault();
             var error = validatePrecioOferta();
+            if (error) return false;
             var error = validateMetrajeOferta();
             if (error) return false;
             var precio_oferta = String($('input[name="precio_oferta"]').val());
@@ -282,7 +285,9 @@
         $('#precio_oferta').val(tela_oferta_edit.items[0].precio_oferta);
         $('#metraje_oferta').val(tela_oferta_edit.items[0].metraje_oferta);
         $('#tela_oferta').val(tela_oferta_edit.items[0].text);
-        //$('#precio_compra').val(tela_oferta_edit.items[0].precio_compra_tela);
+        $('#precio_compra').val(tela_oferta_edit.items[0].precio_compra_tela);
+        $('#precio_venta').val(tela_oferta_edit.items[0].precio_venta_tela);
+        $('#tela_metraje').val(tela_oferta_edit.items[0].tela_metraje);
 
         /*
         tela_oferta.items.precio_oferta=

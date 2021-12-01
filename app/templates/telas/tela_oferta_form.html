@@ -51,9 +51,9 @@
                                             <input type="text" class="form-control" id="precio_oferta" name="precio_oferta">
                                         </div>
                                      </div>
-                                     <input type="hidden"class="form-control" id="precio_compra" name="precio_compra" >
-                                     <input type="hidden"class="form-control" id="precio_venta" name="precio_venta" >
-                                     <input type="hidden"class="form-control" id="metraje" name="metraje" >
+                                     <input type="hidden"class="form-control" id="precio_compra" name="precio_compra_tela" >
+                                     <input type="hidden"class="form-control" id="precio_venta" name="precio_venta_tela" >
+                                     <input type="hidden"class="form-control" id="metraje" name="tela_metraje" >
 
 
                                     <div class="col-md-8">
@@ -197,8 +197,9 @@
         //y evento para actualizar la cantidad
         function validatePrecioOferta(){
             var precio_compra = $('#precio_compra').val();
-            var precio_venta = $('#precio_venta').val();
             console.log(precio_compra)
+            var precio_venta = $('#precio_venta').val();
+            console.log(precio_venta)
             var precio_oferta = $('#precio_oferta').val();
             var metraje_oferta = String($('#metraje_oferta').val());
             p_oferta = precio_oferta.replace('.','');
@@ -277,9 +278,7 @@
         //evento para enviar el formulario
         $(form).on('submit', function (e){
             e.preventDefault();
-            var error = validatePrecioOferta();
-            var error = validateMetrajeOferta();
-            if (error) return false;
+            
             var precio_oferta = String($('input[name="precio_oferta"]').val());
             var metraje_oferta = String($('input[name="metraje_oferta"]').val());
             precio_oferta = precio_oferta.replace('.','');
@@ -291,6 +290,10 @@
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('tela_oferta', JSON.stringify(tela_oferta.items));
+            var error = validatePrecioOferta();
+            if (error) return false;
+            var error = validateMetrajeOferta();
+            if (error) return false;
             submit_with_ajax(window.location.pathname, 'Notificación',
             '¿Estas seguro de que quiere registrar la oferta?', parameters, function (response) {
                 location.href = '/telas/telas/oferta/';
