@@ -129,11 +129,27 @@
                     {
                         "render": function( data, type, row ) {
                             console.log(row)
-                            var button = '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/telas/telas/oferta/'+ row.id+'/edit"> <i class="fas fa-edit"></i> </a>' +
-                                         ' <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar(\'/telas/telas/oferta/'+row.id+'/delete\',\'/telas/telas/oferta\')"><i class="fa fa-trash"></i></button>';
+                            var button = '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/telas/telas/oferta/'+ row.id+'/edit"> <i class="fas fa-edit"></i> </a>';
+                                         //' <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar(\'/telas/telas/oferta/'+row.id+'/delete\',\'/telas/telas/oferta\')"><i class="fa fa-trash"></i></button>';
                             return button;
                         },
                         orderable: false
+                    },
+                ],
+                columnDefs: [
+                    {
+                        targets: [3],
+                        class: 'text-center',
+                        render: function (data, type, row) {
+                            return data.toLocaleString();
+                        }
+                    },
+                    {
+                        targets: [4],
+                        class: 'text-center',
+                        render: function (data, type, row) {
+                            return 'Gs. ' + Intl.NumberFormat('de-DE').format(data);
+                        }
                     },
                 ],
                 language:{

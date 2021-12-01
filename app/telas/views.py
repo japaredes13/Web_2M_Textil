@@ -302,6 +302,7 @@ class TelaOfertaUpdate(LoginRequiredMixin, generic.UpdateView):
                 telas = Tela.objects.get(id=request_tela_oferta['tela_id'])
 
                 with transaction.atomic():
+                    
                     tela_oferta = TelaOferta.objects.get(id=self.get_object().id)
                     print(tela_oferta)
                     tela_oferta.tela_id = request_tela_oferta['tela_id']

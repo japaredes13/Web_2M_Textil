@@ -50,7 +50,12 @@
                                             <label>Precio Oferta:</label>
                                             <input type="text" class="form-control" id="precio_oferta" name="precio_oferta">
                                         </div>
-                                    </div>
+                                     </div>
+                                     <input type="hidden"class="form-control" id="precio_compra" name="precio_compra" >
+                                     <input type="hidden"class="form-control" id="precio_venta" name="precio_venta" >
+                                     <input type="hidden"class="form-control" id="metraje" name="metraje" >
+
+
                                     <div class="col-md-8">
                                         <div class="form-group">
                                             <label>Metraje Oferta:</label>
@@ -180,12 +185,20 @@
         }).on('select2:select', function (e){
             var data = e.params.data;
             tela_oferta.items.tela_id=data.id;
+            console.log(data);
+            $('#precio_compra').val(data.precio_compra);
+            $('#precio_venta').val(data.precio_venta);
+            $('#metraje').val(data.metraje);
             tela_oferta.add(data);
             $(this).val('').trigger('change.select2');
+
         });
         //evento para eliminar un detalle dentro del listado
         //y evento para actualizar la cantidad
         function validatePrecioOferta(){
+            var precio_compra = $('#precio_compra').val();
+            var precio_venta = $('#precio_venta').val();
+            console.log(precio_compra)
             var precio_oferta = $('#precio_oferta').val();
             var metraje_oferta = String($('#metraje_oferta').val());
             p_oferta = precio_oferta.replace('.','');
@@ -201,13 +214,26 @@
                 });
                 return true;
             }
-            
+            if ( (parseInt(p_oferta) < precio_compra) || (parseInt(p_oferta) > precio_venta)){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El precio de la oferta debe ser mayor al precio de compra y menor al precio de venta",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
             return false;
         }
 
+
         function validateMetrajeOferta(){
             var precio_oferta = $('#precio_oferta').val();
+            console.log(precio_oferta)
+            var metraje = $('#metraje').val()
+            console.log(metraje)
             var metraje_oferta = String($('#metraje_oferta').val());
+            console.log(metraje_oferta)
             p_oferta = precio_oferta.replace('.','');
             p_metraje = metraje_oferta.replace('.','')
                              .replace(',','.');
@@ -216,6 +242,15 @@
                 Swal.fire({
                     title: "Notificacion",
                     text: "El metraje de la oferta debe ser mayor a 0",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            if (parseInt(p_metraje) > metraje ){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El metraje de la oferta debe ser menor al stock",
                     icon: "warning",
                     confirmButtonColor:"#007bff",
                 });
@@ -250,9 +285,7 @@
             precio_oferta = precio_oferta.replace('.','');
             metraje_oferta = metraje_oferta.replace('.','')
                              .replace(',','.');
-            console.log(precio_oferta)
             tela_oferta.items.precio_oferta = precio_oferta
-            console.log(tela_oferta.items.precio_oferta)
             tela_oferta.items.metraje_oferta = metraje_oferta
 
             var parameters = new FormData();
@@ -260,13 +293,11 @@
             parameters.append('tela_oferta', JSON.stringify(tela_oferta.items));
             submit_with_ajax(window.location.pathname, 'Notificación',
             '¿Estas seguro de que quiere registrar la oferta?', parameters, function (response) {
-                alert_action('Notificación', '¿Desea imprimir el reporte?', function () {
-                    //window.open('/telas/telas/listado/pdf/' + response.id + '/', '_blank');
+                location.href = '/telas/telas/oferta/';
+            },function () {
                     location.href = '/telas/telas/oferta/';
-                }, function () {
-                    location.href = '/telas/telas/oferta/';
-                });
-            });
+                }
+            );
 
         });
 

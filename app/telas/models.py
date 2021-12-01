@@ -36,8 +36,12 @@ class TelaOferta(ClaseModelo):
         item = model_to_dict(self)
         item['nombre'] = self.tela.nombre
         item['codigo'] = self.tela.codigo
-        #item['precio_venta_tela'] = self.tela.precio_venta
-        #item['tela_metraje'] = self.tela.metraje
+        item['precio_venta_tela'] = self.tela.precio_venta
+        #print(item['precio_venta_tela'])
+        item['precio_compra_tela'] = self.tela.precio_compra
+        #print(item['precio_compra_tela'])
+        item['tela_metraje'] = self.tela.metraje
+        #print(item['tela_metraje'])
         item['precio_venta'] = self.precio_oferta
         item['metraje_vendido'] = 0
         item ['color'] = '<input type="color" value="'+self.tela.color+'" name="color" class="form-control" disabled>' 

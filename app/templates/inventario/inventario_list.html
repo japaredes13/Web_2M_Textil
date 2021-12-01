@@ -120,11 +120,11 @@
                     { "data": "fecha_inventario" },
                     {
                         "render": function( data, type, row ) {
-                            console.log(row)
-                            var button = ' <a target="_blank" class="btn btn-success btn-sm" href="/inventario/inventario/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Físico </a>' +
-                                         ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/inventario/inventario/listado_completo/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Actual </a>';
+                            var button = ' <a target="_blank" class="btn btn-success btn-sm" href="/inventario/inventario/listado/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Físico </a>';
                             if (!row.fecha_ajuste)
                                 button += ' <a rel= "ajuste" class="btn btn-warning btn-sm"><i class="fas fa-times"></i> Ajuste Inventario</a>';
+                            else 
+                                button+= ' <a target="_blank" class="btn btn-info btn-circle btn-sm" href="/inventario/inventario/listado_completo/pdf/'+ row.id+'/" > <i class="fas fa-file-pdf"></i> Inventario Actual </a>';
                             return button;
                         },
                         orderable: false

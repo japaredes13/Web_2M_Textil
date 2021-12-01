@@ -57,6 +57,9 @@
                                             <input type="text" class="form-control" id="metraje_oferta" name="metraje_oferta">
                                         </div>
                                     </div>
+                                    <input type="hidden"class="form-control" id="precio_compra" name="precio_compra_tela" >
+                                    <input type="hidden"class="form-control" id="precio_venta" name="precio_venta_tela" >
+                                    <input type="hidden"class="form-control" id="tela_metraje" name="tela_metraje" >
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 <div class="row">
@@ -101,7 +104,6 @@
             
         };
        
-
         var precio_oferta = document.getElementById("precio_oferta");
         precio_oferta.addEventListener('keyup', function(evt){
             var n = this.value.replace(/\D/g,"")
@@ -111,9 +113,7 @@
 
         var metraje_oferta = document.getElementById("metraje_oferta");
         var valor =String($('#metraje_oferta').val());
-        console.log(valor);
-        console.log(valor.length);
-        console.log(valor.indexOf('.'));
+
         if (metraje_oferta.value >=1000 && (valor.length -valor.indexOf('.'))!=2){
             var n = metraje_oferta.value.replace(/\D/g, "") //Reemplaza los no digitos por espacio en cada ocurrencia
                             .replace(/([0-9])([0-9]{2})$/, '$1,$2')  
@@ -169,6 +169,8 @@
         //evento para eliminar un detalle dentro del listado
         //y evento para actualizar la cantidad
         function validatePrecioOferta(){
+            var precio_compra = $('#precio_compra').val();
+            var precio_venta = $('#precio_venta').val();
             var precio_oferta = $('#precio_oferta').val();
             var metraje_oferta = String($('#metraje_oferta').val());
             p_oferta = precio_oferta.replace('.','');
@@ -184,21 +186,40 @@
                 });
                 return true;
             }
-            
+            if ( (parseInt(p_oferta) < precio_compra) || (parseInt(p_oferta) > precio_venta)){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El precio de la oferta debe ser mayor al precio de compra y menor al precio de venta",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
             return false;
         }
 
         function validateMetrajeOferta(){
             var precio_oferta = $('#precio_oferta').val();
             var metraje_oferta = String($('#metraje_oferta').val());
+            var metraje = $('#tela_metraje').val()
+            console.log(metraje)
             p_oferta = precio_oferta.replace('.','');
             p_metraje = metraje_oferta.replace('.','')
                              .replace(',','.');
-        
+            console.log(p_metraje)
             if (parseInt(p_metraje) == 0){
                 Swal.fire({
                     title: "Notificacion",
                     text: "El metraje de la oferta debe ser mayor a 0",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            if (parseInt(p_metraje) > metraje ){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "El metraje de la oferta debe ser menor al stock",
                     icon: "warning",
                     confirmButtonColor:"#007bff",
                 });
@@ -244,13 +265,11 @@
             parameters.append('tela_oferta', JSON.stringify(tela_oferta.items));
             submit_with_ajax(window.location.pathname, 'Notificación',
             '¿Estas seguro de que quiere registrar la oferta?', parameters, function (response) {
-                alert_action('Notificación', '¿Desea imprimir el reporte?', function () {
-                    //window.open('/telas/telas/listado/pdf/' + response.id + '/', '_blank');
+                location.href = '/telas/telas/oferta/';
+            },function () {
                     location.href = '/telas/telas/oferta/';
-                }, function () {
-                    location.href = '/telas/telas/oferta/';
-                });
-            });
+                }
+            );
 
         });
 
@@ -263,6 +282,7 @@
         $('#precio_oferta').val(tela_oferta_edit.items[0].precio_oferta);
         $('#metraje_oferta').val(tela_oferta_edit.items[0].metraje_oferta);
         $('#tela_oferta').val(tela_oferta_edit.items[0].text);
+        //$('#precio_compra').val(tela_oferta_edit.items[0].precio_compra_tela);
 
         /*
         tela_oferta.items.precio_oferta=
