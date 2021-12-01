@@ -272,11 +272,13 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                     for det in request_venta['telas']:
                         detalle =  DetalleVenta()
                         detalle.venta_id = venta.id
+                        tela_id = det['id']
                         if (det['oferta'] == 1):
                             detalle.descripcion = det['nombre'] + ' ' +det['descripcion']
+                            tela_id = det['tela_id']
                         else:
                             detalle.descripcion = det['nombre']
-                        detalle.tela_id = det['id']
+                        detalle.tela_id = tela_id
                         detalle.metraje_vendido = float(det['metraje_vendido'])
                         detalle.precio_unitario = int(det['precio_venta'])
                         detalle.sub_total = round(float(det['metraje_vendido']) * int(det['precio_venta']))
@@ -285,17 +287,29 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
                         monto_total += detalle.sub_total
                         total_iva_10 += detalle.sub_total_iva_10
                         detalle.user_created_id = self.request.user.id
-                        tela = Tela.objects.get(pk=detalle.tela_id)
-                        tela.metraje -=  detalle.metraje_vendido
-                        tela.save()
+                        #tela = Tela.objects.get(pk=detalle.tela_id)
+                        #tela.metraje -=  detalle.metraje_vendido
+                        #tela.save()
                         detalle.save()
 
+                        if (det['oferta'] == 1):
+                            tela_oferta = TelaOferta.objects.get(estado=True, id = det['id'] )
+                            tela_oferta.metraje_oferta -= detalle.metraje_vendido
+                            tela_oferta.save()
+                        
+                        else:
+                            tela = Tela.objects.get(pk=detalle.tela_id)
+                            tela.metraje -=  detalle.metraje_vendido
+                            tela.save()
+
+                        '''    
                         if (det['oferta'] == 1):
                             tela_oferta = TelaOferta.objects.get(estado=True, tela_id = detalle.tela_id )
                             tela_oferta.metraje_oferta -= detalle.metraje_vendido
                             if (tela_oferta.metraje_oferta == 0):
                                 tela_oferta.estado = False
                             tela_oferta.save()
+                        '''
                     data = {'id': venta.id}
                     #venta.sub_total_sin_iva = sub_total_sin_iva
                     venta.monto_total = monto_total
