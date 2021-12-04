@@ -305,9 +305,17 @@ class TelaOfertaUpdate(LoginRequiredMixin, generic.UpdateView):
                     tela_oferta = TelaOferta.objects.get(id=self.get_object().id)
                     print(tela_oferta)
                     tela_oferta.tela_id = request_tela_oferta['tela_id']
-                    tela_oferta.metraje_oferta = request_tela_oferta['metraje_oferta']
+                    if ( float ( request_tela_oferta['metraje_oferta']) < (telas.metraje + tela_oferta.metraje_oferta )):
+                        print(request_tela_oferta['metraje_oferta'])
+                        print(telas.metraje + tela_oferta.metraje_oferta)
+                        print(tela_oferta.metraje_oferta)
+                        telas.metraje += tela_oferta.metraje_oferta
+                        print(telas.metraje)
+                        tela_oferta.metraje_oferta = float(request_tela_oferta['metraje_oferta'])
+                        print(tela_oferta.metraje_oferta)
+                        telas.metraje -= float(tela_oferta.metraje_oferta)
+                    
                     tela_oferta.precio_oferta = request_tela_oferta['precio_oferta']
-                    telas.metraje -= float(tela_oferta.metraje_oferta)
                     print(telas.metraje)
                     print(tela_oferta.metraje_oferta)
                     tela_oferta.descripcion = 'Oferta'

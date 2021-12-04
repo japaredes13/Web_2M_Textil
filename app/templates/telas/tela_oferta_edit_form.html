@@ -209,7 +209,7 @@
             p_metraje = metraje_oferta.replace('.','')
                              .replace(',','.');
             console.log(p_metraje)
-            if (parseInt(p_metraje) == 0){
+            if (parseFloat(p_metraje) == 0){
                 Swal.fire({
                     title: "Notificacion",
                     text: "El metraje de la oferta debe ser mayor a 0",
@@ -218,7 +218,7 @@
                 });
                 return true;
             }
-            if (parseInt(p_metraje) > metraje ){
+            if (parseFloat(p_metraje) > (parseInt(metraje) + parseFloat(tela_oferta_edit.items[0].metraje_oferta) ) ){
                 Swal.fire({
                     title: "Notificacion",
                     text: "El metraje de la oferta debe ser menor al stock",
@@ -284,6 +284,7 @@
         console.log(tela_oferta_edit.items[0].precio_oferta);
         $('#precio_oferta').val(tela_oferta_edit.items[0].precio_oferta);
         $('#metraje_oferta').val(tela_oferta_edit.items[0].metraje_oferta);
+        console.log(tela_oferta_edit.items[0].metraje_oferta)
         $('#tela_oferta').val(tela_oferta_edit.items[0].text);
         $('#precio_compra').val(tela_oferta_edit.items[0].precio_compra_tela);
         $('#precio_venta').val(tela_oferta_edit.items[0].precio_venta_tela);
