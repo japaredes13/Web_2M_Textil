@@ -4,9 +4,8 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-
-#from core.erp.mixins import ValidatePermissionRequiredMixin
-from user.forms import UserForm
+from django.contrib.auth.models import Group
+from user.forms import UserForm, RolForm
 from user.models import User
 
 
@@ -133,3 +132,59 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         context['entity'] = 'Usuarios'
         context['list_url'] = self.success_url
         return context
+
+
+class RolListView(ListView):
+    model = Group
+    template_name ='users/rol_list.html'
+    #permission_required ='auth.view_user'
+	
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context ['obj'] = self.get_queryset()
+        return context
+
+
+class RolCreateView(CreateView):
+	#error_css_class = 'error'
+    model = Group
+    template_name = 'users/rol_form.html'
+    form_class = RolForm
+    context_object_name = 'form'
+    success_url = reverse_lazy('user:rol_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+class RolEditView(UpdateView):
+	#error_css_class = 'error'
+	model = Group
+	template_name = 'users/rol_form.html'
+	form_class = RolForm
+	context_object_name = 'obj'
+	success_url = reverse_lazy('user:rol_list')
+
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+def rol_delete(request,id):
+    try:
+        grupo= Group.objects.get(pk=id)
+        grupo.delete()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except Group.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    return JsonResponse(data, safe=False)

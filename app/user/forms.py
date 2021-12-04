@@ -1,6 +1,7 @@
 from django.forms import *
 
 from user.models import User
+from django.contrib.auth.models import Group
 
 
 class UserForm(ModelForm):
@@ -59,3 +60,24 @@ class UserForm(ModelForm):
         except Exception as e:
             data['error'] = str(e)
         return data
+
+
+class RolForm(ModelForm):
+    class Meta:
+        model= Group 
+
+        fields=[ 
+	        'name',
+            'permissions'
+        ]
+
+        labels={
+           
+	        'name':'Nombre Rol:',
+            'permissions':'Seleccione los permisos:'
+        }
+
+        widgets={
+	        'name': TextInput(attrs={'class':'form-control','autocomplete':'off'}),
+            'permissions':SelectMultiple(attrs={'class':'form-control select2','id':'grupos'}),
+        }
