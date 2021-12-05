@@ -24,6 +24,7 @@
                 <div class="col-md-12">
                     <div class="card card-secondary">
                         <div class="card-header">
+                            <h3 class="card-title">Reporte de Ventas</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -38,6 +39,25 @@
                                 </div>
                             </div>
                             <br><br><br>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="datepicker_ventas">Seleccionar año:</label>
+                                    <input type="text" class="form-control" name="datepicker_ventas" id="datepicker_ventas" value="{{ year }}"/>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="month">Seleccionar Mes:</label>
+                                    <select id='month' class="form-control" style="width: 200px">
+                                        {% for clave, valor in meses.items %}
+                                            {% if clave == mes  %}
+                                                <option value="{{clave}}" selected>{{valor}}</option>
+                                            {% else %}
+                                                <option value="{{clave}}">{{valor}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>                                
+                            </div>
+                            </br>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div id="dashboard-pie"></div>
@@ -72,7 +92,12 @@
             order:'desc',
             start: 2016,
             end: 2021,
-        });    
+        });
+        $('#datepicker_ventas').yearselect({
+            order:'desc',
+            start: 2016,
+            end: 2021,
+        });   
 
         function obtener_ventas_por_mes (){       
             var year = $('#datepicker').val();
@@ -85,6 +110,7 @@
                 },
                 dataType: 'json',
             }).done(function (data) {
+                console.log(data);
                 if(!data.hasOwnProperty('error')){
                     /*console.log(grafico_ventas);
                     grafico_ventas.addSeries({
@@ -129,7 +155,7 @@
                         tooltip: {
                             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                                '<td style="padding:0"><b>{point.y:.1f} Gs.</b></td></tr>',
+                                '<td style="padding:0"><b>{point.y} Gs.</b></td></tr>',
                             footerFormat: '</table>',
                             shared: true,
                             useHTML: true
@@ -146,7 +172,8 @@
                             colorByPoint: true,
                             data: data
                         }],
-                        exporting: { enabled: false }
+                        exporting: { enabled: true },
+                        credits : { enabled: false}
                     });
                     return false;
                 }
@@ -154,17 +181,20 @@
         }
 
         function obtener_ventas_productos_por_anho_mes (){       
-            //var year = $('#datepicker').val();
+            var year = $('#datepicker_ventas').val();
+            var month = $('#month').val();
+            var month_text = $('#month option:selected').text();
             $.ajax({
                 url: window.location.pathname,
                 type: 'POST',
                 data: {
                     'action': 'dash_ventas_productos_anho_mes',
+                    'year' : year,
+                    'month' : month
                 },
                 dataType: 'json',
             }).done(function (data) {
                 if(!data.hasOwnProperty('error')){
-                    console.log(data)
                     Highcharts.chart('dashboard-pie', {
                         chart: {
                             plotBackgroundColor: null,
@@ -173,7 +203,7 @@
                             type: 'pie'
                         },
                         title: {
-                            text: 'Porcentaje de venta de las telas'
+                            text: 'Porcentaje de venta de las telas. Mes de ' + month_text
                         },
                         tooltip: {
                             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -198,7 +228,8 @@
                             colorByPoint: data.colorByPoint,
                             data: data.data
                         }],
-                        exporting: { enabled: false }
+                        exporting: { enabled: true },
+                        credits : { enabled: false}
                     });
                     return false;
                 }
@@ -212,6 +243,12 @@
 
         $('#datepicker').change(function(){
             obtener_ventas_por_mes();
+        });
+        $('#datepicker_ventas').change(function(){
+            obtener_ventas_productos_por_anho_mes();
+        });
+        $('#month').change(function(){
+            obtener_ventas_productos_por_anho_mes();
         });
     </script>
 {% endblock js_page %}

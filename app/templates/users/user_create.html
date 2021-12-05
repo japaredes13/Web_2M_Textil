@@ -21,8 +21,12 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
-                    <form method="post" action="." enctype="multipart/form-data">
+                <div class="col-md-8">
+                    {% if obj %}
+                        <form method="POST" role="form" id="form" action="{% url 'user:user_edit' obj.pk %}">
+                    {% else %}
+                        <form method="POST" role="form" id="form" action="{% url 'user:user_create' %}">
+                    {% endif %}
                         <div class="card card-secondary">
                             <div class="card-header">
                                 <h3 class="card-title">
@@ -37,7 +41,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="{{ action }}">
                                         {% if form.errors %}
@@ -55,10 +59,11 @@
                                         {% endif %}
                                         {% for field in form.visible_fields %}
                                             <div class="form-group">
-                                                <label for="email">{{ field.label }}:</label>
+                                                <label>{{ field.label }}</label>
                                                 {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
                                             </div>
                                         {% endfor %}
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -81,11 +86,40 @@
 {% block js_page %}
     {% include 'base/functions.html' %}
     <script>
-        
+        $('#grupos').select2({
+            theme: "classic"
+        });
+        $('#permisos').select2({
+            theme: "classic"
+        });
+        var user = {
+            items : {
+                first_name : '',
+                last_name : '',
+                email : "",
+                groups : [],
+                permisos:[],
+                //imagen : "",
+                username : '',
+                password1 : '',
+            }
+        }
 
-        $('form').on('submit', function (e) {
+        $(form).on('submit', function (e){
             e.preventDefault();
-            var parameters = new FormData(this);
+
+            user.items.first_name= $("#id_first_name").val();
+            user.items.last_name= $("#id_last_name").val();
+            user.items.email = $("#id_email").val();
+            user.items.groups = $("#grupos").val();
+            user.items.username = $('#id_username').val();
+            //users.items.imagen = $('#id_imagen').val();
+            user.items.password1 = $('#id_password1').val();
+            user.items.permisos = $('#permisos').val();
+            var parameters = new FormData();
+            parameters.append('action', $('input[name="action"]').val());
+            parameters.append('user', JSON.stringify(user.items));
+            console.log(parameters);
             submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
                 location.href = '{{ list_url }}';
             });

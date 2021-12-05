@@ -36,7 +36,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for="usuario"><strong>Usuario:</strong></label>
-                                    <input type="text" class="form-control" id="usuario" placeholder="Buscar por Nombre del Usuario">
+                                    <input type="text" class="form-control" id="usuario" placeholder="Buscar por Usuario">
                                 </div>
                             </div>
                             <br>
@@ -77,7 +77,7 @@
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'search',
-                        d.proveedor = $('#usuario').val()
+                        d.usuario = $('#usuario').val()
                     },
                     dataSrc: ""
                 },
@@ -89,7 +89,7 @@
                     { 
                         "render": function( data, type, row ) {
                             return '<a class="btn btn-warning btn-circle btn-sm" title="Editar" href="/users/users/'+ row.id + '/edit"> <i class="fas fa-edit"></i> </a>' + 
-                                    ' <button class="btn btn-danger btn-circle btn-sm"><i class="fa fa-trash"></i></button>';
+                                    ' <button class="btn btn-danger btn-circle btn-sm" onclick="eliminar(\'/users/users/'+row.id+'/delete\',\'/users/users\')"><i class="fa fa-trash"></i></button>';
                         },
                         "orderable":false
                     }
@@ -116,7 +116,7 @@
                     }
                 }
             });
-            $('#proveedor').keyup(function(){
+            $('#usuario').keyup(function(){
                 table.ajax.reload();
             });
         });

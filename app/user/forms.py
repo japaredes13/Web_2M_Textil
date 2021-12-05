@@ -1,45 +1,64 @@
 from django.forms import *
-
+from django.contrib.auth.forms import UserCreationForm
 from user.models import User
 from django.contrib.auth.models import Group
 
 
-class UserForm(ModelForm):
+class UserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs['autofocus'] = True
 
+    password1 = CharField(
+            label=("Contraseña:"),
+            strip=False,
+            widget=PasswordInput(attrs={'autocomplete': 'new-password','class':'form-control'}),
+            
+        )
+    password2 = CharField(
+            label=("Confirmación de Contraseña:"),
+            widget=PasswordInput(attrs={'autocomplete': 'new-password','class':'form-control'}),
+            strip=False,
+        )
+
     class Meta:
         model = User
-        fields = 'first_name', 'last_name', 'email', 'username', 'password'
-        widgets = {
-            'first_name': TextInput(
-                attrs={
-                    'placeholder': 'Ingrese el nombre',
-                }
-            ),
-            'last_name': TextInput(
-                attrs={
-                    'placeholder': 'Ingrese el apellido',
-                }
-            ),
-            'email': TextInput(
-                attrs={
-                    'placeholder': 'Ingrese el email',
-                }
-            ),
-            'username': TextInput(
-                attrs={
-                    'placeholder': 'Ingrese el username',
-                }
-            ),
-            'password': PasswordInput(render_value=True,
-                attrs={
-                    'placeholder': 'Ingrese el password',
-                }
-            ),
+        fields=[
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'password1',
+            'password2',
+
+            'groups',
+            'user_permissions',
+        ]
+
+        labels={
+           
+            'first_name':'Nombre:',
+            'last_name':'Apellido:',
+            'username':'Username:',
+            'email' :'Correo:',
+            'password1':'Contraseña:',
+            'password2':'Contraseña:',
+            'groups':'Roles:',
+            'user_permissions':'Permisos Individuales:',
         }
-        exclude = ['groups', 'user_permissions', 'last_login', 'date_joined', 'is_superuser', 'is_active', 'is_staff']
+
+
+        widgets={
+            'first_name':TextInput(attrs={'class':'form-control'}),
+            'last_name':TextInput(attrs={'class':'form-control'}),
+            'username':TextInput(attrs={'class':'form-control'}),
+            'email':EmailInput(attrs={'class':'form-control'}),
+            'password1':PasswordInput(attrs={'class':'form-control','id':'password1'}),
+            'password2':PasswordInput(attrs={'class':'form-control','id':'password2'}),
+            'groups':SelectMultiple(attrs={'class':'form-control select2','id':'grupos'}),
+            'user_permissions':SelectMultiple(attrs={'class':'form-control select2','id':'permisos'}),
+        }
+        #exclude = ['groups', 'user_permissions', 'last_login', 'date_joined', 'is_superuser', 'is_active', 'is_staff']
 
     def save(self, commit=True):
         data = {}

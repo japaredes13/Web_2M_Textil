@@ -1,17 +1,27 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.db import transaction
+from django.contrib.auth.hashers import *
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import Group
 from user.forms import UserForm, RolForm
 from user.models import User
+from django.db.models import Q
+import json
+from django.db.models import ProtectedError
 
 
 class UserListView(LoginRequiredMixin, ListView):
     model = User
     template_name = 'users/user_list.html'
+
+    def queryset(self):
+        usuario = self.request.POST['usuario']
+        usuarios = User.objects.filter(Q(first_name__icontains=usuario) | Q(last_name__icontains=usuario) | Q(username__icontains=usuario))
+        return usuarios
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -23,7 +33,8 @@ class UserListView(LoginRequiredMixin, ListView):
             action = request.POST['action']
             if action == 'search':
                 data = []
-                for i in User.objects.all():
+                usuarios = self.queryset()
+                for i in usuarios:
                     data.append(i.toJSON())
             else:
                 data['error'] = 'Ha ocurrido un error'
@@ -47,7 +58,8 @@ class UserCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('user:user_list')
     #permission_required = 'user.add_user'
     url_redirect = success_url
-
+    
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -55,12 +67,28 @@ class UserCreateView(LoginRequiredMixin, CreateView):
         data = {}
         try:
             action = request.POST['action']
+            user_request =  json.loads(request.POST['user'])
             if action == 'add':
-                form = self.get_form()
-                data = form.save()
+                with transaction.atomic():
+                    user_request =  json.loads(request.POST['user'])
+                    print(user_request)
+                    user = User()
+
+                    user.first_name = user_request['first_name']
+                    user.last_name = user_request['last_name']
+                    user.email = user_request['email']
+                    user.username = user_request['username']
+                    password = user_request['password1']
+                    user.password = make_password(password)
+                    user.save()
+                    user.user_permissions.set(user_request['permisos'])
+                    user.groups.set(user_request['groups'])
+
+                    user.save()
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:
+            print('ERROOOOR:   ' +str(e))
             data['error'] = str(e)
         return JsonResponse(data)
 
@@ -107,31 +135,25 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class UserDeleteView(LoginRequiredMixin, DeleteView):
-    model = User
-    template_name = 'user/delete.html'
-    success_url = reverse_lazy('user:user_list')
-    permission_required = 'user.delete_user'
-    url_redirect = success_url
-
-    def dispatch(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        data = {}
-        try:
-            self.object.delete()
-        except Exception as e:
-            data['error'] = str(e)
-        return JsonResponse(data)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Eliminación de un Usuario'
-        context['entity'] = 'Usuarios'
-        context['list_url'] = self.success_url
-        return context
+def user_delete(request,id):
+    try:
+        user = User.objects.get(id=id)
+        user.delete()
+        data = {
+            'error':False, 
+            'message':"Registro eliminado correctamente."
+        }
+    except User.DoesNotExist:
+        data = {
+            'error':True, 
+            'message':"No se encontro el registro."
+        }
+    except ProtectedError:
+        data = {
+            'error':True,
+            'message':'No se ha eliminado. El registro se encuentra asociado con otras informaciones. Comuníquese con soporte!.'
+        }
+    return JsonResponse(data, safe=False)
 
 
 class RolListView(ListView):

@@ -48,8 +48,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def obtener_ventas_productos_por_anho_mes(self):
         data = []
-        year = datetime.now().year
-        month = datetime.now().month
+        year = self.request.POST['year'] if (self.request.POST['year']) else datetime.now().year
+        month = self.request.POST['month'] if (self.request.POST['month']) else datetime.now().month
+        #year = datetime.now().year
+        #month = datetime.now().month
         try:
             telas = Tela.objects.all()
             for tela in telas:
@@ -67,6 +69,25 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        year = datetime.now().year
+        month = datetime.now().month
         context["reportes_ventas"] =  self.get_obtener_ventas_por_mes()
+        context["year"] =  year
+        context["mes"] =  str(month)
+        meses = {
+            "1" : "ENERO",
+            "2" : "FEBRERO",
+            "3" : "MARZO",
+            "4" : "ABRIL",
+            "5" : "MAYO",
+            "6" : "JUNIO",
+            "7" : "JULIO",
+            "8" : "AGOSTO",
+            "9" : "SEPTIEMBRE",
+            "10" : "OCTUBRE",
+            "11" : "NOVIEMBRE",
+            "12" : "DICIEMBRE"
+        }
+        context['meses'] = meses
         return context
     
