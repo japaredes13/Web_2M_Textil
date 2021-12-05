@@ -118,6 +118,7 @@
 
 {% block js_page %}
     {% include 'base/functions.html' %}
+    {% include 'base/partials/functions_cuota.html' %}
     {% include 'base/partials/sweet_delete.html' %}
     <script>
         
@@ -262,12 +263,12 @@
                 console.log(data)
                 console.log(data.monto_total)
                 console.log(data.detalle_credito)
-                $('#id_monto_total').text(data.monto_total)
+                $('#id_monto_total').text(Intl.NumberFormat('de-DE').format(data.monto_total))
                 if (data.saldo_actual.monto_cuota__sum==null){
                     $('#id_saldo_actual').text(0);
                 }
                 else{
-                    $('#id_saldo_actual').text(data.saldo_actual.monto_cuota__sum);
+                    $('#id_saldo_actual').text(Intl.NumberFormat('de-DE').format(data.saldo_actual.monto_cuota__sum));
                 }
                 console.log(data.saldo_actual.monto_cuota__sum)
                 $('#tblDetalleCredito').DataTable({
@@ -378,7 +379,7 @@
                             render: function (data, type, row) {
                                 var buttons = ''; 
                                 if (row.estado=='Pendiente'){
-                                    buttons += '<button id="boton" name="botonCobro" title="Guardar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
+                                    buttons += '<button id="boton" name="botonCobro" title="Registrar" class="btn btn-success btn-sm"><i class="fas fa-save"></i></button>';
                                 }
                                 return buttons;
                             }
@@ -429,10 +430,13 @@
                     }).done(function (data) {
                         $('#tblVentas').DataTable().ajax.reload();
                     }).always(function (data) {
-
+                        
+                    });
+                    alert('Notificación', '¡Cuota Pagada!', function () {
+                        location.href = '/ventas/ventas/';
                     });
                 }, function () {
-                    location.href = '/ventas/ventas/';
+                    
                 });
             });
 

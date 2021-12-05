@@ -59,7 +59,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     r=Coalesce(Sum('sub_total'), 0)).get('r')
                 if (total > 0):
                     data.append({
-                        'name' : tela.nombre,
+                        'name' : tela.nombre+' '+tela.codigo,
                         'y' : int(total)
                     })
         except:

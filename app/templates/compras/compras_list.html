@@ -230,6 +230,10 @@
                         autoWidth: false,
                         destroy: true,
                         deferRender: true,
+                        filter: false,
+                        paging: false,
+                        searching: true,
+                        info: false,
                         data: data.detalle,
                         
                         columns: [
@@ -336,7 +340,7 @@
                 console.log(data)
                 $('#tblPago').DataTable({
                     responsive: true,
-                    autoWidth: true,
+                    autoWidth: false,
                     destroy: true,
                     deferRender: true,
                     filter: false,

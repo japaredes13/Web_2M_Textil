@@ -1,0 +1,24 @@
+<script>
+    function alert(title, content, callback, cancel) {
+        $.confirm({
+            theme: 'material',
+            title: title,
+            icon: 'fa fa-info',
+            content: content,
+            columnClass: 'small',
+            typeAnimated: true,
+            cancelButtonClass: 'btn-primary',
+            draggable: true,
+            dragWindowBorder: false,
+            buttons: {
+                info: {
+                    text: "OK",
+                    btnClass: 'btn-primary',
+                    action: function () {
+                        callback();
+                    }
+                },
+            }
+        })
+    }
+</script>
