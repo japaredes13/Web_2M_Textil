@@ -1,4 +1,5 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.db import transaction
@@ -14,9 +15,10 @@ import json
 from django.db.models import ProtectedError
 
 
-class UserListView(LoginRequiredMixin, ListView):
+class UserListView(LoginRequiredMixin,ValidatePermissionRequired, ListView):
     model = User
     template_name = 'users/user_list.html'
+    #permission_required = 'user.change_user'
 
     def queryset(self):
         usuario = self.request.POST['usuario']
@@ -51,12 +53,12 @@ class UserListView(LoginRequiredMixin, ListView):
         return context
 
 
-class UserCreateView(LoginRequiredMixin, CreateView):
+class UserCreateView(LoginRequiredMixin,ValidatePermissionRequired, CreateView):
     model = User
     form_class = UserForm
     template_name = 'users/user_create.html'
     success_url = reverse_lazy('user:user_list')
-    #permission_required = 'user.add_user'
+    #permission_required = 'user.view_user'
     url_redirect = success_url
     
     @method_decorator(csrf_exempt)
@@ -71,7 +73,6 @@ class UserCreateView(LoginRequiredMixin, CreateView):
             if action == 'add':
                 with transaction.atomic():
                     user_request =  json.loads(request.POST['user'])
-                    print(user_request)
                     user = User()
 
                     user.first_name = user_request['first_name']
@@ -109,6 +110,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     #permission_required = 'user.change_user'
     url_redirect = success_url
 
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
@@ -117,9 +119,23 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         data = {}
         try:
             action = request.POST['action']
+            user_request =  json.loads(request.POST['user'])
             if action == 'edit':
-                form = self.get_form()
-                data = form.save()
+                with transaction.atomic():
+                    user_request =  json.loads(request.POST['user'])
+                    user = self.get_object()
+
+                    user.first_name = user_request['first_name']
+                    user.last_name = user_request['last_name']
+                    user.email = user_request['email']
+                    user.username = user_request['username']
+                    password = user_request['password1']
+                    user.password = make_password(password)
+                    user.save()
+                    user.user_permissions.set(user_request['permisos'])
+                    user.groups.set(user_request['groups'])
+
+                    user.save()
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:

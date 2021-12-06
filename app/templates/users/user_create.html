@@ -104,10 +104,79 @@
                 password1 : '',
             }
         }
+        $("#form").validate({
+		    rules: {
+		    	first_name: {required: true, nombreRule:true},
+		    	last_name: {required: true, nombreRule:true},
+		    	username: {required: true, userNameRule:true},
+                email: {required: true, email: true ,emailRule:true},
+                password1: {required: true},
+                password2: {required: true},
+            },
+            messages: {
+                first_name : {required: "* El campo es requerido"},
+                last_name : {required: "* El campo es requerido"},
+                username : {required: "* El campo es requerido"},
+                password1 : {required: "* El campo es requerido"},
+                password2: {required: "* El campo es requerido"},
+                email : {required: "* El campo es requerido",email: "* Ingrese un correo válido. Ej: example@gmail.com"},
+            },
+            errorElement: 'span',
+            highlight: function(element){
+                if (element.name == 'first_name' || element.name == 'last_name' || element.name == 'username' || element.name == 'email') {
+                    $(element).closest('.form-control').addClass('is-invalid');
+                    $(element).closest('.form-control').removeClass('is-valid');
+                }
+            },
+            unhighlight: function(element){
+                if (element.name == 'first_name' || element.name == 'last_name' || element.name == 'username' || element.name == 'email') {
+                    $(element).closest('.form-control').addClass('is-valid');
+                    $(element).closest('.form-control').removeClass('is-invalid');
+                }
+            }
+        });
+
+        $('input[name="password2"]').on('change', function(){
+            var validate = validateContrasenha();
+        })
+
+        function validateContrasenha(){
+            var password1 = $('#id_password1').val();
+            var password2 = $('#id_password2').val();
+
+            if (password1 != password2){
+                Swal.fire({
+                    title: "Notificacion",
+                    text: "Las contraseñas no coinciden, favor verificar",
+                    icon: "warning",
+                    confirmButtonColor:"#007bff",
+                });
+                return true;
+            }
+            return false;
+        }
+
+        $.validator.addMethod("nombreRule", function (value, element) {
+            var pattern = /^[a-zA-Z.-\s]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "* El campo debe tener letras");
+
+        $.validator.addMethod("userNameRule", function (value, element) {
+            var pattern = /^[\w]+$/i;
+            return this.optional(element) || pattern.test(value);
+        }, "El campo debe tener un valor alfanumérico (azAZ09)");
+        
+        $.validator.addMethod("emailRule", function (value, element) {
+            var pattern = /^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/;
+            return this.optional(element) || pattern.test(value);
+        }, "* Formato del correo incorrecto. Ej: example@gmail.com");     
 
         $(form).on('submit', function (e){
             e.preventDefault();
-
+            var error = validateContrasenha();
+            var form = $(this);
+            console.log(form)
+            if (error) return false;
             user.items.first_name= $("#id_first_name").val();
             user.items.last_name= $("#id_last_name").val();
             user.items.email = $("#id_email").val();
@@ -120,9 +189,14 @@
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('user', JSON.stringify(user.items));
             console.log(parameters);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-                location.href = '{{ list_url }}';
-            });
+            if(form.validate()) {
+                submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+                    location.href = '{{ list_url }}';
+                });
+                return true;
+               } else {
+                return false;
+               }
         });
     </script>
 {% endblock js_page %}
