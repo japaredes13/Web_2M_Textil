@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
 from datetime import datetime,date
+from calendar import monthrange
 from django.contrib import messages
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
@@ -727,8 +728,11 @@ class CompraPago(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Listado de Cuotas a Vencer'
         context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
-        context['fecha_hasta'] = datetime.now().replace(month=11).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = self.last_day_of_month(datetime.now()).strftime("%d/%m/%Y")
         return context
+
+    def last_day_of_month(self,date_value):
+        return date_value.replace(day = monthrange(date_value.year, date_value.month)[1])
 
 
     @method_decorator(csrf_exempt)

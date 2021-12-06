@@ -18,7 +18,7 @@ from django.db.models import ProtectedError
 class UserListView(LoginRequiredMixin,ValidatePermissionRequired, ListView):
     model = User
     template_name = 'users/user_list.html'
-    #permission_required = 'user.change_user'
+    #permission_required = 'user.view_user'
 
     def queryset(self):
         usuario = self.request.POST['usuario']

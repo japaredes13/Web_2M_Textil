@@ -17,23 +17,29 @@
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box">
-                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
-
+                        <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-tag"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">CPU Traffic</span>
+                            <span class="info-box-text">Stock Disponible</span>
                             <span class="info-box-number">
-                                10
-                                <small>%</small>
-                            </span>
+                                {{ stock_disponible }} tela(s)
+                            </span><br>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+                        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-shopping-bag"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Likes</span>
-                            <span class="info-box-number">41,410</span>
+                            <span class="info-box-text">Compras Hechas</span>
+                            <span class="info-box-number">Gs. {% load humanize  %} {{ compra_mes_actual|intcomma  }}<br>
+                                {% if nivel_compra < 0 %}
+                                    <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i> {{ nivel_compra }}%</span>
+                                {% elif nivel_compra == 0 %}
+                                    <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> {{ nivel_compra }}%</span>
+                                {% else %}
+                                    <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> {{ nivel_compra }}%</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -46,19 +52,27 @@
                         <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Ventas</span>
-                            <span class="info-box-number">Gs. 760.000.000   <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span></span>
+                            <span class="info-box-text">Ventas Realizadas</span>
+                            <span class="info-box-number">Gs. {% load humanize  %} {{ venta_mes_actual|intcomma  }}<br>
+                                {% if nivel_venta < 0 %}
+                                    <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i> {{ nivel_venta }}%</span>
+                                {% elif nivel_venta == 0 %}
+                                    <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> {{ nivel_venta }}%</span>
+                                {% else %}
+                                    <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> {{ nivel_venta }}%</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
-                        <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+                        <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-chalkboard-teacher"></i></span>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">New Members</span>
-                            <span class="info-box-number">2,000</span>
+                            <span class="info-box-text">Clientes Adeudores</span>
+                            <span class="info-box-number">{{ clientes_adeudores }}</span><br>
                         </div>
                     </div>
                 </div>

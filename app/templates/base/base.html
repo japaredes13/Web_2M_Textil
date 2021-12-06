@@ -101,8 +101,8 @@
     
     {% block js_page %} 
     {% endblock js_page %}
-
-    <script>
+    
+    <!--<script>
         {% if messages %}
             var html = '<p>';
             {% for message in messages %}
@@ -112,10 +112,11 @@
             Swal.fire({
                 title: 'Error!',
                 html: html,
-                icon: 'error'
+                icon: 'error',
+                confirmButtonColor: '#007bff'
             });
         {% endif %}
-    </script>
+    </script>-->
 </body>
 {% endblock body %}
 </html>

@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 from datetime import datetime, date
+from calendar import monthrange
 from dateutil.relativedelta import relativedelta
 from django.db import transaction
 from django.contrib import messages
@@ -156,9 +157,11 @@ class VentaCobro(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Listado de Cuotas a Vencer'
         context['fecha_desde'] = datetime.now().replace(day=1).strftime("%d/%m/%Y")
-        context['fecha_hasta'] = datetime.now().replace(month=11).strftime("%d/%m/%Y")
+        context['fecha_hasta'] = self.last_day_of_month(datetime.now()).strftime("%d/%m/%Y")
         return context
 
+    def last_day_of_month(self,date_value):
+        return date_value.replace(day = monthrange(date_value.year, date_value.month)[1])
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
