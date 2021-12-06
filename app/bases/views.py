@@ -49,9 +49,9 @@ class Home(LoginRequiredMixin, generic.TemplateView):
             porcentaje_venta = ( int(venta_mes_actual) - int(venta_mes_anterior) ) / int(venta_mes_anterior) * 100
             nivel_venta = round (porcentaje_venta, 2)
 
-        if (venta_mes_anterior <= 0 and compra_mes_actual <= 0):
+        if (compra_mes_anterior <= 0 and compra_mes_actual <= 0):
             nivel_compra = 0.00
-        if (compra_mes_anterior <= 0 and compra_mes_actual > 0):
+        elif (compra_mes_anterior <= 0 and compra_mes_actual > 0):
             porcentaje_compra = ( int(compra_mes_actual) / int(compra_mes_actual) ) * 100
             nivel_compra = round (porcentaje_compra, 2)
         else:
