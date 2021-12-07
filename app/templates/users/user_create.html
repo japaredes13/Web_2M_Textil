@@ -174,7 +174,7 @@
         $(form).on('submit', function (e){
             e.preventDefault();
             var error = validateContrasenha();
-            var form = $(this);
+            var $form = $(this);
             console.log(form)
             if (error) return false;
             user.items.first_name= $("#id_first_name").val();
@@ -188,15 +188,12 @@
             var parameters = new FormData();
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('user', JSON.stringify(user.items));
-            console.log(parameters);
-            if(form.validate()) {
-                submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-                    location.href = '{{ list_url }}';
-                });
-                return true;
-               } else {
-                return false;
-               }
+            //console.log($("#form").validate());
+            if(!$(this).validate().form()) return false;
+ 
+            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+                location.href = '{{ list_url }}';
+            });
         });
     </script>
 {% endblock js_page %}
