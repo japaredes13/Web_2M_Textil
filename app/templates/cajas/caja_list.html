@@ -44,9 +44,31 @@
                             </div>
                                 {% csrf_token %}
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="caja"><strong>Caja:</strong></label>
-                                        <input type="text" class="form-control" name="caja" id="caja" placeholder="Buscar por Cajero" autocomplete="off">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Fecha Apertura Desde:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="far fa-calendar-alt"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Fecha Apertura Hasta:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="far fa-calendar-alt"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             <br>
@@ -79,7 +101,18 @@
 {% block js_page %}
 {% include 'base/functions.html' %}
     <script>
-        $(document).ready(function() {      
+        $(document).ready(function() {
+            $('#fecha_desde').datetimepicker({
+                format: 'DD/MM/YYYY',
+                locale: 'es',
+                ignoreReadonly: true
+            });
+
+            $('#fecha_hasta').datetimepicker({
+                format: 'DD/MM/YYYY',
+                locale: 'es',
+                ignoreReadonly: true
+            });      
             var table = $('#tblCaja').DataTable({
                 responsive: true,
                 autoWidth: false,
@@ -90,7 +123,9 @@
                     type: 'POST',
                     "data": function (d) {
                         d.action = 'search',
-                        d.caja = $('#caja').val()                    },
+                        d.fecha_desde = $('#fecha_desde').val(),
+                        d.fecha_hasta = $('#fecha_hasta').val()
+                    },
                     dataSrc: ""
                 },
                 columns: [
@@ -206,8 +241,12 @@
                     //location.href = '/ventas/ventas/';
                 });
             });
-
-
+            $('input[name="fecha_desde"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
+            $('input[name="fecha_hasta"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
         });
     </script>
 {% endblock js_page %}

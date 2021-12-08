@@ -30,13 +30,18 @@ class CajaList(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
 
     def queryset(self):
         cajas = Caja.objects.filter(fecha_eliminacion__isnull=True)
-        buscar_caja = self.request.POST['caja']
-        if buscar_caja:
-            cajas = cajas.filter(Q(user_created__icontains=buscar_caja))
+        fecha_desde = str(self.request.POST['fecha_desde'])
+        fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y")
+        fecha_hasta = str(self.request.POST['fecha_hasta'])
+        fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y")
+        
+        cajas = cajas.filter(fecha_apertura__range=(fecha_desde, fecha_hasta))
         return cajas
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['fecha_desde'] = datetime.now().strftime("%d/%m/%Y")
+        context['fecha_hasta'] = datetime.now().strftime("%d/%m/%Y")
         return context
 
     @method_decorator(csrf_exempt)
@@ -134,7 +139,7 @@ class BancoCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateV
     def form_valid(self, form):
         form.instance.user_created = self.request.user
         form.instance.estado = True
-        messages.success(self.request, 'Registro actualizado correctamente')
+        messages.success(self.request, 'Registro creado correctamente')
         return super().form_valid(form)
     
 

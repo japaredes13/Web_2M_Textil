@@ -332,7 +332,6 @@
                     columns: [
                         {"data": "numero_cuota"},
                         {"data": "monto_cuota"},
-                        {"data": "estado"},
                         {"data": "medio_cobro"},
                         {"data": "banco"},
                         {"data": "fecha_vencimiento"},
@@ -349,12 +348,6 @@
                         {
                             targets: [2],
                             render: function (data, type, row) {
-                                return (data);
-                            },
-                        },
-                        {
-                            targets: [3],
-                            render: function (data, type, row) {
 
                                 var $select = $("<select class='form-control' style='width:100px' name='medio_cobro' id='medio_cobro'><option value='Cheque'>Cheque</option><option value='Efectivo'>Efectivo</option></select>");
                                 $select.find('option[value="' + row.medio_cobro + '"]').attr('selected', 'selected');
@@ -363,7 +356,7 @@
                             },
                         },
                         {
-                            targets: [4],
+                            targets: [3],
                                 render: function (data, type, row) {
                                     if (row.medio_cobro == 'Efectivo' && row.estado=='Pagado'){
                                             return ""
@@ -375,7 +368,7 @@
                                 },
                         },
                         {
-                            targets: [7],
+                            targets: [6],
                             render: function (data, type, row) {
                                 var buttons = ''; 
                                 if (row.estado=='Pendiente'){
@@ -428,13 +421,30 @@
                         },
                         dataType: 'json',
                     }).done(function (data) {
-                        $('#tblVentas').DataTable().ajax.reload();
-                    }).always(function (data) {
-                        
+                        console.log(data)
+                        if(data.error){
+                            Swal.fire({
+                                title: 'Error!',
+                                html: data.message,
+                                confirmButtonColor: '#007bff',
+                                icon: 'error'
+                            });
+                        } else {
+                            $('#tblVentas').DataTable().ajax.reload();
+                                Swal.fire({
+                                title: 'Éxito',
+                                text: "Cobro generado éxitosamente",
+                                icon: 'success',
+                                confirmButtonColor: '#007bff',
+                                showCancelButton: false,
+                                allowOutsideClick: false
+                            }).then(function(result)  {
+                                window.location.href = "/ventas/ventas/";
+                            });
+                        }
+                    }).always(function (data) {   
                     });
-                    alert('Notificación', '¡Cuota Pagada!', function () {
-                        location.href = '/ventas/ventas/';
-                    });
+                    
                 }, function () {
                     
                 });

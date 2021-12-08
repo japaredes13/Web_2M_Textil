@@ -67,11 +67,10 @@
                                                     <i class="far fa-calendar-alt"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control docs-date" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}" readonly>
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_desde" id="fecha_desde" value="{{fecha_desde}}">
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Fecha Hasta:</label>
@@ -81,8 +80,18 @@
                                                     <i class="far fa-calendar-alt"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control docs-date" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}" readonly>
+                                            <input type="text" onkeydown="return false" class="form-control datetimepicker-input" data-toggle="datetimepicker" name="fecha_hasta" id="fecha_hasta" value="{{fecha_hasta}}">
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label><strong>Condición de Compra:</strong></label>
+                                        <select id='condicion_compra' class="form-control">
+                                            <option value="">Todos</option>
+                                            <option value="contado">Contado</option>
+                                            <option value="credito">Crédito</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -137,16 +146,16 @@
     <script src="{% static 'base/plugins/datepicker-1.0.10/datepicker.es-ES.js' %}"></script>
     <script>
         $(document).ready(function() {   
-            $('#fecha_desde').datepicker({
+            $('#fecha_desde').datetimepicker({
                 format: 'DD/MM/YYYY',
                 locale: 'es',
-                autoHide: true,
+                ignoreReadonly: true
             });
 
-            $('#fecha_hasta').datepicker({
+            $('#fecha_hasta').datetimepicker({
                 format: 'DD/MM/YYYY',
                 locale: 'es',
-                autoHide: true,
+                ignoreReadonly: true
             });
 
             var table = $('#tblCompras').DataTable({
@@ -160,6 +169,7 @@
                         d.action = 'searchdata',
                         d.compra = $('#compra').val(),
                         d.proveedor = $('#proveedor').val(),
+                        d.condicion_compra = $('#condicion_compra').val(),
                         d.fecha_desde = $('#fecha_desde').val(),
                         d.fecha_hasta = $('#fecha_hasta').val()
                     },
@@ -451,6 +461,26 @@
                         dataType: 'json',
                     }).done(function (data) {
                         $('#tblCompras').DataTable().ajax.reload();
+                        if(data.error){
+                            Swal.fire({
+                                title: 'Error!',
+                                html: data.message,
+                                confirmButtonColor: '#007bff',
+                                icon: 'error'
+                            });
+                        } else {
+                            $('#tblVentas').DataTable().ajax.reload();
+                                Swal.fire({
+                                title: 'Éxito',
+                                text: "Pago generado éxitosamente",
+                                icon: 'success',
+                                confirmButtonColor: '#007bff',
+                                showCancelButton: false,
+                                allowOutsideClick: false
+                            }).then(function(result)  {
+                                window.location.href = "/compras/compra/list";
+                            });
+                        }
                     }).always(function (data) {
 
                     });
@@ -469,10 +499,13 @@
             $('#compra').keyup(function(){
                 table.draw();
             });
-            $('#fecha_desde').change(function(){
+            $('input[name="fecha_desde"]').on('change.datetimepicker', function() {
                 table.ajax.reload();
             });
-            $('#fecha_hasta').change(function(){
+            $('input[name="fecha_hasta"]').on('change.datetimepicker', function() {
+                table.ajax.reload();
+            });
+            $('#condicion_compra').change(function(){
                 table.ajax.reload();
             });
         });

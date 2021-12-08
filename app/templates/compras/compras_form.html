@@ -149,6 +149,7 @@
 {% endblock %}
 
 {% block js_page %}
+{% include 'base/partials/functions_cuota.html' %}
 {% include 'base/functions.html' %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.3.0/jquery.bootstrap-touchspin.min.js" integrity="sha512-0hFHNPMD0WpvGGNbOaTXP0pTO9NkUeVSqW5uFG2f5F9nKyDuHE3T4xnfKhAhnAZWZIO/gBLacwVvxxq0HuZNqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
@@ -355,7 +356,6 @@
         e.preventDefault();
 
         var fecha_inicio_timbrado = moment($('#inicio_timbrado').val().split("/").reverse().join("-")).toDate();
-        console.log(fecha_inicio_timbrado)
         var fecha_fin_timbrado = moment($('#fin_timbrado').val().split("/").reverse().join("-")).toDate();
         var fecha_compra = moment($('#fecha_compra').val().split("/").reverse().join("-")).toDate();
 
@@ -381,8 +381,42 @@
             parameters.append('action', $('input[name="action"]').val());
             parameters.append('monto_total', monto_total);
             parameters.append('compras', JSON.stringify(compras.items));  
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
+            /*submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
                 location.href = '/compras/compra/list/';
+            });*/
+            alert_action('Notificación', '¿Estas seguro de realizar la siguiente acción?', function () {
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: parameters,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                }).done(function (data) {
+                    if(data.error){
+                        Swal.fire({
+                            title: 'Error!',
+                            html: data.message,
+                            confirmButtonColor: '#007bff',
+                            icon: 'error'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: "Compra generada éxitosamente",
+                            icon: 'success',
+                            confirmButtonColor: '#007bff',
+                            showCancelButton: false,
+                            allowOutsideClick: false
+                        }).then(function(result)  {
+                            window.location.href = "/compras/compra/list/";
+                        });
+                    }
+                }).always(function (data) {  
+                });
+                
+            }, function () {
+                
             });
         }
         else{
@@ -393,7 +427,6 @@
     });
     compras.items.telas = {{ detalles|safe }};
     var detalle = {{ detalles|safe }}
-    console.log(detalle);
     // Esto se puso aqui para que funcione bien el editar y calcule bien los valores del iva. // sino tomaría el valor del iva de la base debe
     // coger el que pusimos al inicializarlo. 
     compras.list();

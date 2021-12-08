@@ -288,6 +288,9 @@ class CompraListView(LoginRequiredMixin,ValidatePermissionRequired, generic.List
         fecha_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").strftime("%Y-%m-%d")
         compras = compras.filter(fecha_compra__range=(fecha_desde,fecha_hasta))
         proveedor = self.request.POST['proveedor']
+        condicion_compra = self.request.POST['condicion_compra']
+        if condicion_compra:
+            compras = compras.filter(condicion_compra=condicion_compra)
         if proveedor:
             compras = compras.filter(proveedor__nombre_empresa__icontains=proveedor)
         return compras
@@ -311,32 +314,46 @@ class CompraListView(LoginRequiredMixin,ValidatePermissionRequired, generic.List
                 medio_pago = (request.POST['medio_pago'] )
                 banco = (request.POST['banco'] )
                 cuota_id=request.POST['id'] 
-                cuota=CuotaCompra.objects.get(id=cuota_id)
-                caja = Caja.objects.get(estado=True)
-                cuota.estado =  True
-                cuota.fecha_cancelacion = datetime.now()
-                cuota.save()
+                caja = Caja.objects.filter(estado=True).first()
+                if (not caja):
+                    data = {
+                        'error':True,
+                        'message':'No se puede registrar el pago. Debe de abrir la caja para operar!.'
+                    }
+                    return JsonResponse(data, safe=False)
 
-                pago = Pago()
-                pago.compra_id = cuota.compra_id
-                pago.cuota_id = cuota_id
-                pago.caja_id = caja.id
-                pago.fecha_pago = cuota.fecha_cancelacion
-                pago.medio_pago = medio_pago
-                pago.user_created_id = self.request.user.id
-                if (medio_pago=='Cheque'):
-                    pago.monto_pagado = cuota.monto_cuota
-                    pago.banco_id = banco
-                    caja.monto_cheque -= cuota.monto_cuota
-                    print(caja.monto_cheque)
-                    print(cuota.monto_cuota)
+                with transaction.atomic():
+                    cuota=CuotaCompra.objects.get(id=cuota_id)
+                    if( int(caja.monto_actual) < cuota.monto_cuota and medio_pago=='Efectivo'):
+                        data = {
+                            'error':True,
+                            'message':'El monto a pagar supera al monto efectivo de la caja'
+                        }
+                        return JsonResponse(data, safe=False)
+                    cuota.estado =  True
+                    cuota.fecha_cancelacion = datetime.now()
+                    cuota.save()
 
-                else:
-                    pago.monto_pagado = cuota.monto_cuota
-                    caja.monto_efectivo -= cuota.monto_cuota
-                    caja.monto_actual -= cuota.monto_cuota
-                caja.save()
-                pago.save()
+                    pago = Pago()
+                    pago.compra_id = cuota.compra_id
+                    pago.cuota_id = cuota_id
+                    pago.caja_id = caja.id
+                    pago.fecha_pago = cuota.fecha_cancelacion
+                    pago.medio_pago = medio_pago
+                    pago.user_created_id = self.request.user.id
+                    if (medio_pago=='Cheque'):
+                        pago.monto_pagado = cuota.monto_cuota
+                        pago.banco_id = banco
+                        caja.monto_cheque -= cuota.monto_cuota
+                        print(caja.monto_cheque)
+                        print(cuota.monto_cuota)
+
+                    else:
+                        pago.monto_pagado = cuota.monto_cuota
+                        caja.monto_efectivo -= cuota.monto_cuota
+                        caja.monto_actual -= cuota.monto_cuota
+                    caja.save()
+                    pago.save()
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -395,10 +412,11 @@ class CompraCreateView(LoginRequiredMixin, ValidatePermissionRequired, generic.U
                 data = []
                 item = {}
                 print (int(caja['monto_actual']) < monto_total)
-                if( int(caja['monto_actual']) < monto_total and medio_pago=='Efectivo'):
-                    item['error'] = True
-                    item['message'] = 'El monto a pagar supera al de la caja'
-                    data.append(item)
+                if( int(caja['monto_actual']) < monto_total and medio_pago=='Efectivo' and request_compra['condicion_compra'] == 'contado'):
+                    data = {
+                        'error':True,
+                        'message':'El monto a pagar supera al monto efectivo de la caja'
+                    }
                     return JsonResponse(data, safe=False)
 
                 with transaction.atomic():

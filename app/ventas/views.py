@@ -33,7 +33,6 @@ class VentaView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView)
 
     def queryset(self):
         ventas = Venta.objects.filter(fecha_eliminacion__isnull=True)
-        print(ventas)
         fecha_desde = str(self.request.POST['fecha_desde'])
         fecha_desde = datetime.strptime(fecha_desde, "%d/%m/%Y").strftime("%Y-%m-%d")
         fecha_hasta = str(self.request.POST['fecha_hasta'])
@@ -69,7 +68,6 @@ class VentaView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView)
             if request.POST['action'] == 'search':
                 data = []
                 ventas = self.queryset()
-                print(ventas)
                 if (request.POST['deuda_credito']=='deuda'):
                     for venta in ventas:
                         venta_auxiliar = venta.toJSON()
@@ -104,34 +102,44 @@ class VentaView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView)
                 medio_cobro = (request.POST['medio_cobro'] )
                 banco = (request.POST['banco'] )
                 cuota_id=request.POST['id'] 
-                cuota=CuotaVenta.objects.get(id=cuota_id)
-                caja = Caja.objects.get(estado=True)
-                cuota.estado =  True
-                cuota.fecha_cancelacion = datetime.now()
-                cuota.save()
+                caja = Caja.objects.filter(estado=True).first()
+                if (not caja):
+                    data = {
+                        'error':True,
+                        'message':'No se puede registrar el cobro. Debe de abrir la caja para operar!.'
+                    }
+                    return JsonResponse(data, safe=False)
+                
+                with transaction.atomic():
+                    cuota=CuotaVenta.objects.get(id=cuota_id)
+                    print(cuota)
+                    cuota.estado =  True
+                    cuota.fecha_cancelacion = datetime.now()
+                    cuota.save()
 
-                cobro = Cobro()
-                cobro.venta_id = cuota.venta_id
-                cobro.cuota_id = cuota_id
-                cobro.caja_id = caja.id
-                cobro.fecha_cobro = cuota.fecha_cancelacion
-                cobro.medio_cobro = medio_cobro
-                cobro.user_created_id = self.request.user.id
-                if (medio_cobro=='Cheque'):
-                    cobro.monto_cobrado = cuota.monto_cuota
-                    cobro.banco_id = banco
-                    caja.monto_cheque += cobro.monto_cobrado
-                    caja.monto_actual += cobro.monto_cobrado
+                    cobro = Cobro()
+                    cobro.venta_id = cuota.venta_id
+                    cobro.cuota_id = cuota_id
+                    cobro.caja_id = caja.id
+                    cobro.fecha_cobro = cuota.fecha_cancelacion
+                    cobro.medio_cobro = medio_cobro
+                    cobro.user_created_id = self.request.user.id
+                    if (medio_cobro=='Cheque'):
+                        cobro.monto_cobrado = cuota.monto_cuota
+                        cobro.banco_id = banco
+                        caja.monto_cheque += cobro.monto_cobrado
+                        caja.monto_actual += cobro.monto_cobrado
 
-                else:
-                    cobro.monto_cobrado = cuota.monto_cuota
-                    caja.monto_efectivo += cobro.monto_cobrado
-                    caja.monto_actual += cobro.monto_cobrado
-                caja.save()
-                cobro.save()
+                    else:
+                        cobro.monto_cobrado = cuota.monto_cuota
+                        caja.monto_efectivo += cobro.monto_cobrado
+                        caja.monto_actual += cobro.monto_cobrado
+                    caja.save()
+                    cobro.save()
             else:
                 data['error'] = 'Ha ocurrido un error'
         except Exception as e:
+            print(str(e))
             data['error'] = str(e)
         
         return JsonResponse(data, safe=False)
@@ -255,7 +263,6 @@ class VentaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateV
                     data.append(aux)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
-                print(request_venta)
                 with transaction.atomic():
                     venta = Venta()
                     cliente = Cliente.objects.get(pk=request_venta['cliente'])
@@ -269,8 +276,6 @@ class VentaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateV
                     venta.user_created_id = self.request.user.id
                     venta.plazo = request_venta['plazo']
                     venta.numero_cheque = request_venta['numero_cheque']
-                    print(request_venta['numero_cheque'])
-                    print(venta.numero_cheque)
                     venta.save()
                     
                     monto_total = 0
