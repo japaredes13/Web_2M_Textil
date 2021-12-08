@@ -35,13 +35,13 @@
 </style>
 <body>
 <!--<img src="{{ icon }}" class="img-invoice"> -->
-<h4 align="right"> FECHA DE AJUSTE DE INVENTARIO:
-<tr>
-    <td style="text-align"> {{ inventarios.fecha_ajuste }} </td>
-</tr>
-</h4>
+<p><hr width=550></p>
+<h2 class="head" style = "font-family:courier,arial,helvética;">RESUMEN INVENTARIO FISICO VS Sistema</h2>
+<p><hr width=550></p>
 <p>
     <b>FECHA DE INVENTARIO:</b> {{ inventarios.fecha_inventario }}<br>
+    <b>FECHA DE AJUSTE DE INVENTARIO:</b> {{ inventarios.fecha_ajuste }}<br>
+    <b>AJUSTE HECHO POR:</b> {{ usuario }}<br>
 </p>
 <table id="listado">
     <thead>

@@ -35,17 +35,28 @@
 </style>
 <body>
 <!--<img src="{{ icon }}" class="img-invoice"> -->
+<h1 class="head">{{ compras.proveedor.nombre_empresa|upper }}</h1>
+    <h4 class="head">
+    RUC: {{compras.proveedor.ruc}}<br>
+    TIMBRADO: {{compras.timbrado}}<br>
+    INICIO TIMBRADO: {{compras.inicio_timbrado}}<br>
+    FIN TIMBRADO: {{compras.fin_timbrado}}
+
+</h4>
 <p>
+    <div style="border-style: solid;"><br>
     <b>FACTURA:</b> {{ compras.nro_factura }}<br>
     <b>CONDICION COMPRA:</b> {{ compras.condicion_compra|upper }}<br>
-    <b>MEDIO DE PAGO:</b> {{ pagos.medio_pago|upper }}<br>
-    <!--<b>PLAZO:</b> {{ ventas.plazo }} <b>DIAS</b><br>-->
     <b>FECHA DE COMPRA:</b> {{ compras.fecha_compra }}<br>
-    <b>PROVEEDOR:</b> {{ compras.proveedor.nombre_empresa|upper }}<br>
-    <b>RUC:</b> {{ compras.proveedor.ruc }}<br>
-</p>
+    </div>
+</p><br>
 <table id="listado">
     <thead>
+        <tr>
+       
+            <center> <b> DETALLE DE LA COMPRA</b></center>
+         
+      </tr>
     <tr>
         <th class="text-center">Tela</th>
         <th class="text-center">Codigo</th>

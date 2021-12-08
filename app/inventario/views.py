@@ -3,9 +3,11 @@ from django.shortcuts import render
 from django.views import generic
 from django.http.response import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from .forms import InventarioForm
 from telas.models import Tela
 from inventario.models import Inventario, DetalleInventario
+from user.models import User
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -17,8 +19,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-class InventarioView(LoginRequiredMixin, generic.ListView):
+class InventarioView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = Inventario
+    permission_required = 'inventario.view_inventario'
     template_name = "inventario/inventario_list.html"
     login_url = 'bases:login'
 
@@ -59,6 +62,7 @@ class InventarioView(LoginRequiredMixin, generic.ListView):
                 detalles = DetalleInventario.objects.filter(inventario_id=id)
                 inventario = Inventario.objects.filter(id=id).first()
                 inventario.fecha_ajuste = datetime.now()
+                inventario.user_updated_id = self.request.user.id
                 for det in detalles:
                     tela= Tela.objects.get(id=det.tela.id)
                     tela.metraje = det.metraje_deposito
@@ -71,8 +75,9 @@ class InventarioView(LoginRequiredMixin, generic.ListView):
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
 
-class InventarioCreate(LoginRequiredMixin, generic.CreateView):
+class InventarioCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Inventario
+    permission_required = 'inventario.add_inventario'
     form_class=InventarioForm
     template_name="inventario/inventario_form.html"
     success_url=reverse_lazy("inventario:inventario_list")
@@ -156,20 +161,19 @@ class InventarioListadoCompletoPdfView(generic.View):
     def get(self,request, *args, **kwargs):
         try:
             inventarios = Inventario.objects.get(pk=self.kwargs['pk'])
-            #detalles = DetalleInventario.objects.filter(id=self.kwargs['pk']).values('metraje_deposito')
-            #print(detalles['metraje_deposito'])
+            usuario_inventario = inventarios.user_updated_id
+            usuario = User.objects.get(id=usuario_inventario)
             metraje = DetalleInventario.objects.filter(id=self.kwargs['pk'])
-            print(metraje)
-            #metraje_ajustado = metraje['metraje_ajustado']
             template = get_template('inventario/listado_completo_pdf.html')
             context = {
                 'inventarios': inventarios,
+                'usuario': usuario,
             }
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')
             pisa_status = pisa.CreatePDF(
                 html, dest=response)
             return response
-        except:
-            pass
+        except Exception as e:
+            print(str(e))
         return HttpResponseRedirect(reverse_lazy('inventario:inventario_list'))

@@ -18,7 +18,7 @@ from django.db.models import ProtectedError
 class UserListView(LoginRequiredMixin,ValidatePermissionRequired, ListView):
     model = User
     template_name = 'users/user_list.html'
-    #permission_required = 'user.view_user'
+    permission_required = 'user.view_user'
 
     def queryset(self):
         usuario = self.request.POST['usuario']
@@ -58,7 +58,7 @@ class UserCreateView(LoginRequiredMixin,ValidatePermissionRequired, CreateView):
     form_class = UserForm
     template_name = 'users/user_create.html'
     success_url = reverse_lazy('user:user_list')
-    #permission_required = 'user.view_user'
+    permission_required = 'user.add_user'
     url_redirect = success_url
     
     @method_decorator(csrf_exempt)
@@ -102,12 +102,12 @@ class UserCreateView(LoginRequiredMixin,ValidatePermissionRequired, CreateView):
         return context
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(LoginRequiredMixin,ValidatePermissionRequired, UpdateView):
     model = User
     form_class = UserForm
     template_name = 'users/user_create.html'
     success_url = reverse_lazy('user:user_list')
-    #permission_required = 'user.change_user'
+    permission_required = 'user.change_user'
     url_redirect = success_url
 
     @method_decorator(csrf_exempt)
@@ -172,10 +172,10 @@ def user_delete(request,id):
     return JsonResponse(data, safe=False)
 
 
-class RolListView(ListView):
+class RolListView(ListView,ValidatePermissionRequired):
     model = Group
     template_name ='users/rol_list.html'
-    #permission_required ='auth.view_user'
+    #permission_required ='user.view_group'
 	
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import JsonResponse
 from .models import Tela, TelaOferta
 from .forms import TelaForm, TelaOfertaForm
@@ -27,8 +28,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-class TelaList(LoginRequiredMixin,generic.ListView):
+class TelaList(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
     model = Tela 
+    permission_required = 'telas.view_tela'
     template_name = "telas/tela_list.html"
     login_url = 'bases:login'
 
@@ -63,8 +65,9 @@ class TelaList(LoginRequiredMixin,generic.ListView):
         
         return JsonResponse(data, safe=False)
 
-class TelaCreate(LoginRequiredMixin, generic.CreateView):
+class TelaCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Tela
+    permission_required = 'telas.add_tela'
     template_name="telas/tela_form.html"
     context_object_name="obj"
     form_class=TelaForm
@@ -84,8 +87,9 @@ class TelaCreate(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class TelaEdit(LoginRequiredMixin, generic.UpdateView):
+class TelaEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Tela
+    permission_required = 'telas.change_tela'
     template_name="telas/tela_form.html"
     context_object_name = 'obj'
     form_class=TelaForm
@@ -149,8 +153,9 @@ class TelaInvoicePdfView(generic.View):
             pass
         return HttpResponseRedirect(reverse_lazy('telas:tela_list'))
 
-class TelaOfertaView(LoginRequiredMixin, generic.ListView):
+class TelaOfertaView(LoginRequiredMixin, ValidatePermissionRequired,generic.ListView):
     model = TelaOferta
+    permission_required = 'telas.view_telaoferta'
     template_name = "telas/tela_oferta_list.html"
     login_url = 'bases:login'
 
@@ -194,8 +199,9 @@ class TelaOfertaView(LoginRequiredMixin, generic.ListView):
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
 
-class TelaOfertaCreate(LoginRequiredMixin, generic.CreateView):
+class TelaOfertaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateView):
     model=TelaOferta
+    permission_required = 'telas.add_telaoferta'
     form_class=TelaOfertaForm
     context_object_name = 'obj'
     template_name="telas/tela_oferta_form.html"
@@ -249,8 +255,9 @@ class TelaOfertaCreate(LoginRequiredMixin, generic.CreateView):
         return JsonResponse(data, safe=False)
 
 
-class TelaOfertaUpdate(LoginRequiredMixin, generic.UpdateView):
+class TelaOfertaUpdate(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=TelaOferta
+    permission_required = 'telas.change_telaoferta'
     form_class=TelaOfertaForm
     context_object_name = 'obj'
     template_name="telas/tela_oferta_edit_form.html"

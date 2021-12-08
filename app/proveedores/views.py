@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import HttpResponse, JsonResponse, response
 from datetime import datetime
 from .models import Proveedor
@@ -12,8 +13,9 @@ from .forms import ProveedorForm
 from ubicaciones.models import Ciudad
 
 
-class ProveedorView(LoginRequiredMixin,generic.ListView):
+class ProveedorView(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
     model = Proveedor 
+    permission_requied = 'proveedores.view_proveedor'
     template_name = "proveedores/proveedor_list.html"
     login_url = 'bases:login'
     
@@ -42,8 +44,9 @@ class ProveedorView(LoginRequiredMixin,generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class ProveedorCreate(LoginRequiredMixin, generic.CreateView):
+class ProveedorCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Proveedor
+    permission_required = 'proveedores.add_proveedor'
     template_name="proveedores/proveedor_form.html"
     context_object_name="obj"
     form_class=ProveedorForm
@@ -63,8 +66,9 @@ class ProveedorCreate(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class ProveedorEdit(LoginRequiredMixin, generic.UpdateView):
+class ProveedorEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Proveedor
+    permission_required = 'proveedores.change_proveedor'
     template_name="proveedores/proveedor_form.html"
     context_object_name="obj"
     form_class=ProveedorForm

@@ -5,14 +5,16 @@ from django.contrib import messages
 from django.db.models import ProtectedError 
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import HttpResponse
 import json
 from .models import Categoria, Disenho
 from .forms import CategoriaForm, DisenhoForm
 from datetime import datetime
 
-class CategoriaView(LoginRequiredMixin, generic.ListView):
+class CategoriaView(LoginRequiredMixin, ValidatePermissionRequired,generic.ListView):
     paginate_by = 5
+    permission_required = 'tipos.view_categoria'
     template_name = "tipos/categorias/categoria_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -22,8 +24,9 @@ class CategoriaView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class CategoriaCreate(LoginRequiredMixin, generic.CreateView):
+class CategoriaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateView):
     model = Categoria
+    permission_required = 'tipos.add_categoria'
     template_name="tipos/categorias/categoria_form.html"
     context_object_name = 'obj'
     form_class=CategoriaForm
@@ -37,8 +40,9 @@ class CategoriaCreate(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
     
 
-class CategoriaEdit(LoginRequiredMixin, generic.UpdateView):
+class CategoriaEdit(LoginRequiredMixin, ValidatePermissionRequired,generic.UpdateView):
     model=Categoria
+    permission_required = 'tipos.change_categoria'
     template_name="tipos/categorias/categoria_form.html"
     context_object_name = 'obj'
     form_class=CategoriaForm
@@ -68,8 +72,9 @@ def categoria_delete(request,id):
     return JsonResponse(data, safe=False)
 
 
-class DisenhoView(LoginRequiredMixin, generic.ListView):
+class DisenhoView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 5
+    permission_required = 'tipos.view_disenho'
     template_name = "tipos/disenhos/disenho_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -79,8 +84,9 @@ class DisenhoView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class DisenhoCreate(LoginRequiredMixin, generic.CreateView):
+class DisenhoCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = Categoria
+    permission_required = 'tipos.add_disenho'
     template_name="tipos/disenhos/disenho_form.html"
     context_object_name = 'obj'
     form_class=DisenhoForm
@@ -94,8 +100,9 @@ class DisenhoCreate(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
     
 
-class DisenhoEdit(LoginRequiredMixin, generic.UpdateView):
+class DisenhoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Categoria
+    permission_required = 'tipos.change_disenho'
     template_name="tipos/disenhos/disenho_form.html"
     context_object_name = 'obj'
     form_class=CategoriaForm

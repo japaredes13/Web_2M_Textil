@@ -131,6 +131,8 @@
 {% block js_page %}
     {% include 'base/functions.html' %}
     {% include 'base/partials/sweet_delete.html' %}
+    {% include 'base/partials/functions_cuota.html' %}
+
     <script src="{% static 'base/plugins/datepicker-1.0.10/datepicker.min.js' %}"></script>
     <script src="{% static 'base/plugins/datepicker-1.0.10/datepicker.es-ES.js' %}"></script>
     <script>
@@ -281,12 +283,12 @@
                 var tr = table.cell($(this).closest('td, li')).index();
                 var data = table.row(tr.row).data();
                 console.log(data)
-                $('#id_monto_total').text(data.monto_total)
+                $('#id_monto_total').text(Intl.NumberFormat('de-DE').format(data.monto_total))
                 if (data.saldo_actual.monto_cuota__sum==null){
                     $('#id_saldo_actual').text(0);
                 }
                 else{
-                    $('#id_saldo_actual').text(data.saldo_actual.monto_cuota__sum);
+                    $('#id_saldo_actual').text(Intl.NumberFormat('de-DE').format(data.saldo_actual.monto_cuota__sum));
                 }
                 console.log(data.saldo_actual.monto_cuota__sum)
                 $('#tblDetalleCredito').DataTable({
@@ -452,8 +454,11 @@
                     }).always(function (data) {
 
                     });
+                    alert('Notificación', '¡Cuota Pagada!', function () {
+                        location.href = '/compras/compra/list/';
+                    });
                 }, function () {
-                    location.href = '/compras/compra/list';
+                    
                 });
             });
 

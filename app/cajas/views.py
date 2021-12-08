@@ -8,6 +8,7 @@ from .forms import CajaForm, BancoForm, CobroForm
 from ventas.models import Venta
 from .forms import CajaForm, CajaMovimientoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -21,8 +22,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-class CajaList(LoginRequiredMixin,generic.ListView):
+class CajaList(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
     model = Caja 
+    permission_required = 'cajas.view_caja'
     template_name = "cajas/caja_list.html"
     login_url = 'bases:login'
 
@@ -62,8 +64,9 @@ class CajaList(LoginRequiredMixin,generic.ListView):
         
         return JsonResponse(data, safe=False)
 
-class CajaCreate(LoginRequiredMixin, generic.CreateView):
+class CajaCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Caja
+    permission_required = 'cajas.add_caja'
     template_name="cajas/caja_form.html"
     context_object_name="obj"
     form_class=CajaForm
@@ -93,8 +96,9 @@ class CajaCreate(LoginRequiredMixin, generic.CreateView):
         context = super(CajaCreate,self).get_context_data(**kwargs)
         return context
 
-class CajaEdit(LoginRequiredMixin, generic.UpdateView):
+class CajaEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Caja
+    permission_required = 'cajas.change_caja'
     template_name="cajas/caja_form.html"
     context_object_name = 'obj'
     form_class=CajaForm
@@ -106,8 +110,9 @@ class CajaEdit(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
 
-class BancoView(LoginRequiredMixin, generic.ListView):
+class BancoView(LoginRequiredMixin, ValidatePermissionRequired,generic.ListView):
     paginate_by = 5
+    permission_required = 'cajas.view_banco'
     template_name = "cajas/bancos/banco_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -117,8 +122,9 @@ class BancoView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class BancoCreate(LoginRequiredMixin, generic.CreateView):
+class BancoCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = Banco
+    permission_required = 'cajas.add_banco'
     template_name="cajas/bancos/banco_form.html"
     context_object_name = 'obj'
     form_class=BancoForm
@@ -132,8 +138,9 @@ class BancoCreate(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
     
 
-class BancoEdit(LoginRequiredMixin, generic.UpdateView):
+class BancoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Banco
+    permission_required = 'cajas.change_banco'
     template_name="cajas/bancos/banco_form.html"
     context_object_name = 'obj'
     form_class=BancoForm
@@ -161,8 +168,9 @@ def banco_delete(request,id):
         }
     return JsonResponse(data, safe=False)
 
-class CajaMovimientoList(LoginRequiredMixin,generic.ListView):
+class CajaMovimientoList(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
     model = Movimiento 
+    permission_required = 'cajas.view_movimiento'
     template_name = "cajas/movimientos_list.html"
     login_url = 'bases:login'
 
@@ -194,8 +202,9 @@ class CajaMovimientoList(LoginRequiredMixin,generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class CajaMovimientoCreate(LoginRequiredMixin, generic.CreateView):
+class CajaMovimientoCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = Movimiento
+    permission_required = 'cajas.add_movimiento'
     template_name="cajas/movimientos_form.html"
     context_object_name="obj"
     form_class=CajaMovimientoForm
@@ -246,8 +255,9 @@ class CajaMovimientoCreate(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class CajaMovimientoEdit(LoginRequiredMixin, generic.UpdateView):
+class CajaMovimientoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model = Movimiento
+    permission_required = 'cajas.change_movimiento'
     template_name="cajas/movimientos_form.html"
     context_object_name = 'obj'
     form_class=CajaMovimientoForm

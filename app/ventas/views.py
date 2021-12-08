@@ -8,6 +8,7 @@ from cajas.forms import CobroForm, BancoForm
 from clientes.models import Cliente
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.db.models import Q
 import json
 from django.utils.decorators import method_decorator
@@ -24,8 +25,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-class VentaView(LoginRequiredMixin, generic.ListView):
+class VentaView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = Venta 
+    permission_required = 'ventas.view_venta'
     template_name = "ventas/ventas_list.html"
     login_url = 'bases:login'
 
@@ -134,8 +136,9 @@ class VentaView(LoginRequiredMixin, generic.ListView):
         
         return JsonResponse(data, safe=False)
 
-class VentaCobro(LoginRequiredMixin, generic.ListView):
+class VentaCobro(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = CuotaVenta 
+    permission_required = 'ventas.view_cobro'
     template_name = "ventas/ventas_cobro_list.html"
     login_url = 'bases:login'
 
@@ -185,8 +188,9 @@ class VentaCobro(LoginRequiredMixin, generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class VentaCreate(LoginRequiredMixin, generic.CreateView):
+class VentaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateView):
     model=Venta
+    permission_required = 'ventas.add_venta'
     form_class=VentaForm
     template_name="ventas/venta_form.html"
     success_url=reverse_lazy("ventas:ventas_list")
@@ -374,8 +378,9 @@ class VentaCreate(LoginRequiredMixin, generic.CreateView):
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
 
-class VentaEdit(LoginRequiredMixin, generic.CreateView):
+class VentaEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Venta
+    permission_required = 'ventas.change_venta'
     form_class=VentaForm
     template_name="ventas/venta_form.html"
     success_url=reverse_lazy("ventas:ventas_list")
@@ -470,12 +475,43 @@ class VentaEdit(LoginRequiredMixin, generic.CreateView):
         return JsonResponse(data, safe=False)
 
 class VentaListadoPdfView(generic.View):
+
+    def link_callback(self, uri, rel):
+        """
+        Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+        resources
+        """
+        # use short variable names
+        sUrl = settings.STATIC_URL  # Typically /static/
+        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL  # Typically /static/media/
+        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
+
+        # convert URIs to absolute system paths
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        else:
+            return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+
+        # make sure that file exists
+        if not os.path.isfile(path):
+            raise Exception(
+                'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+        return path
+    
+
     def get(self,request, *args, **kwargs):
         try:
             template = get_template('ventas/listado_pdf.html')
             context = {
                 'ventas': Venta.objects.get(pk=self.kwargs['pk']),
                 #'cobros': Cobro.objects.select_related('venta').filter(venta_id=self.kwargs['pk'])
+                'configuracion': ConfiguracionVenta.objects.filter(estado=True).first(),
+                'cabecera': {'nombre': '2M TEXTIL', 'ruc': '80090982-2', 'descripcion': 'Ventas al por menor y mayor de telas','telefono':'Tel: 021 64 45 67 ,  Cel: 0986542187'},
+                'icon': '{}{}'.format(settings.MEDIA_URL, '2m.png')
             }
             print(context)
             print(self.kwargs['pk'])
@@ -483,7 +519,7 @@ class VentaListadoPdfView(generic.View):
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')
             pisa_status = pisa.CreatePDF(
-                html, dest=response)
+                html, dest=response,link_callback = self.link_callback)
             return response
         except:
             pass

@@ -5,14 +5,16 @@ from django.contrib import messages
 from django.db.models import ProtectedError 
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import HttpResponse
 import json
 from .models import Departamento, Ciudad
 from .forms import DepartamentoForm, CiudadForm
 from datetime import datetime
 
-class DepartamentoView(LoginRequiredMixin, generic.ListView):
+class DepartamentoView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 5
+    permission_required = 'ubicaciones.view_departamento'
     template_name = "ubicaciones/departamentos/departamento_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -22,8 +24,9 @@ class DepartamentoView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class DepartamentoCreate(LoginRequiredMixin, generic.CreateView):
+class DepartamentoCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = Departamento
+    permission_required = 'ubicaciones.add_departamento'
     template_name="ubicaciones/departamentos/departamento_form.html"
     context_object_name = 'obj'
     form_class=DepartamentoForm
@@ -37,8 +40,9 @@ class DepartamentoCreate(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
     
 
-class DepartamentoEdit(LoginRequiredMixin, generic.UpdateView):
+class DepartamentoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Departamento
+    permission_required = 'ubicaciones.change_departamento'
     template_name="ubicaciones/departamentos/departamento_form.html"
     context_object_name = 'obj'
     form_class=DepartamentoForm
@@ -68,8 +72,9 @@ def departamento_delete(request,id):
     return JsonResponse(data, safe=False)
 
 
-class CiudadView(LoginRequiredMixin, generic.ListView):
+class CiudadView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 5
+    permission_required = 'ubicaciones.view_cuidad'
     template_name = "ubicaciones/ciudades/ciudad_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -79,8 +84,9 @@ class CiudadView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
-class CiudadCreate(LoginRequiredMixin, generic.CreateView):
+class CiudadCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model=Ciudad
+    permission_required = 'ubicaciones.add_ciudad'
     template_name="ubicaciones/ciudades/ciudad_form.html"
     context_object_name = 'obj'
     form_class=CiudadForm
@@ -93,8 +99,9 @@ class CiudadCreate(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
     
 
-class CiudadEdit(LoginRequiredMixin, generic.UpdateView):
+class CiudadEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Ciudad
+    permission_required = 'ubicaciones.change_ciudad'
     template_name="ubicaciones/ciudades/ciudad_form.html"
     context_object_name = 'obj'
     form_class=CiudadForm

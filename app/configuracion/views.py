@@ -3,12 +3,14 @@ from django.views import generic
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from .models import  ConfiguracionUsuario, ConfiguracionProducto, ConfiguracionVenta, ConfiguracionEgreso
 from .forms import ConfiguracionUsuarioForm, ConfiguracionProductoForm, ConfiguracionVentaForm, ConfiguracionEgresoForm
 from datetime import datetime, date
 
-class ConfiguracionUsuarioView(LoginRequiredMixin, generic.ListView):
+class ConfiguracionUsuarioView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 6
+    permission_required = 'configuracion.view_configuracionusuario'
     template_name = "configuracion/configuracion_usuario_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -17,8 +19,9 @@ class ConfiguracionUsuarioView(LoginRequiredMixin, generic.ListView):
         queryset = ConfiguracionUsuario.objects.filter(fecha_eliminacion__isnull=True)
         return queryset
 
-class ConfiguracionUsuarioEdit(LoginRequiredMixin, generic.UpdateView):
+class ConfiguracionUsuarioEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=ConfiguracionUsuario
+    permission_required = 'configuracion.change_configuracionusuario'
     template_name="configuracion/configuracion_usuario_form.html"
     context_object_name = 'obj'
     form_class=ConfiguracionUsuarioForm
@@ -30,8 +33,9 @@ class ConfiguracionUsuarioEdit(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
 
-class ConfiguracionProductoView(LoginRequiredMixin, generic.ListView):
+class ConfiguracionProductoView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 6
+    permission_required = 'configuracion.view_configuracionproducto'
     template_name = "configuracion/configuracion_producto_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -40,8 +44,9 @@ class ConfiguracionProductoView(LoginRequiredMixin, generic.ListView):
         queryset = ConfiguracionProducto.objects.filter(fecha_eliminacion__isnull=True)
         return queryset
 
-class ConfiguracionProductoEdit(LoginRequiredMixin, generic.UpdateView):
+class ConfiguracionProductoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=ConfiguracionProducto
+    permission_required = 'configuracion.change_configuracionproducto'
     template_name="configuracion/configuracion_producto_form.html"
     context_object_name = 'obj'
     form_class=ConfiguracionProductoForm
@@ -54,8 +59,9 @@ class ConfiguracionProductoEdit(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
     
 
-class ConfiguracionVentaView(LoginRequiredMixin, generic.ListView):
+class ConfiguracionVentaView(LoginRequiredMixin, ValidatePermissionRequired,generic.ListView):
     paginate_by = 6
+    permission_required = 'configuracion.view_configuracionventa'
     template_name = "configuracion/configuracion_venta_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -70,8 +76,9 @@ class ConfiguracionVentaView(LoginRequiredMixin, generic.ListView):
         queryset = ConfiguracionVenta.objects.filter(fecha_eliminacion__isnull=True)
         return queryset
 
-class ConfiguracionVentaCreate(LoginRequiredMixin, generic.CreateView):
+class ConfiguracionVentaCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = ConfiguracionVenta
+    permission_required = 'configuracion.add_configuracionventa'
     template_name="configuracion/configuracion_venta_form.html"
     context_object_name = 'obj'
     form_class=ConfiguracionVentaForm
@@ -84,8 +91,9 @@ class ConfiguracionVentaCreate(LoginRequiredMixin, generic.CreateView):
         messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
 
-class ConfiguracionVentaEdit(LoginRequiredMixin, generic.UpdateView):
+class ConfiguracionVentaEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=ConfiguracionVenta
+    permission_required = 'configuracion.change_configuracionventa'
     template_name="configuracion/configuracion_venta_form.html"
     context_object_name = 'obj'
     form_class=ConfiguracionVentaForm
@@ -97,8 +105,9 @@ class ConfiguracionVentaEdit(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, 'Registro actualizado correctamente')
         return super().form_valid(form)
 
-class ConfiguracionEgresoView(LoginRequiredMixin, generic.ListView):
+class ConfiguracionEgresoView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     paginate_by = 6
+    permission_required = 'configuracion.view_configuracionegreso'
     template_name = "configuracion/configuracion_egreso_list.html"
     context_object_name = "obj"
     login_url = 'bases:login'
@@ -107,8 +116,9 @@ class ConfiguracionEgresoView(LoginRequiredMixin, generic.ListView):
         queryset = ConfiguracionEgreso.objects.filter(fecha_eliminacion__isnull=True)
         return queryset
 
-class ConfiguracionEgresoEdit(LoginRequiredMixin, generic.UpdateView):
+class ConfiguracionEgresoEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=ConfiguracionEgreso
+    permission_required = 'configuracion.change_configuracionegreso'
     template_name="configuracion/configuracion_egreso_form.html"
     context_object_name = 'obj'
     form_class=ConfiguracionEgresoForm

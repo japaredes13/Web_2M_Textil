@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime
 
@@ -13,8 +14,9 @@ from .models import Cliente
 from .forms import ClienteForm
 from ubicaciones.models import Ciudad
 
-class ClienteView(LoginRequiredMixin,generic.ListView):
+class ClienteView(LoginRequiredMixin,ValidatePermissionRequired,generic.ListView):
     model = Cliente 
+    permission_required = 'clientes.view_cliente'
     template_name = "clientes/cliente_list.html"
     login_url = 'bases:login'
 
@@ -43,8 +45,9 @@ class ClienteView(LoginRequiredMixin,generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class ClienteCreate(LoginRequiredMixin, generic.CreateView):
+class ClienteCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateView):
     model=Cliente
+    permission_required = 'clientes.add_cliente'
     template_name="clientes/cliente_form.html"
     context_object_name="obj"
     form_class=ClienteForm
@@ -62,8 +65,9 @@ class ClienteCreate(LoginRequiredMixin, generic.CreateView):
         context ["ciudades"] = Ciudad.objects.all()
         return context
 
-class ClienteEdit(LoginRequiredMixin, generic.UpdateView):
+class ClienteEdit(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model=Cliente
+    permission_required = 'clientes.change_cliente'
     template_name="clientes/cliente_form.html"
     context_object_name="obj"
     form_class=ClienteForm

@@ -6,6 +6,7 @@ from django.views import generic
 from cajas.models import Caja, Pago, Banco
 from cajas.forms import PagoForm, BancoForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from bases.mixins import ValidatePermissionRequired
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -29,8 +30,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
 
-class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
+class OrdenCompraListView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = OrdenCompra
+    permission_required = 'compras.view_ordencompra'
     template_name = 'orden_compras/orden_compras_list.html'
 
     @method_decorator(csrf_exempt)
@@ -82,9 +84,10 @@ class OrdenCompraListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
+class OrdenCompraCreateView(LoginRequiredMixin,ValidatePermissionRequired, generic.CreateView):
     model = OrdenCompra
     form_class = OrdenCompraForm
+    permission_required = 'compras.add_ordencompra'
     template_name = 'orden_compras/orden_compras_form.html'
     
 
@@ -159,9 +162,10 @@ class OrdenCompraCreateView(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class OrdenCompraUpdateView(LoginRequiredMixin, generic.UpdateView):
+class OrdenCompraUpdateView(LoginRequiredMixin,ValidatePermissionRequired, generic.UpdateView):
     model = OrdenCompra
     form_class = OrdenCompraForm
+    permission_required = 'compras.change_ordencompra'
     template_name = 'orden_compras/orden_compras_form.html'
     
 
@@ -267,8 +271,9 @@ class OrdenCompraDeleteView(LoginRequiredMixin, generic.DeleteView):
         return context
 
 
-class CompraListView(LoginRequiredMixin, generic.ListView):
+class CompraListView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = Compra
+    permission_required = 'compras.view_compra'
     template_name = 'compras/compras_list.html'
 
     @method_decorator(csrf_exempt)
@@ -350,9 +355,10 @@ class CompraListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class CompraCreateView(LoginRequiredMixin, generic.UpdateView):
+class CompraCreateView(LoginRequiredMixin, ValidatePermissionRequired, generic.UpdateView):
     model = OrdenCompra
     form_class = CompraForm
+    permission_required = 'compras.add_compra'
     template_name = 'compras/compras_form.html'
     
 
@@ -705,8 +711,9 @@ class CompraListadoDetallePdfView(generic.View):
             pass
         return HttpResponseRedirect(reverse_lazy('compras:compra_list'))
 
-class CompraPago(LoginRequiredMixin, generic.ListView):
+class CompraPago(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView):
     model = CuotaCompra
+    permission_required = 'compras.view_pago'
     template_name = "compras/compras_pago_list.html"
     login_url = 'bases:login'
 
