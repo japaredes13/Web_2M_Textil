@@ -130,10 +130,10 @@ class InventarioCreate(LoginRequiredMixin,ValidatePermissionRequired, generic.Cr
                         detalle.inventario_id = inventario.id
                         tela_id = det['id']
                         if (det['oferta'] == 1):
-                            detalle.descripcion = det['nombre'] + ' ' +det['descripcion']
+                            detalle.descripcion = det['nombre']  + ' ' + det['codigo'] + ' ' +det['descripcion']
                             tela_id = det['tela_id']
                         else:
-                            detalle.descripcion = det['nombre']
+                            detalle.descripcion = det['nombre']  + ' '  + det['codigo']
                         detalle.tela_id = tela_id
                         detalle.metraje_deposito = float(det['metraje_deposito'])
 

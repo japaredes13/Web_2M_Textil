@@ -265,7 +265,16 @@ class VentaCreate(LoginRequiredMixin, ValidatePermissionRequired,generic.CreateV
                     data.append(aux)
             elif action == 'add':
                 request_venta = json.loads(request.POST['venta'])
+                
+                if(request_venta['medio_cobro']=='Cheque'):
+                    if (request_venta['banco'] is None or request_venta['banco'] == ' '):
+                        data = {
+                            'error':'Selecciona un banco!',
+                            'message':'Selecciona un banco!.'
+                        }
+                        return JsonResponse(data, safe=False)
                 with transaction.atomic():
+                    
                     venta = Venta()
                     cliente = Cliente.objects.get(pk=request_venta['cliente'])
                     venta.nro_factura = request_venta['numero_factura']

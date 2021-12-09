@@ -135,6 +135,12 @@ class TelaInvoicePdfView(generic.View):
             telas = Tela.objects.filter(fecha_eliminacion__isnull=True).order_by('nombre')
             buscar_tela = request.GET['tela']
             categoria = request.GET['categoria']
+            print(categoria)
+            if (categoria == ''):
+                nombre = 'Todos'
+            else:
+                nombre_categoria = Categoria.objects.get(id=categoria)
+                nombre = nombre_categoria.descripcion
             if categoria:
                 telas = telas.filter(categoria=categoria)
             if buscar_tela:
@@ -142,7 +148,8 @@ class TelaInvoicePdfView(generic.View):
             
             template = get_template('telas/listado_pdf.html')
             context = {
-                'telas': telas
+                'telas': telas,
+                'nombre': nombre
             }
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')
@@ -344,6 +351,11 @@ class TelaOfertaInvoicePdfView(generic.View):
             telas_ofertas = TelaOferta.objects.filter(fecha_eliminacion__isnull=True, estado=True)
             buscar_tela = request.GET['tela_oferta']
             categoria = request.GET['categoria']
+            if (categoria == ''):
+                nombre = 'Todos'
+            else:
+                nombre_categoria = Categoria.objects.get(id=categoria)
+                nombre = nombre_categoria.descripcion
             if categoria:
                 telas_ofertas = telas_ofertas.select_related('tela').filter(tela__categoria=categoria)
             if buscar_tela:
@@ -351,7 +363,8 @@ class TelaOfertaInvoicePdfView(generic.View):
             
             template = get_template('telas/listado_oferta_pdf.html')
             context = {
-                'telas_ofertas': telas_ofertas
+                'telas_ofertas': telas_ofertas,
+                'nombre': nombre
             }
             html = template.render(context)
             response = HttpResponse(content_type='application/pdf')

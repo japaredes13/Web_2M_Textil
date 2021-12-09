@@ -18,6 +18,7 @@
 
                         <form class="user" method="POST" id="form">
                             {% csrf_token %}
+                            {{ form.non_field_errors }}
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" id="id_username" name="username" placeholder="Usuario" autocomplete="off">
                                 <div class="input-group-append">
