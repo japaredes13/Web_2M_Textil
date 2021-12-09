@@ -261,7 +261,7 @@
                                 targets: [-2],
                                 class: 'text-center',
                                 render: function (data, type, row) {
-                                    return data;
+                                    return Intl.NumberFormat('de-DE').format(data);
                                 }
                             },
                         ],

@@ -270,8 +270,8 @@ $(document).ready(function(){
     })
 
     $(form).on('submit', function (e){
-        var error = validatePrecioVenta();
-        if (error) return false;
+        //var error = validatePrecioVenta();
+        //if (error) return false;
         var precio_compra = String($('#id_precio_compra').val());
         console.log(precio_compra)
         var precio_compra_anterior = String($('#id_precio_compra_anterior').val());
