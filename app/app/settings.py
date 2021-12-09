@@ -72,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -117,11 +118,11 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dvskohe7gc2vh',
-        'USER': 'ewojfykifidxqi',
-        'PASSWORD': 'f8cd88e09081cf49f070c48accd70dd3c243c6c4a2348846382542352cc50313',
-        'HOST': 'ec2-54-157-113-118.compute-1.amazonaws.com',
-        'PORT': 5432
+        'NAME': 'degs3hqi4tos6i',
+        'USER': 'vsieyrjrsgxgsh',
+        'PASSWORD': 'ba8b40c6e383dd69993309941968748806edd56803950b75f4f3c18508e93fcd',
+        'HOST': 'ec2-3-230-219-251.compute-1.amazonaws.com',
+        'PORT': '5432'
     }
 }
 
@@ -178,3 +179,6 @@ AUTH_USER_MODEL = 'user.User'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
