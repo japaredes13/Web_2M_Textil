@@ -19,6 +19,8 @@ class Inventario(ClaseModelo):
 class DetalleInventario(ClaseModelo):
     tela = models.ForeignKey(Tela, on_delete=models.CASCADE)
     inventario = models.ForeignKey(Inventario, on_delete=models.CASCADE)
+    descripcion = models.CharField(max_length=100,null=True,blank=True)
+    es_oferta = models.BooleanField(default=False)
     ultimo_metraje = models.FloatField(null=True,blank=True)
     metraje_deposito = models.FloatField()
     metraje_ajustado = models.FloatField(null=True,blank=True)

@@ -125,7 +125,7 @@
         }).on('select2:select', function (e){
             var data = e.params.data;
             data.metraje_deposito = 1;
-            if (inventario.items.telas.find(tela => tela.id === data.id)){
+            if (inventario.items.telas.find(tela => tela.id === data.id && tela.oferta===data.oferta)){
                 Swal.fire({
                     icon: 'warning',
                     title: 'Atención!',

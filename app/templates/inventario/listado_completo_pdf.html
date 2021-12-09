@@ -47,21 +47,27 @@
     <thead>
     <tr>
         <th class="text-center">Tela</th>
-        <th class="text-center">Codigo</th>
         <th class="text-center">Metraje Sistema</th>
         <th class="text-center">Metraje Depósito</th>
         <th class="text-center">Diferencia</th>
-        <th class="text-center">Monto Pérdida</th>
+        <th class="text-center">Monto Diferencia</th>
     </tr>
     </thead>
     <tbody>
     {% for inventario in inventarios.detalleinventario_set.all %}
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
-            <td class="text-center">{{ inventario.tela.nombre }}</td>
-            <td class="text-center">{{ inventario.tela.codigo }}</td>
+            <td class="text-center">{{ inventario.descripcion }}</td>
             <td class="text-center">{% load humanize  %}{{ inventario.ultimo_metraje|intcomma }}</td>
             <td class="text-center">{% load humanize  %}{{ inventario.metraje_deposito|intcomma }}</td>
-            <td class="text-center">{% load humanize  %}{{ inventario.metraje_ajustado|intcomma }}</td>
+            <td class="text-center"> 
+                {% if  inventario.ultimo_metraje > inventario.metraje_deposito%} 
+                    - {% load humanize  %}{{ inventario.metraje_ajustado|intcomma }}
+                {% elif  inventario.ultimo_metraje < inventario.metraje_deposito%} 
+                    + {% load humanize  %}{{ inventario.metraje_ajustado|intcomma }}
+                {% else %} 
+                    {% load humanize  %}{{ inventario.metraje_ajustado|intcomma }}
+                {% endif %}
+                </td>
             <td class="text-center">Gs {% load humanize  %}{{ inventario.monto_perdida|intcomma }}</td>
         </tr>
     {% endfor %}

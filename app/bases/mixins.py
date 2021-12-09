@@ -12,10 +12,8 @@ class ValidatePermissionRequired(object):
     def get_perms(self):
         if isinstance(self.permission_required,str):
             perms = (self.permission_required,)
-            print(perms)
         else:
             perms = self.permission_required
-            print(perms)
         return perms
     
     def get_url(self):
@@ -24,7 +22,6 @@ class ValidatePermissionRequired(object):
         return self.url_redirect    
 
     def dispatch(self,request,*args,**kwargs):
-        print(request.user.has_perms(self.get_perms()))
         if request.user.has_perms(self.get_perms()):
             return super().dispatch(request,*args,**kwargs)
         messages.error(request,'No tiene permiso para ingresar a este módulo')

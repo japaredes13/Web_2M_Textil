@@ -45,15 +45,13 @@
     <thead>
     <tr>
         <th class="text-center">Tela</th>
-        <th class="text-center">Codigo</th>
         <th class="text-center">Metraje Depósito</th>
     </tr>
     </thead>
     <tbody>
     {% for inventario in inventarios.detalleinventario_set.all %}
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
-            <td class="text-center">{{ inventario.tela.nombre }}</td>
-            <td class="text-center">{{ inventario.tela.codigo }}</td>
+            <td class="text-center">{{ inventario.descripcion }}</td>
             <td class="text-center">{% load humanize  %}{{ inventario.metraje_deposito|intcomma }}</td>
         </tr>
     {% endfor %}
