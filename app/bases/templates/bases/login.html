@@ -1,7 +1,16 @@
 {% extends 'base/base.html' %}
 
+{% load static%}
+{% block css %}
+    <style>
+        .img-background{
+            background-image: url( "{% static 'base/img/login.jpeg' %}");
+        }
+    </style>
+{% endblock css %}
+
 {% block body %}
-    <body class="hold-transition login-page">
+    <body class="hold-transition login-page img-background">
         {% block side_bar %} {% endblock %}
         {% block content %} {% endblock %}
         {% block footer%} {% endblock %}
