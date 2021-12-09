@@ -42,8 +42,11 @@ class Home(LoginRequiredMixin, generic.TemplateView):
 
         if (venta_mes_anterior <= 0 and venta_mes_actual <= 0):
             nivel_venta = 0.00
+        elif (venta_mes_anterior > 0 and venta_mes_actual <= 0):
+            porcentaje_venta = ( int(venta_mes_anterior) /  -100 )
+            nivel_venta = round (porcentaje_venta, 2)
         elif (venta_mes_anterior <= 0 and venta_mes_actual > 0):
-            porcentaje_venta = ( int(venta_mes_actual) / int(venta_mes_actual)) * 100
+            porcentaje_venta = ( int(venta_mes_actual) / 100) 
             nivel_venta = round (porcentaje_venta, 2)
         else:
             porcentaje_venta = ( int(venta_mes_actual) - int(venta_mes_anterior) ) / int(venta_mes_anterior) * 100
@@ -51,8 +54,11 @@ class Home(LoginRequiredMixin, generic.TemplateView):
 
         if (compra_mes_anterior <= 0 and compra_mes_actual <= 0):
             nivel_compra = 0.00
+        elif (compra_mes_anterior > 0 and compra_mes_actual <= 0):
+            porcentaje_compra = ( int(compra_mes_anterior) /  -100 )
+            nivel_compra = round (porcentaje_compra, 2)
         elif (compra_mes_anterior <= 0 and compra_mes_actual > 0):
-            porcentaje_compra = ( int(compra_mes_actual) / int(compra_mes_actual) ) * 100
+            porcentaje_compra = ( int(compra_mes_actual) / 100 ) 
             nivel_compra = round (porcentaje_compra, 2)
         else:
             porcentaje_compra = ( int(compra_mes_actual) - int(compra_mes_anterior) ) / int(compra_mes_anterior) * 100

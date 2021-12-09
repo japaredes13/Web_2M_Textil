@@ -98,10 +98,12 @@ class VentaView(LoginRequiredMixin,ValidatePermissionRequired, generic.ListView)
                     caja.monto_actual -= venta.monto_total
                     caja.save()
             elif request.POST['action'] == 'edit_cuota':
+                print(request.POST)
                 estado=request.POST['estado'] 
                 medio_cobro = (request.POST['medio_cobro'] )
                 banco = (request.POST['banco'] )
                 cuota_id=request.POST['id'] 
+                print(cuota_id)
                 caja = Caja.objects.filter(estado=True).first()
                 if (not caja):
                     data = {
