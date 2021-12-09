@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-&3%ow+9#5mrj7#$0+!(&so(2v3k%7)oor9=430z#-b)(h8%4a(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+ALLOWED_HOSTS = ['dosmtextil.herokuapp.com']
 
 
 # Application definition
@@ -102,6 +102,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -112,7 +113,17 @@ DATABASES = {
         'PORT': 5432
     }
 }
-
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dvskohe7gc2vh',
+        'USER': 'ewojfykifidxqi',
+        'PASSWORD': 'f8cd88e09081cf49f070c48accd70dd3c243c6c4a2348846382542352cc50313',
+        'HOST': 'ec2-54-157-113-118.compute-1.amazonaws.com',
+        'PORT': 5432
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
