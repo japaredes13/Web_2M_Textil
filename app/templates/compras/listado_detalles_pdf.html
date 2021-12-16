@@ -70,7 +70,7 @@
         <tr {% if forloop.first %}style="padding-top: 5px;" {% endif %}>
             <td class="text-center">{{ compra.tela.nombre }}</td>
             <td class="text-center">{{ compra.tela.codigo }}</td>
-            <td class="text-center">Gs. {% load humanize  %} {{ venta.precio_costo|intcomma  }}</td>
+            <td class="text-center">Gs. {% load humanize  %} {{ compra.precio_costo|intcomma  }}</td>
             <td class="text-center">{{ compra.metraje_comprado }}</td>
             <td class="text-center">Gs. {% load humanize  %} {{ compra.sub_total|intcomma  }}</td>
         </tr>

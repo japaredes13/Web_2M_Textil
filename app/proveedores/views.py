@@ -23,7 +23,7 @@ class ProveedorView(LoginRequiredMixin,ValidatePermissionRequired,generic.ListVi
         proveedores = Proveedor.objects.filter(fecha_eliminacion__isnull=True)
         proveedor = self.request.POST['proveedor']
         if proveedor:
-            proveedores = proveedores.filter(Q(nombre_empresa__icontains=proveedor))
+            proveedores = proveedores.filter(Q(nombre_empresa__icontains=proveedor) | Q(ruc__icontains=proveedor))
         return proveedores
 
 
